@@ -1,11 +1,12 @@
 package order
 
 import (
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/db"
+	"github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
+
+
 
 func AttachRouter(r *chi.Mux, db *db.DB) {
 	err := db.AutoMigrate(&Order{})
@@ -16,12 +17,7 @@ func AttachRouter(r *chi.Mux, db *db.DB) {
 	controller := NewController(repository)
 
 	orderRouter := chi.NewRouter()
-	orderRouter.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			next.ServeHTTP(w, r)
-		})
-	})
+	orderRouter.Use(middleware.Json)
 
 	orderRouter.Get("/", controller.List)
 	orderRouter.Post("/", controller.Create)

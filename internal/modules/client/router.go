@@ -1,10 +1,9 @@
 package client
 
 import (
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/db"
+	"github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
 
 func AttachRouter(r *chi.Mux, db *db.DB) {
@@ -16,12 +15,7 @@ func AttachRouter(r *chi.Mux, db *db.DB) {
 	controller := NewController(repository)
 
 	clientRouter := chi.NewRouter()
-	clientRouter.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			next.ServeHTTP(w, r)
-		})
-	})
+	clientRouter.Use(middleware.Json)
 
 	clientRouter.Get("/", controller.List)
 	clientRouter.Post("/", controller.Create)
