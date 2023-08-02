@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/server/srverr"
+	"github.com/raphael-foliveira/chi-gorm/pkg/resp"
 )
 
 type Controller struct {
@@ -35,14 +36,13 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(&newOrder)
+	resp.JSON(w, http.StatusCreated, &newOrder)
 }
 
 func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		srverr.Error(w, 400, "bad request")
+		srverr.Error(w, 400, "invalid id")
 		return
 	}
 	Order, err := c.repository.Get(id)
@@ -52,7 +52,7 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	err = json.NewDecoder(r.Body).Decode(&Order)
 	if err != nil {
-		srverr.Error(w, 400, "bad request")
+		srverr.Error(w, 400, "invalid request body")
 		return
 	}
 	defer r.Body.Close()
@@ -61,14 +61,13 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 500, "internal server error")
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&Order)
+	resp.JSON(w, http.StatusOK, &Order)
 }
 
 func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		srverr.Error(w, 400, "bad request")
+		srverr.Error(w, 400, "invalid id")
 		return
 	}
 	order, err := c.repository.Get(id)
@@ -90,13 +89,13 @@ func (c *Controller) List(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 500, "internal server error")
 		return
 	}
-	json.NewEncoder(w).Encode(&orders)
+	resp.JSON(w, http.StatusOK, &orders)
 }
 
 func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		srverr.Error(w, 400, "bad request")
+		srverr.Error(w, 400, "invalid id")
 		return
 	}
 	order, err := c.repository.Get(id)
@@ -104,5 +103,5 @@ func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 404, "order not found")
 		return
 	}
-	json.NewEncoder(w).Encode(&order)
+	resp.JSON(w, http.StatusOK, &order)
 }

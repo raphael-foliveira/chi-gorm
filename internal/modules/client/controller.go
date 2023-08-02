@@ -2,12 +2,12 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/server/srverr"
+	"github.com/raphael-foliveira/chi-gorm/pkg/resp"
 )
 
 type Controller struct {
@@ -19,8 +19,7 @@ func NewController(r iRepository) *Controller {
 }
 
 func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
-	var newClient Client
-	err := json.NewDecoder(r.Body).Decode(&newClient)
+	newClient, err := parseClientFromBody(r.Body)
 	if err != nil {
 		srverr.Error(w, 400, "bad request")
 		return
@@ -31,14 +30,11 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(&newClient)
+	resp.JSON(w, http.StatusCreated, &newClient)
 }
 
 func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 	urlId := chi.URLParam(r, "id")
-	fmt.Println("request path:", r.URL.String())
-	fmt.Println("urlId", urlId)
 	id, err := strconv.ParseUint(urlId, 10, 64)
 	if err != nil {
 		srverr.Error(w, 400, "invalid user id")
@@ -60,14 +56,13 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 500, "internal server error")
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&client)
+	resp.JSON(w, http.StatusOK, &client)
 }
 
 func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		srverr.Error(w, 400, "bad request")
+		srverr.Error(w, 400, "invalid user id")
 		return
 	}
 	client, err := c.repository.Get(id)
@@ -89,7 +84,7 @@ func (c *Controller) List(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 500, "internal server error")
 		return
 	}
-	json.NewEncoder(w).Encode(clients)
+	resp.JSON(w, http.StatusOK, clients)
 }
 
 func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
@@ -103,5 +98,5 @@ func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 404, "client not found")
 		return
 	}
-	json.NewEncoder(w).Encode(client)
+	resp.JSON(w, http.StatusOK, client)
 }

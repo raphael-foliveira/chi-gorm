@@ -45,7 +45,7 @@ func ClearClientsTable() {
 func TestMain(m *testing.M) {
 	testDb = db.Connect(internal.TestConfig.DatabaseURL)
 	testRouter = chi.NewRouter()
-	AttachRouter(testRouter, testDb)
+	MountRouter(testRouter, testDb)
 	ClearClientsTable()
 	m.Run()
 

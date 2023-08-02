@@ -21,10 +21,10 @@ func attachMiddleware(r *chi.Mux) {
 	}))
 }
 
-func attachRoutes(r *chi.Mux, db *db.DB) {
-	client.AttachRouter(r, db)
-	product.AttachRouter(r, db)
-	order.AttachRouter(r, db)
+func mountRouters(r *chi.Mux, db *db.DB) {
+	client.MountRouter(r, db)
+	product.MountRouter(r, db)
+	order.MountRouter(r, db)
 }
 
 func Start(db *db.DB) error {
@@ -33,7 +33,7 @@ func Start(db *db.DB) error {
 	mainRouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"message": "Hello World!"})
 	})
-	attachRoutes(mainRouter, db)
+	mountRouters(mainRouter, db)
 	fmt.Println("listening on port 3000")
 	return http.ListenAndServe(":3000", mainRouter)
 }

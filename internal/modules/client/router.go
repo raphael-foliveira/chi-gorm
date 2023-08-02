@@ -6,7 +6,7 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
 
-func AttachRouter(r *chi.Mux, db *db.DB) {
+func MountRouter(r *chi.Mux, db *db.DB) {
 	err := db.AutoMigrate(&Client{})
 	if err != nil {
 		panic(err)

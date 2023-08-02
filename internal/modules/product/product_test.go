@@ -44,7 +44,7 @@ func ClearProductsTable() {
 func TestMain(m *testing.M) {
 	database = db.Connect(internal.TestConfig.DatabaseURL)
 	router = chi.NewRouter()
-	AttachRouter(router, database)
+	MountRouter(router, database)
 	ClearProductsTable()
 	m.Run()
 
