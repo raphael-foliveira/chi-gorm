@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/server/srverr"
-	"github.com/raphael-foliveira/chi-gorm/pkg/resp"
+	"github.com/raphael-foliveira/chi-gorm/pkg/res"
 )
 
 type Controller struct {
@@ -31,7 +31,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	resp.JSON(w, http.StatusCreated, &newProduct)
+	res.JSON(w, http.StatusCreated, &newProduct)
 }
 
 func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +56,7 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 500, "internal server error")
 		return
 	}
-	resp.JSON(w, http.StatusOK, &product)
+	res.JSON(w, http.StatusOK, &product)
 }
 
 func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +84,7 @@ func (c *Controller) List(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 500, "internal server error")
 		return
 	}
-	resp.JSON(w, http.StatusOK, &products)
+	res.JSON(w, http.StatusOK, &products)
 }
 
 func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
@@ -98,5 +98,5 @@ func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
 		srverr.Error(w, 404, "product not found")
 		return
 	}
-	resp.JSON(w, http.StatusOK, &product)
+	res.JSON(w, http.StatusOK, &product)
 }
