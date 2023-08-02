@@ -1,4 +1,4 @@
-package srverr
+package res
 
 import (
 	"encoding/json"
