@@ -1,4 +1,4 @@
-package srverr
+package res
 
 import (
 	"net/http"
@@ -22,10 +22,6 @@ func (trw *testResponseWriter) WriteHeader(status int) {
 func (trw *testResponseWriter) Write(b []byte) (int, error) {
 	trw.body = string(b)
 	return 0, nil
-}
-
-func TestMain(m *testing.M) {
-	m.Run()
 }
 
 func TestError(t *testing.T) {

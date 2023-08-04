@@ -123,7 +123,7 @@ func TestList(t *testing.T) {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
 		}
 
-		if rec.Body.String() == "[]" {
+		if strings.TrimSpace(rec.Body.String()) == "[]" {
 			t.Errorf("Expected body %v, got %v", "[]", rec.Body.String())
 		}
 	})
