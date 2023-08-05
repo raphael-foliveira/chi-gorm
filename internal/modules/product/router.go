@@ -6,10 +6,10 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
 
-func MountRouter(r *chi.Mux, db *db.DB) {
+func NewRouter(db *db.DB) (*chi.Mux, error) {
 	err := db.AutoMigrate(&Product{})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	repository := NewRepository(db)
 	controller := NewController(repository)
@@ -22,6 +22,6 @@ func MountRouter(r *chi.Mux, db *db.DB) {
 	productRouter.Get("/{id}", controller.Get)
 	productRouter.Delete("/{id}", controller.Delete)
 	productRouter.Put("/{id}", controller.Update)
+	return productRouter, nil
 
-	r.Mount("/products", productRouter)
 }

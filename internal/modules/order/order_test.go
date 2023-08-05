@@ -83,7 +83,11 @@ func ClearOrdersTable() {
 func TestMain(m *testing.M) {
 	database = db.Connect(internal.TestConfig.DatabaseURL)
 	router = chi.NewRouter()
-	MountRouter(router, database)
+	ordersRouter, err := NewRouter(database)
+	if err != nil {
+		panic(err)
+	}
+	router.Handle("/orders", ordersRouter)
 	ClearOrdersTable()
 	m.Run()
 	ClearOrdersTable()
