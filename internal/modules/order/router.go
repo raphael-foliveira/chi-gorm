@@ -6,22 +6,21 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
 
-func MountRouter(r *chi.Mux, db *db.DB) {
+func NewRouter(db *db.DB) (*chi.Mux, error) {
 	err := db.AutoMigrate(&Order{})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	repository := NewRepository(db)
 	controller := NewController(repository)
 
-	orderRouter := chi.NewRouter()
-	orderRouter.Use(middleware.Json)
+	ordersRouter := chi.NewRouter()
+	ordersRouter.Use(middleware.Json)
 
-	orderRouter.Get("/", controller.List)
-	orderRouter.Post("/", controller.Create)
-	orderRouter.Get("/{id}", controller.Get)
-	orderRouter.Delete("/{id}", controller.Delete)
-	orderRouter.Put("/{id}", controller.Update)
-
-	r.Mount("/orders", orderRouter)
+	ordersRouter.Get("/", controller.List)
+	ordersRouter.Post("/", controller.Create)
+	ordersRouter.Get("/{id}", controller.Get)
+	ordersRouter.Delete("/{id}", controller.Delete)
+	ordersRouter.Put("/{id}", controller.Update)
+	return ordersRouter, nil
 }
