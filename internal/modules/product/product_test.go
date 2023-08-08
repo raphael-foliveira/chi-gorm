@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -48,10 +49,11 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	router.Handle("/products", productsRouter)
+	router.Mount("/products", productsRouter)
 	ClearProductsTable()
-	m.Run()
-
+	code := m.Run()
+	ClearProductsTable()
+	os.Exit(code)
 }
 
 func TestList(t *testing.T) {

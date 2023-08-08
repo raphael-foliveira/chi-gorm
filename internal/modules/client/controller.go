@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -78,6 +79,7 @@ func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) List(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("handling list")
 	clients, err := c.repository.List()
 	if err != nil {
 		res.Error(w, 500, "internal server error")
