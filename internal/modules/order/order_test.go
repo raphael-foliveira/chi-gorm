@@ -64,7 +64,7 @@ func InsertOrdersHelper(qt int) {
 		o.ProductID = 0
 		o.Client = c
 		o.Product = p
-		fmt.Println(o)
+		o.ID = 0
 		if err != nil {
 			panic(err)
 		}
@@ -233,13 +233,14 @@ func TestCreate(t *testing.T) {
 		}
 		rec := httptest.NewRecorder()
 		router.ServeHTTP(rec, req)
+		newOrder := Order{}
+		json.NewDecoder(rec.Body).Decode(&newOrder)
 
 		if rec.Code != http.StatusCreated {
 			t.Errorf("Expected status code %v, got %v", http.StatusCreated, rec.Code)
 		}
-
-		if !strings.Contains(rec.Body.String(), fmt.Sprint(order.Quantity)) {
-			t.Errorf("Expected body %v, got %v", order.Quantity, rec.Body.String())
+		if newOrder.Client.ID != cli.ID {
+			t.Errorf("Expected client id to be %v, got %v", cli, newOrder.Client)
 		}
 	})
 }
