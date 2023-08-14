@@ -24,12 +24,12 @@ func NewRepository(db *db.DB) *Repository {
 
 func (r *Repository) List() ([]Order, error) {
 	c := []Order{}
-	return c, r.db.Model(&Order{}).Preload("Client").Preload("Product").Find(&c).Error
+	return c, r.db.Preload("Client").Preload("Product").Find(&c).Error
 }
 
 func (r *Repository) Get(id uint64) (Order, error) {
 	c := Order{}
-	return c, r.db.Model(&Order{}).Preload("Client").Preload("Product").First(&c, id).Error
+	return c, r.db.Preload("Client").Preload("Product").First(&c, id).Error
 }
 
 func (r *Repository) Create(c *Order) error {
