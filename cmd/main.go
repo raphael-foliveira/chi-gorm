@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -11,5 +12,8 @@ import (
 func main() {
 	godotenv.Load()
 	db := db.Connect(os.Getenv("DATABASE_URL"))
-	server.Start(db)
+	err := server.Start(db)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
