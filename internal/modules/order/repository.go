@@ -6,14 +6,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/modules/product"
 )
 
-type iRepository interface {
-	List() ([]Order, error)
-	Get(id uint64) (Order, error)
-	Create(c *Order) error
-	Update(c *Order) error
-	Delete(c *Order) error
-}
-
 type Repository struct {
 	db *db.DB
 }
