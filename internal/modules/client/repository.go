@@ -4,14 +4,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/db"
 )
 
-type iRepository interface {
-	List() ([]Client, error)
-	Get(id uint64) (Client, error)
-	Create(c *Client) error
-	Update(c *Client) error
-	Delete(c *Client) error
-}
-
 type Repository struct {
 	db *db.DB
 }

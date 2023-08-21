@@ -6,14 +6,15 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
 )
 
 type Controller struct {
-	repository iRepository
+	repository interfaces.IRepository[Order]
 }
 
-func NewController(r iRepository) *Controller {
+func NewController(r interfaces.IRepository[Order]) *Controller {
 	return &Controller{r}
 }
 
