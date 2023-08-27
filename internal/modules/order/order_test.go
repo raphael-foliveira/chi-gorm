@@ -14,61 +14,21 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal"
 	"github.com/raphael-foliveira/chi-gorm/internal/db"
-	"github.com/raphael-foliveira/chi-gorm/internal/modules/client"
-	"github.com/raphael-foliveira/chi-gorm/internal/modules/product"
 )
 
 var database *db.DB
 var router *chi.Mux
 
 func InsertOrdersHelper(qt int) {
-	for i := 0; i < qt; i++ {
-		c := client.Client{}
-		err := faker.FakeData(&c)
-		c.ID = 0
-		if err != nil {
-			panic(err)
-		}
-		tx := database.Create(&c)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
-	}
-	for i := 0; i < qt; i++ {
-		p := product.Product{}
-		err := faker.FakeData(&p)
-		p.ID = 0
-		if err != nil {
-			panic(err)
-		}
-		tx := database.Create(&p)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
-	}
-	for i := 0; i < qt; i++ {
-		c := client.Client{}
-		p := product.Product{}
 
-		tx := database.Order("RANDOM()").First(&c)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
-		tx = database.Order("RANDOM()").First(&p)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
+	for i := 0; i < qt; i++ {
 		o := Order{}
 		err := faker.FakeData(&o)
-		o.ClientID = 0
-		o.ProductID = 0
-		o.Client = c
-		o.Product = p
 		o.ID = 0
 		if err != nil {
 			panic(err)
 		}
-		tx = database.Create(&o)
+		tx := database.Create(&o)
 		if tx.Error != nil {
 			panic(tx.Error)
 		}
@@ -77,8 +37,6 @@ func InsertOrdersHelper(qt int) {
 
 func ClearOrdersTable() {
 	database.Delete(&Order{}, "1=1")
-	database.Delete(&client.Client{}, "1=1")
-	database.Delete(&product.Product{}, "1=1")
 }
 
 func TestMain(m *testing.M) {
@@ -202,20 +160,7 @@ func TestCreate(t *testing.T) {
 	t.Run("should return 201 when body is valid", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(5)
-		cli := client.Client{}
-		pro := product.Product{}
-
-		tx := database.Order("RANDOM()").First(&cli)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
-		tx = database.Order("RANDOM()").First(&pro)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
 		order := CreateOrderSchema{
-			ClientID:  cli.ID,
-			ProductID: pro.ID,
 			Quantity:  10,
 		}
 		err := faker.FakeData(&order)
@@ -238,9 +183,6 @@ func TestCreate(t *testing.T) {
 
 		if rec.Code != http.StatusCreated {
 			t.Errorf("Expected status code %v, got %v", http.StatusCreated, rec.Code)
-		}
-		if newOrder.Client.ID != cli.ID {
-			t.Errorf("Expected client id to be %v, got %v", cli, newOrder.Client)
 		}
 	})
 }

@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/db"
+	"github.com/raphael-foliveira/chi-gorm/internal/modules/order"
 )
 
 type Repository struct {
@@ -13,23 +14,34 @@ func NewRepository(db *db.DB) *Repository {
 }
 
 func (r *Repository) List() ([]Client, error) {
-	c := []Client{}
-	return c, r.db.Find(&c).Error
+	clients := []Client{}
+	err := r.db.Find(&clients).Error
+	if err != nil {
+		return nil, err
+	}
+	for i := range clients {
+		orders, err := order.NewRepository(r.db).ListByClient(clients[i].ID)
+		if err != nil {
+			return nil, err
+		}
+		clients[i].Orders = orders
+	}
+	return clients, nil
 }
 
 func (r *Repository) Get(id uint64) (Client, error) {
-	c := Client{}
-	return c, r.db.First(&c, id).Error
+	client := Client{}
+	return client, r.db.First(&client, id).Error
 }
 
-func (r *Repository) Create(c *Client) error {
-	return r.db.Create(c).Error
+func (r *Repository) Create(client *Client) error {
+	return r.db.Create(client).Error
 }
 
-func (r *Repository) Update(c *Client) error {
-	return r.db.Save(c).Error
+func (r *Repository) Update(client *Client) error {
+	return r.db.Save(client).Error
 }
 
-func (r *Repository) Delete(c *Client) error {
-	return r.db.Delete(c).Error
+func (r *Repository) Delete(client *Client) error {
+	return r.db.Delete(client).Error
 }
