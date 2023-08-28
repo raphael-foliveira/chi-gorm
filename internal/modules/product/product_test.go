@@ -35,11 +35,8 @@ func InsertProductsHelper(qt int) {
 }
 
 func ClearProductsTable() {
-	database.Raw("delete from orders")
-	tx := database.Delete(&Product{}, "1=1")
-	if tx.Error != nil {
-		panic(tx.Error)
-	}
+	database.Exec("delete from orders where 1=1;")
+	database.Exec("delete from products where 1=1;")
 }
 
 func TestMain(m *testing.M) {
@@ -115,7 +112,7 @@ func TestGet(t *testing.T) {
 
 	t.Run("should return 200 when product exists", func(t *testing.T) {
 		ClearProductsTable()
-		InsertProductsHelper(1)
+		InsertProductsHelper(10)
 		product := Product{}
 		tx := database.First(&product)
 		if tx.Error != nil {

@@ -14,21 +14,32 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal"
 	"github.com/raphael-foliveira/chi-gorm/internal/db"
+	"github.com/raphael-foliveira/chi-gorm/internal/modules/product"
 )
 
 var database *db.DB
 var router *chi.Mux
 
 func InsertOrdersHelper(qt int) {
-
 	for i := 0; i < qt; i++ {
-		o := Order{}
-		err := faker.FakeData(&o)
-		o.ID = 0
+		p := product.Product{}
+		err := faker.FakeData(&p)
 		if err != nil {
 			panic(err)
 		}
-		tx := database.Create(&o)
+		p.ID = 0
+		tx := database.Create(&p)
+		if tx.Error != nil {
+			panic(tx.Error)
+		}
+		o := Order{}
+		err = faker.FakeData(&o)
+		if err != nil {
+			panic(err)
+		}
+		o.ID = 0
+		o.ProductID = p.ID
+		tx = database.Create(&o)
 		if tx.Error != nil {
 			panic(tx.Error)
 		}
@@ -36,7 +47,8 @@ func InsertOrdersHelper(qt int) {
 }
 
 func ClearOrdersTable() {
-	database.Delete(&Order{}, "1=1")
+	database.Exec("delete from orders cascade;")
+	database.Exec("delete from products cascade;")
 }
 
 func TestMain(m *testing.M) {
@@ -160,13 +172,14 @@ func TestCreate(t *testing.T) {
 	t.Run("should return 201 when body is valid", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(5)
-		order := CreateOrderSchema{
-			Quantity:  10,
-		}
+		product := product.Product{}
+		database.First(&product)
+		order := CreateOrderSchema{}
 		err := faker.FakeData(&order)
 		if err != nil {
 			t.Fatal(err)
 		}
+		order.ProductID = product.ID
 		buf := new(bytes.Buffer)
 		err = json.NewEncoder(buf).Encode(order)
 		if err != nil {
