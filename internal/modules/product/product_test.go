@@ -35,8 +35,22 @@ func InsertProductsHelper(qt int) {
 }
 
 func ClearProductsTable() {
-	database.Exec("delete from orders where 1=1;")
-	database.Exec("delete from products where 1=1;")
+	tx := database.Begin()
+
+	err := tx.Exec("delete from orders").Error
+	if err != nil {
+		panic(err)
+	}
+
+	err = tx.Unscoped().Delete(&Product{}, "1=1").Error
+	if err != nil {
+		panic(err)
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		panic(err)
+	}
 }
 
 func TestMain(m *testing.M) {

@@ -37,7 +37,6 @@ func InsertOrdersHelper(qt int) {
 		if err != nil {
 			panic(err)
 		}
-		o.ID = 0
 		o.ProductID = p.ID
 		tx = database.Create(&o)
 		if tx.Error != nil {
@@ -47,8 +46,10 @@ func InsertOrdersHelper(qt int) {
 }
 
 func ClearOrdersTable() {
-	database.Exec("delete from orders where 1=1;")
-	database.Exec("delete from products where 1=1;")
+	err := database.Unscoped().Delete(&Order{}, "1=1").Error
+	if err != nil {
+		panic(err)
+	}
 }
 
 func TestMain(m *testing.M) {
