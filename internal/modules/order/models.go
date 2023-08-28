@@ -1,21 +1,17 @@
 package order
 
 import (
-	"database/sql"
 	"time"
 
-	"github.com/raphael-foliveira/chi-gorm/internal/modules/client"
 	"github.com/raphael-foliveira/chi-gorm/internal/modules/product"
 )
 
 type Order struct {
-	ID        uint            `json:"id" gorm:"primarykey"`
+	ID        uint            `json:"id" gorm:"primarykey" faker:"-"`
 	CreatedAt time.Time       `json:"-"`
 	UpdatedAt time.Time       `json:"-"`
-	DeletedAt sql.NullTime    `gorm:"index" json:"-"`
-	ClientID  uint            `json:"-"`
-	Client    client.Client   `json:"client"`
-	ProductID uint            `json:"-"`
-	Product   product.Product `json:"product"`
+	ClientID  uint            `json:"clientId" gorm:"OnDelete:CASCADE;"`
+	ProductID uint            `json:"productId" gorm:"OnDelete:CASCADE;"`
+	Product   product.Product `json:"product" gorm:"OnDelete:CASCADE;"`
 	Quantity  uint            `json:"quantity"`
 }

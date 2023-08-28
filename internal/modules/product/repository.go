@@ -18,18 +18,18 @@ func (r *Repository) List() ([]Product, error) {
 }
 
 func (r *Repository) Get(id uint64) (Product, error) {
-	c := Product{}
-	return c, r.db.First(&c, id).Error
+	product := Product{}
+	return product, r.db.First(&product, id).Error
 }
 
-func (r *Repository) Create(c *Product) error {
-	return r.db.Create(c).Error
+func (r *Repository) Create(product *Product) error {
+	return r.db.Create(product).Error
 }
 
-func (r *Repository) Update(c *Product) error {
-	return r.db.Save(c).Error
+func (r *Repository) Update(product *Product) error {
+	return r.db.Save(product).Error
 }
 
-func (r *Repository) Delete(c *Product) error {
-	return r.db.Delete(c).Error
+func (r *Repository) Delete(product *Product) error {
+	return r.db.Delete(product).Error
 }

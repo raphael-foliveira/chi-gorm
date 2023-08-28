@@ -2,8 +2,6 @@ package order
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/db"
-	"github.com/raphael-foliveira/chi-gorm/internal/modules/client"
-	"github.com/raphael-foliveira/chi-gorm/internal/modules/product"
 )
 
 type Repository struct {
@@ -15,35 +13,28 @@ func NewRepository(db *db.DB) *Repository {
 }
 
 func (r *Repository) List() ([]Order, error) {
-	o := []Order{}
-	return o, r.db.Preload("Client").Preload("Product").Find(&o).Error
+	orders := []Order{}
+	return orders, r.db.Model(Order{}).Preload("Product").Find(&orders).Error
+}
+
+func (r *Repository) ListByClient(id uint) ([]Order, error) {
+	orders := []Order{}
+	return orders, r.db.Model(Order{}).Preload("Product").Where("client_id = ?", id).Find(&orders).Error
 }
 
 func (r *Repository) Get(id uint64) (Order, error) {
-	o := Order{}
-	return o, r.db.Preload("Client").Preload("Product").First(&o, id).Error
+	order := Order{}
+	return order, r.db.First(&order, id).Error
 }
 
-func (r *Repository) Create(c *Order) error {
-	cli := client.Client{}
-	prod := product.Product{}
-	err := r.db.First(&cli, c.ClientID).Error
-	if err != nil {
-		return err
-	}
-	err = r.db.First(&prod, c.ProductID).Error
-	if err != nil {
-		return err
-	}
-	c.Client = cli
-	c.Product = prod
-	return r.db.Create(c).Error
+func (r *Repository) Create(order *Order) error {
+	return r.db.Create(order).Error
 }
 
-func (r *Repository) Update(c *Order) error {
-	return r.db.Save(c).Error
+func (r *Repository) Update(order *Order) error {
+	return r.db.Save(order).Error
 }
 
-func (r *Repository) Delete(c *Order) error {
-	return r.db.Delete(c).Error
+func (r *Repository) Delete(order *Order) error {
+	return r.db.Delete(order).Error
 }

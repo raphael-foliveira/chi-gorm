@@ -23,7 +23,7 @@ func InsertProductsHelper(qt int) {
 	for i := 0; i < qt; i++ {
 		product := Product{}
 		err := faker.FakeData(&product)
-		product.ID = 0
+		product.ID = uint(i + 1)
 		if err != nil {
 			panic(err)
 		}
@@ -35,10 +35,21 @@ func InsertProductsHelper(qt int) {
 }
 
 func ClearProductsTable() {
-	database.Raw("delete from orders")
-	tx := database.Delete(&Product{}, "1=1")
-	if tx.Error != nil {
-		panic(tx.Error)
+	tx := database.Begin()
+
+	err := tx.Exec("delete from orders").Error
+	if err != nil {
+		panic(err)
+	}
+
+	err = tx.Unscoped().Delete(&Product{}, "1=1").Error
+	if err != nil {
+		panic(err)
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		panic(err)
 	}
 }
 
@@ -115,7 +126,7 @@ func TestGet(t *testing.T) {
 
 	t.Run("should return 200 when product exists", func(t *testing.T) {
 		ClearProductsTable()
-		InsertProductsHelper(1)
+		InsertProductsHelper(10)
 		product := Product{}
 		tx := database.First(&product)
 		if tx.Error != nil {
