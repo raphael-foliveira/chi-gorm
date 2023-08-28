@@ -23,7 +23,7 @@ func InsertProductsHelper(qt int) {
 	for i := 0; i < qt; i++ {
 		product := Product{}
 		err := faker.FakeData(&product)
-		product.ID = 0
+		product.ID = uint(i + 1)
 		if err != nil {
 			panic(err)
 		}

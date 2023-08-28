@@ -47,8 +47,8 @@ func InsertOrdersHelper(qt int) {
 }
 
 func ClearOrdersTable() {
-	database.Exec("delete from orders cascade;")
-	database.Exec("delete from products cascade;")
+	database.Exec("delete from orders where 1=1;")
+	database.Exec("delete from products where 1=1;")
 }
 
 func TestMain(m *testing.M) {
@@ -124,7 +124,7 @@ func TestGet(t *testing.T) {
 
 	t.Run("should return 200 when order exists", func(t *testing.T) {
 		ClearOrdersTable()
-		InsertOrdersHelper(1)
+		InsertOrdersHelper(10)
 		order := Order{}
 		database.First(&order)
 		req, err := http.NewRequest("GET", fmt.Sprintf("/orders/%v", order.ID), nil)
