@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -12,44 +13,88 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal"
-	"github.com/raphael-foliveira/chi-gorm/internal/db"
 )
 
-var testDb *db.DB
+type MockRepository struct {
+	db  []Client
+	err bool
+}
+
+func (m *MockRepository) List() ([]Client, error) {
+	if m.err {
+		return nil, errors.New("test")
+	}
+	return m.db, nil
+}
+
+func (m *MockRepository) Get(id uint64) (Client, error) {
+	if m.err {
+		return Client{}, errors.New("test")
+	}
+	for _, o := range m.db {
+		if uint64(o.ID) == id {
+			return o, nil
+		}
+	}
+	return Client{}, errors.New("not found")
+}
+
+func (m *MockRepository) Create(c *Client) error {
+	if m.err {
+		return errors.New("test")
+	}
+	m.db = append(m.db, *c)
+	return nil
+}
+
+func (m *MockRepository) Update(c *Client) error {
+	if m.err {
+		return errors.New("test")
+	}
+	for i, o := range m.db {
+		if o.ID == c.ID {
+			m.db[i] = *c
+			return nil
+		}
+	}
+	return errors.New("not found")
+}
+
+func (m *MockRepository) Delete(c *Client) error {
+	if m.err {
+		return errors.New("test")
+	}
+	for i, o := range m.db {
+		if o.ID == c.ID {
+			m.db = append(m.db[:i], m.db[i+1:]...)
+			return nil
+		}
+	}
+	return errors.New("not found")
+}
+
+var repository *MockRepository
 var testRouter *chi.Mux
 
 func InsertClientsHelper(qt int) {
 	for i := 0; i < qt; i++ {
 		client := Client{}
 		err := faker.FakeData(&client)
-		client.ID = 0
 		if err != nil {
 			panic(err)
 		}
-		tx := testDb.Create(&client)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
+		repository.db = append(repository.db, client)
 	}
 }
 
 func ClearClientsTable() {
-	tx := testDb.Delete(&Client{}, "true")
-	if tx.Error != nil {
-		tx.Rollback()
-		panic(tx.Error)
-	}
-	tx.Commit()
+	repository.db = []Client{}
 }
 
 func TestMain(m *testing.M) {
-	testDb = db.Connect(internal.TestConfig.DatabaseURL)
 	testRouter = chi.NewRouter()
-	clientTestRouter, err := NewRouter(testDb)
-	if err != nil {
-		panic(err)
-	}
+	repository = new(MockRepository)
+	clientTestRouter := NewRouter(repository)
 	testRouter.Mount("/clients", clientTestRouter)
 	ClearClientsTable()
 	code := m.Run()
@@ -120,10 +165,8 @@ func TestGet(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		tx := testDb.Create(&client)
-		if tx.Error != nil {
-			t.Fatal(tx.Error)
-		}
+		repository.db = append(repository.db, client)
+
 		req, err := http.NewRequest("GET", fmt.Sprintf("/clients/%v", client.ID), nil)
 		if err != nil {
 			t.Fatal(err)
@@ -142,10 +185,6 @@ func TestGet(t *testing.T) {
 		err := faker.FakeData(&client)
 		if err != nil {
 			t.Fatal(err)
-		}
-		tx := testDb.Create(&client)
-		if tx.Error != nil {
-			t.Fatal(tx.Error)
 		}
 		req, err := http.NewRequest("GET", "/clients/fff", nil)
 		if err != nil {
@@ -224,15 +263,9 @@ func TestDelete(t *testing.T) {
 
 	t.Run("should return 204 when client exists", func(t *testing.T) {
 		ClearClientsTable()
-		client := Client{}
-		err := faker.FakeData(&client)
-		if err != nil {
-			t.Fatal(err)
-		}
-		tx := testDb.Create(&client)
-		if tx.Error != nil {
-			t.Fatal(tx.Error)
-		}
+		InsertClientsHelper(10)
+		client := repository.db[0]
+
 		req, err := http.NewRequest("DELETE", fmt.Sprintf("/clients/%v", client.ID), nil)
 		if err != nil {
 			t.Fatal(err)
@@ -252,10 +285,7 @@ func TestDelete(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		tx := testDb.Create(&client)
-		if tx.Error != nil {
-			t.Fatal(tx.Error)
-		}
+
 		req, err := http.NewRequest("DELETE", "/clients/fff", nil)
 		if err != nil {
 			t.Fatal(err)
@@ -290,9 +320,8 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 200 when client exists", func(t *testing.T) {
 		ClearClientsTable()
 		InsertClientsHelper(1)
-		client := Client{}
+		client := repository.db[0]
 		client.Name = "updated"
-		testDb.First(&client)
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(client)
 		if err != nil {
@@ -317,8 +346,8 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 400 when body is invalid", func(t *testing.T) {
 		ClearClientsTable()
 		InsertClientsHelper(1)
-		client := Client{}
-		testDb.First(&client)
+		client := repository.db[0]
+
 		buf := new(bytes.Buffer)
 		buf.Write([]byte("invalid body"))
 		req, err := http.NewRequest("PUT", fmt.Sprintf("/clients/%v", client.ID), buf)
@@ -339,8 +368,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 400 when id is invalid", func(t *testing.T) {
 		ClearClientsTable()
 		InsertClientsHelper(1)
-		client := Client{}
-		testDb.First(&client)
+		client := repository.db[0]
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(client)
 		if err != nil {

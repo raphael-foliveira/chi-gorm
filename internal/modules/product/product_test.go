@@ -3,6 +3,7 @@ package product
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -12,54 +13,89 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal"
-	"github.com/raphael-foliveira/chi-gorm/internal/db"
 )
 
-var database *db.DB
+type MockRepository struct {
+	db  []Product
+	err bool
+}
+
+func (m *MockRepository) List() ([]Product, error) {
+	if m.err {
+		return nil, errors.New("test")
+	}
+	return m.db, nil
+}
+
+func (m *MockRepository) Get(id uint64) (Product, error) {
+	if m.err {
+		return Product{}, errors.New("test")
+	}
+	for _, o := range m.db {
+		if uint64(o.ID) == id {
+			return o, nil
+		}
+	}
+	return Product{}, errors.New("not found")
+}
+
+func (m *MockRepository) Create(c *Product) error {
+	if m.err {
+		return errors.New("test")
+	}
+	m.db = append(m.db, *c)
+	return nil
+}
+
+func (m *MockRepository) Update(c *Product) error {
+	if m.err {
+		return errors.New("test")
+	}
+	for i, o := range m.db {
+		if o.ID == c.ID {
+			m.db[i] = *c
+			return nil
+		}
+	}
+	return errors.New("not found")
+}
+
+func (m *MockRepository) Delete(c *Product) error {
+	if m.err {
+		return errors.New("test")
+	}
+	for i, o := range m.db {
+		if o.ID == c.ID {
+			m.db = append(m.db[:i], m.db[i+1:]...)
+			return nil
+		}
+	}
+	return errors.New("not found")
+}
+
+var repository *MockRepository
 var router *chi.Mux
 
 func InsertProductsHelper(qt int) {
 	for i := 0; i < qt; i++ {
 		product := Product{}
 		err := faker.FakeData(&product)
-		product.ID = uint(i + 1)
 		if err != nil {
 			panic(err)
 		}
-		tx := database.Create(&product)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
+		repository.db = append(repository.db, product)
 	}
 }
 
 func ClearProductsTable() {
-	tx := database.Begin()
-
-	err := tx.Exec("delete from orders").Error
-	if err != nil {
-		panic(err)
-	}
-
-	err = tx.Unscoped().Delete(&Product{}, "1=1").Error
-	if err != nil {
-		panic(err)
-	}
-
-	err = tx.Commit().Error
-	if err != nil {
-		panic(err)
-	}
+	repository.db = []Product{}
 }
 
 func TestMain(m *testing.M) {
-	database = db.Connect(internal.TestConfig.DatabaseURL)
 	router = chi.NewRouter()
-	productsRouter, err := NewRouter(database)
-	if err != nil {
-		panic(err)
-	}
+	repository = new(MockRepository)
+	productsRouter := NewRouter(repository)
+
 	router.Mount("/products", productsRouter)
 	ClearProductsTable()
 	code := m.Run()
@@ -127,11 +163,8 @@ func TestGet(t *testing.T) {
 	t.Run("should return 200 when product exists", func(t *testing.T) {
 		ClearProductsTable()
 		InsertProductsHelper(10)
-		product := Product{}
-		tx := database.First(&product)
-		if tx.Error != nil {
-			t.Fatal(tx.Error)
-		}
+		product := repository.db[0]
+
 		req, err := http.NewRequest("GET", fmt.Sprintf("/products/%v", product.ID), nil)
 		if err != nil {
 			t.Fatal(err)
@@ -223,15 +256,10 @@ func TestDelete(t *testing.T) {
 
 	t.Run("should return 204 when product exists", func(t *testing.T) {
 		ClearProductsTable()
-		product := Product{}
-		err := faker.FakeData(&product)
-		if err != nil {
-			t.Fatal(err)
-		}
-		tx := database.Create(&product)
-		if tx.Error != nil {
-			t.Fatal(tx.Error)
-		}
+		InsertProductsHelper(1)
+
+		product := repository.db[0]
+
 		req, err := http.NewRequest("DELETE", fmt.Sprintf("/products/%v", product.ID), nil)
 		if err != nil {
 			t.Fatal(err)
@@ -284,10 +312,8 @@ func TestUpdate(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		tx := database.Create(&product)
-		if tx.Error != nil {
-			t.Fatal(tx.Error)
-		}
+		repository.db = append(repository.db, product)
+
 		buf := new(bytes.Buffer)
 		err = json.NewEncoder(buf).Encode(product)
 		if err != nil {
@@ -330,10 +356,8 @@ func TestUpdate(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		tx := database.Create(&product)
-		if tx.Error != nil {
-			t.Fatal(tx.Error)
-		}
+		repository.db = append(repository.db, product)
+
 		req, err := http.NewRequest("PUT", fmt.Sprintf("/products/%v", product.ID), strings.NewReader("invalid body"))
 		if err != nil {
 			t.Fatal(err)

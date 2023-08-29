@@ -3,6 +3,7 @@ package order
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -12,57 +13,92 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal"
-	"github.com/raphael-foliveira/chi-gorm/internal/db"
-	"github.com/raphael-foliveira/chi-gorm/internal/modules/product"
 )
 
-var database *db.DB
+type MockRepository struct {
+	db  []Order
+	err bool
+}
+
+func (m *MockRepository) List() ([]Order, error) {
+	if m.err {
+		return nil, errors.New("test")
+	}
+	return m.db, nil
+}
+
+func (m *MockRepository) Get(id uint64) (Order, error) {
+	if m.err {
+		return Order{}, errors.New("test")
+	}
+	for _, o := range m.db {
+		if uint64(o.ID) == id {
+			return o, nil
+		}
+	}
+	return Order{}, errors.New("not found")
+}
+
+func (m *MockRepository) Create(c *Order) error {
+	if m.err {
+		return errors.New("test")
+	}
+	m.db = append(m.db, *c)
+	return nil
+}
+
+func (m *MockRepository) Update(c *Order) error {
+	if m.err {
+		return errors.New("test")
+	}
+	for i, o := range m.db {
+		if o.ID == c.ID {
+			m.db[i] = *c
+			return nil
+		}
+	}
+	return errors.New("not found")
+}
+
+func (m *MockRepository) Delete(c *Order) error {
+	if m.err {
+		return errors.New("test")
+	}
+	for i, o := range m.db {
+		if o.ID == c.ID {
+			m.db = append(m.db[:i], m.db[i+1:]...)
+			return nil
+		}
+	}
+	return errors.New("not found")
+}
+
 var router *chi.Mux
+var repository *MockRepository
 
 func InsertOrdersHelper(qt int) {
 	for i := 0; i < qt; i++ {
-		p := product.Product{}
-		err := faker.FakeData(&p)
+		order := Order{}
+		err := faker.FakeData(&order)
 		if err != nil {
 			panic(err)
 		}
-		p.ID = 0
-		tx := database.Create(&p)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
-		o := Order{}
-		err = faker.FakeData(&o)
-		if err != nil {
-			panic(err)
-		}
-		o.ProductID = p.ID
-		tx = database.Create(&o)
-		if tx.Error != nil {
-			panic(tx.Error)
-		}
+		repository.db = append(repository.db, order)
 	}
 }
 
 func ClearOrdersTable() {
-	err := database.Unscoped().Delete(&Order{}, "1=1").Error
-	if err != nil {
-		panic(err)
-	}
+	repository.db = []Order{}
 }
 
 func TestMain(m *testing.M) {
-	database = db.Connect(internal.TestConfig.DatabaseURL)
 	router = chi.NewRouter()
-	ordersRouter, err := NewRouter(database)
-	if err != nil {
-		panic(err)
-	}
+	repository = new(MockRepository)
+	ordersRouter := NewRouter(repository)
+
 	router.Mount("/orders", ordersRouter)
 	ClearOrdersTable()
 	code := m.Run()
-	ClearOrdersTable()
 	os.Exit(code)
 }
 
@@ -103,6 +139,26 @@ func TestList(t *testing.T) {
 			t.Errorf("Expected body %v, got %v", "[]", rec.Body.String())
 		}
 	})
+
+	t.Run("should return an error when repository fails", func(t *testing.T) {
+		ClearOrdersTable()
+		repository.err = true
+		req, err := http.NewRequest("GET", "/orders", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rec := httptest.NewRecorder()
+		router.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusInternalServerError {
+			t.Errorf("Expected status code %v, got %v", http.StatusInternalServerError, rec.Code)
+		}
+
+		if !strings.Contains(rec.Body.String(), "error") {
+			t.Errorf("Expected body %v, got %v", "error", rec.Body.String())
+		}
+		repository.err = false
+	})
 }
 
 func TestGet(t *testing.T) {
@@ -126,8 +182,7 @@ func TestGet(t *testing.T) {
 	t.Run("should return 200 when order exists", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(10)
-		order := Order{}
-		database.First(&order)
+		order := repository.db[0]
 		req, err := http.NewRequest("GET", fmt.Sprintf("/orders/%v", order.ID), nil)
 		if err != nil {
 			t.Fatal(err)
@@ -173,14 +228,11 @@ func TestCreate(t *testing.T) {
 	t.Run("should return 201 when body is valid", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(5)
-		product := product.Product{}
-		database.First(&product)
 		order := CreateOrderSchema{}
 		err := faker.FakeData(&order)
 		if err != nil {
 			t.Fatal(err)
 		}
-		order.ProductID = product.ID
 		buf := new(bytes.Buffer)
 		err = json.NewEncoder(buf).Encode(order)
 		if err != nil {
@@ -222,8 +274,7 @@ func TestDelete(t *testing.T) {
 	t.Run("should return 204 when order exists", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(1)
-		order := Order{}
-		database.Order("RANDOM()").First(&order)
+		order := repository.db[0]
 		req, err := http.NewRequest("DELETE", fmt.Sprintf("/orders/%v", order.ID), nil)
 		if err != nil {
 			t.Fatal(err)
@@ -272,8 +323,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 200 when order exists", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(1)
-		order := Order{}
-		database.First(&order)
+		order := repository.db[0]
 		order.Quantity = 30
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(order)
@@ -299,8 +349,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 400 when body is invalid", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(1)
-		order := Order{}
-		database.First(&order)
+		order := repository.db[0]
 		order.Quantity = 30
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode("invalid body")
