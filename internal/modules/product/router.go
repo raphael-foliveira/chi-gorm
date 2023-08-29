@@ -2,16 +2,11 @@ package product
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/db"
+	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
 
-func NewRouter(db *db.DB) (*chi.Mux, error) {
-	err := db.AutoMigrate(&Product{})
-	if err != nil {
-		return nil, err
-	}
-	repository := NewRepository(db)
+func NewRouter(repository interfaces.IRepository[Product]) *chi.Mux {
 	controller := NewController(repository)
 
 	productRouter := chi.NewRouter()
@@ -22,6 +17,6 @@ func NewRouter(db *db.DB) (*chi.Mux, error) {
 	productRouter.Get("/{id}", controller.Get)
 	productRouter.Delete("/{id}", controller.Delete)
 	productRouter.Put("/{id}", controller.Update)
-	return productRouter, nil
+	return productRouter
 
 }
