@@ -138,6 +138,27 @@ func TestList(t *testing.T) {
 			t.Errorf("Expected body %v, got %v", "[]", rec.Body.String())
 		}
 	})
+
+	t.Run("should return an error when repository fails", func(t *testing.T) {
+		ClearClientsTable()
+		repository.err = true
+		req, err := http.NewRequest("GET", "/clients", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rec := httptest.NewRecorder()
+		testRouter.ServeHTTP(rec, req)
+		repository.err = false
+
+		if rec.Code != http.StatusInternalServerError {
+			t.Errorf("Expected status code %v, got %v", http.StatusInternalServerError, rec.Code)
+		}
+
+		if !strings.Contains(rec.Body.String(), "error") {
+			t.Errorf("Expected body %v, got %v", "error", rec.Body.String())
+		}
+		repository.err = false
+	})
 }
 
 func TestGet(t *testing.T) {
@@ -240,6 +261,37 @@ func TestCreate(t *testing.T) {
 		if !strings.Contains(rec.Body.String(), client.Name) {
 			t.Errorf("Expected body %v, got %v", client.Name, rec.Body.String())
 		}
+	})
+
+	t.Run("should return an error when repository fails", func(t *testing.T) {
+		ClearClientsTable()
+		repository.err = true
+		client := Client{}
+		err := faker.FakeData(&client)
+		if err != nil {
+			t.Fatal(err)
+		}
+		buf := new(bytes.Buffer)
+		err = json.NewEncoder(buf).Encode(client)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req, err := http.NewRequest("POST", "/clients", buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rec := httptest.NewRecorder()
+		testRouter.ServeHTTP(rec, req)
+		repository.err = false
+
+		if rec.Code != http.StatusInternalServerError {
+			t.Errorf("Expected status code %v, got %v", http.StatusInternalServerError, rec.Code)
+		}
+
+		if !strings.Contains(rec.Body.String(), "error") {
+			t.Errorf("Expected body %v, got %v", "error", rec.Body.String())
+		}
+		repository.err = false
 	})
 }
 
