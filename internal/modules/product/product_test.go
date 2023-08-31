@@ -73,8 +73,8 @@ func (m *MockRepository) Delete(c *Product) error {
 	return errors.New("not found")
 }
 
-var repository *MockRepository
-var router *chi.Mux
+var mockRepository *MockRepository
+var testRouter *chi.Mux
 
 func InsertProductsHelper(qt int) {
 	for i := 0; i < qt; i++ {
@@ -83,20 +83,21 @@ func InsertProductsHelper(qt int) {
 		if err != nil {
 			panic(err)
 		}
-		repository.db = append(repository.db, product)
+		mockRepository.db = append(mockRepository.db, product)
 	}
 }
 
 func ClearProductsTable() {
-	repository.db = []Product{}
+	mockRepository.db = []Product{}
 }
 
 func TestMain(m *testing.M) {
-	router = chi.NewRouter()
-	repository = new(MockRepository)
-	productsRouter := NewRouter(repository)
+	testRouter = chi.NewRouter()
+	mockRepository = new(MockRepository)
+	controller := NewController(mockRepository)
+	productsRouter := NewRouter(controller)
 
-	router.Mount("/products", productsRouter)
+	testRouter.Mount("/products", productsRouter)
 	ClearProductsTable()
 	code := m.Run()
 	ClearProductsTable()
@@ -111,7 +112,7 @@ func TestList(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -130,7 +131,7 @@ func TestList(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -150,7 +151,7 @@ func TestGet(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNotFound {
 			t.Errorf("Expected status code %v, got %v", http.StatusNotFound, rec.Code)
@@ -163,14 +164,14 @@ func TestGet(t *testing.T) {
 	t.Run("should return 200 when product exists", func(t *testing.T) {
 		ClearProductsTable()
 		InsertProductsHelper(10)
-		product := repository.db[0]
+		product := mockRepository.db[0]
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("/products/%v", product.ID), nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -184,7 +185,7 @@ func TestGet(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
@@ -200,7 +201,7 @@ func TestCreate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
@@ -224,7 +225,7 @@ func TestCreate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusCreated {
 			t.Errorf("Expected status code %v, got %v", http.StatusCreated, rec.Code)
@@ -244,7 +245,7 @@ func TestDelete(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNotFound {
 			t.Errorf("Expected status code %v, got %v", http.StatusNotFound, rec.Code)
@@ -258,14 +259,14 @@ func TestDelete(t *testing.T) {
 		ClearProductsTable()
 		InsertProductsHelper(1)
 
-		product := repository.db[0]
+		product := mockRepository.db[0]
 
 		req, err := http.NewRequest("DELETE", fmt.Sprintf("/products/%v", product.ID), nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNoContent {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -279,7 +280,7 @@ func TestDelete(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
@@ -295,7 +296,7 @@ func TestUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNotFound {
 			t.Errorf("Expected status code %v, got %v", http.StatusNotFound, rec.Code)
@@ -312,7 +313,7 @@ func TestUpdate(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		repository.db = append(repository.db, product)
+		mockRepository.db = append(mockRepository.db, product)
 
 		buf := new(bytes.Buffer)
 		err = json.NewEncoder(buf).Encode(product)
@@ -324,7 +325,7 @@ func TestUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -342,7 +343,7 @@ func TestUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
@@ -356,14 +357,14 @@ func TestUpdate(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		repository.db = append(repository.db, product)
+		mockRepository.db = append(mockRepository.db, product)
 
 		req, err := http.NewRequest("PUT", fmt.Sprintf("/products/%v", product.ID), strings.NewReader("invalid body"))
 		if err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
 		}

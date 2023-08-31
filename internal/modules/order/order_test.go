@@ -73,8 +73,8 @@ func (m *MockRepository) Delete(c *Order) error {
 	return errors.New("not found")
 }
 
-var router *chi.Mux
-var repository *MockRepository
+var testRouter *chi.Mux
+var mockRepository *MockRepository
 
 func InsertOrdersHelper(qt int) {
 	for i := 0; i < qt; i++ {
@@ -83,20 +83,21 @@ func InsertOrdersHelper(qt int) {
 		if err != nil {
 			panic(err)
 		}
-		repository.db = append(repository.db, order)
+		mockRepository.db = append(mockRepository.db, order)
 	}
 }
 
 func ClearOrdersTable() {
-	repository.db = []Order{}
+	mockRepository.db = []Order{}
 }
 
 func TestMain(m *testing.M) {
-	router = chi.NewRouter()
-	repository = new(MockRepository)
-	ordersRouter := NewRouter(repository)
+	testRouter = chi.NewRouter()
+	mockRepository = new(MockRepository)
+	controller := NewController(mockRepository)
+	ordersRouter := NewRouter(controller)
 
-	router.Mount("/orders", ordersRouter)
+	testRouter.Mount("/orders", ordersRouter)
 	ClearOrdersTable()
 	code := m.Run()
 	os.Exit(code)
@@ -110,7 +111,7 @@ func TestList(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -129,7 +130,7 @@ func TestList(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -142,13 +143,13 @@ func TestList(t *testing.T) {
 
 	t.Run("should return an error when repository fails", func(t *testing.T) {
 		ClearOrdersTable()
-		repository.err = true
+		mockRepository.err = true
 		req, err := http.NewRequest("GET", "/orders", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusInternalServerError {
 			t.Errorf("Expected status code %v, got %v", http.StatusInternalServerError, rec.Code)
@@ -157,7 +158,7 @@ func TestList(t *testing.T) {
 		if !strings.Contains(rec.Body.String(), "error") {
 			t.Errorf("Expected body %v, got %v", "error", rec.Body.String())
 		}
-		repository.err = false
+		mockRepository.err = false
 	})
 }
 
@@ -169,7 +170,7 @@ func TestGet(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNotFound {
 			t.Errorf("Expected status code %v, got %v", http.StatusNotFound, rec.Code)
@@ -182,13 +183,13 @@ func TestGet(t *testing.T) {
 	t.Run("should return 200 when order exists", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(10)
-		order := repository.db[0]
+		order := mockRepository.db[0]
 		req, err := http.NewRequest("GET", fmt.Sprintf("/orders/%v", order.ID), nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -202,7 +203,7 @@ func TestGet(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
@@ -218,7 +219,7 @@ func TestCreate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
@@ -243,7 +244,7 @@ func TestCreate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 		newOrder := Order{}
 		json.NewDecoder(rec.Body).Decode(&newOrder)
 
@@ -261,7 +262,7 @@ func TestDelete(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNotFound {
 			t.Errorf("Expected status code %v, got %v", http.StatusNotFound, rec.Code)
@@ -274,13 +275,13 @@ func TestDelete(t *testing.T) {
 	t.Run("should return 204 when order exists", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(1)
-		order := repository.db[0]
+		order := mockRepository.db[0]
 		req, err := http.NewRequest("DELETE", fmt.Sprintf("/orders/%v", order.ID), nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNoContent {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -294,7 +295,7 @@ func TestDelete(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
@@ -310,7 +311,7 @@ func TestUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNotFound {
 			t.Errorf("Expected status code %v, got %v", http.StatusNotFound, rec.Code)
@@ -323,7 +324,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 200 when order exists", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(1)
-		order := repository.db[0]
+		order := mockRepository.db[0]
 		order.Quantity = 30
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(order)
@@ -335,7 +336,7 @@ func TestUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("Expected status code %v, got %v", http.StatusOK, rec.Code)
@@ -349,7 +350,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 400 when body is invalid", func(t *testing.T) {
 		ClearOrdersTable()
 		InsertOrdersHelper(1)
-		order := repository.db[0]
+		order := mockRepository.db[0]
 		order.Quantity = 30
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode("invalid body")
@@ -361,7 +362,7 @@ func TestUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)
@@ -375,7 +376,7 @@ func TestUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
-		router.ServeHTTP(rec, req)
+		testRouter.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("Expected status code %v, got %v", http.StatusBadRequest, rec.Code)

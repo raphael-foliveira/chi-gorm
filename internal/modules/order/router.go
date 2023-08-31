@@ -2,12 +2,10 @@ package order
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
 
-func NewRouter(repository interfaces.IRepository[Order]) *chi.Mux {
-	controller := NewController(repository)
+func NewRouter(controller *Controller) *chi.Mux {
 
 	ordersRouter := chi.NewRouter()
 	ordersRouter.Use(middleware.Json)

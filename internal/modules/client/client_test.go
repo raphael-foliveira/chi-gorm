@@ -73,7 +73,7 @@ func (m *MockRepository) Delete(c *Client) error {
 	return errors.New("not found")
 }
 
-var repository *MockRepository
+var mockRepository *MockRepository
 var testRouter *chi.Mux
 
 func InsertClientsHelper(qt int) {
@@ -83,18 +83,19 @@ func InsertClientsHelper(qt int) {
 		if err != nil {
 			panic(err)
 		}
-		repository.db = append(repository.db, client)
+		mockRepository.db = append(mockRepository.db, client)
 	}
 }
 
 func ClearClientsTable() {
-	repository.db = []Client{}
+	mockRepository.db = []Client{}
 }
 
 func TestMain(m *testing.M) {
 	testRouter = chi.NewRouter()
-	repository = new(MockRepository)
-	clientTestRouter := NewRouter(repository)
+	mockRepository = new(MockRepository)
+	controller := NewController(mockRepository)
+	clientTestRouter := NewRouter(controller)
 	testRouter.Mount("/clients", clientTestRouter)
 	ClearClientsTable()
 	code := m.Run()
@@ -141,14 +142,14 @@ func TestList(t *testing.T) {
 
 	t.Run("should return an error when repository fails", func(t *testing.T) {
 		ClearClientsTable()
-		repository.err = true
+		mockRepository.err = true
 		req, err := http.NewRequest("GET", "/clients", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 		rec := httptest.NewRecorder()
 		testRouter.ServeHTTP(rec, req)
-		repository.err = false
+		mockRepository.err = false
 
 		if rec.Code != http.StatusInternalServerError {
 			t.Errorf("Expected status code %v, got %v", http.StatusInternalServerError, rec.Code)
@@ -157,7 +158,7 @@ func TestList(t *testing.T) {
 		if !strings.Contains(rec.Body.String(), "error") {
 			t.Errorf("Expected body %v, got %v", "error", rec.Body.String())
 		}
-		repository.err = false
+		mockRepository.err = false
 	})
 }
 
@@ -186,7 +187,7 @@ func TestGet(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		repository.db = append(repository.db, client)
+		mockRepository.db = append(mockRepository.db, client)
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("/clients/%v", client.ID), nil)
 		if err != nil {
@@ -265,7 +266,7 @@ func TestCreate(t *testing.T) {
 
 	t.Run("should return an error when repository fails", func(t *testing.T) {
 		ClearClientsTable()
-		repository.err = true
+		mockRepository.err = true
 		client := Client{}
 		err := faker.FakeData(&client)
 		if err != nil {
@@ -282,7 +283,7 @@ func TestCreate(t *testing.T) {
 		}
 		rec := httptest.NewRecorder()
 		testRouter.ServeHTTP(rec, req)
-		repository.err = false
+		mockRepository.err = false
 
 		if rec.Code != http.StatusInternalServerError {
 			t.Errorf("Expected status code %v, got %v", http.StatusInternalServerError, rec.Code)
@@ -291,7 +292,7 @@ func TestCreate(t *testing.T) {
 		if !strings.Contains(rec.Body.String(), "error") {
 			t.Errorf("Expected body %v, got %v", "error", rec.Body.String())
 		}
-		repository.err = false
+		mockRepository.err = false
 	})
 }
 
@@ -316,7 +317,7 @@ func TestDelete(t *testing.T) {
 	t.Run("should return 204 when client exists", func(t *testing.T) {
 		ClearClientsTable()
 		InsertClientsHelper(10)
-		client := repository.db[0]
+		client := mockRepository.db[0]
 
 		req, err := http.NewRequest("DELETE", fmt.Sprintf("/clients/%v", client.ID), nil)
 		if err != nil {
@@ -372,7 +373,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 200 when client exists", func(t *testing.T) {
 		ClearClientsTable()
 		InsertClientsHelper(1)
-		client := repository.db[0]
+		client := mockRepository.db[0]
 		client.Name = "updated"
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(client)
@@ -398,7 +399,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 400 when body is invalid", func(t *testing.T) {
 		ClearClientsTable()
 		InsertClientsHelper(1)
-		client := repository.db[0]
+		client := mockRepository.db[0]
 
 		buf := new(bytes.Buffer)
 		buf.Write([]byte("invalid body"))
@@ -420,7 +421,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("should return 400 when id is invalid", func(t *testing.T) {
 		ClearClientsTable()
 		InsertClientsHelper(1)
-		client := repository.db[0]
+		client := mockRepository.db[0]
 		buf := new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(client)
 		if err != nil {
