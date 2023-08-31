@@ -22,12 +22,9 @@ func attachMiddleware(r *chi.Mux) {
 }
 
 func mountRouters(r *chi.Mux, db *db.DB) {
-	clientsRepository := client.NewRepository(db)
-	clientsRouter := client.NewRouter(clientsRepository)
-	productsRepository := product.NewRepository(db)
-	productsRouter := product.NewRouter(productsRepository)
-	ordersRepository := order.NewRepository(db)
-	ordersRouter := order.NewRouter(ordersRepository)
+	clientsRouter := client.Init(db)
+	productsRouter := product.Init(db)
+	ordersRouter := order.Init(db)
 	r.Mount("/clients", clientsRouter)
 	r.Mount("/products", productsRouter)
 	r.Mount("/orders", ordersRouter)
