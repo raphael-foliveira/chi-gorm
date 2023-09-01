@@ -12,6 +12,7 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/modules/client"
 	"github.com/raphael-foliveira/chi-gorm/internal/modules/order"
 	"github.com/raphael-foliveira/chi-gorm/internal/modules/product"
+	mw "github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
 
 func attachMiddleware(r *chi.Mux) {
@@ -19,6 +20,7 @@ func attachMiddleware(r *chi.Mux) {
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"*"},
 	}))
+	r.Use(mw.Json)
 }
 
 func mountRouters(r *chi.Mux, db *db.DB) {
