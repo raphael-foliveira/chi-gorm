@@ -18,85 +18,74 @@ func NewController(r interfaces.IRepository[Product]) *Controller {
 	return &Controller{r}
 }
 
-func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Create(w http.ResponseWriter, r *http.Request) error {
 	var newProduct Product
 	err := json.NewDecoder(r.Body).Decode(&newProduct)
 	if err != nil {
-		res.Error(w, 400, "bad request")
-		return
-	}
-	err = c.repository.Create(&newProduct)
-	if err != nil {
-		res.Error(w, 500, "internal server error")
-		return
+		return res.Error(w, http.StatusBadRequest, "bad request", err)
 	}
 	defer r.Body.Close()
-	res.JSON(w, http.StatusCreated, &newProduct)
+	err = c.repository.Create(&newProduct)
+	if err != nil {
+		return res.Error(w, http.StatusInternalServerError, "internal server error", err)
+	}
+	return res.JSON(w, http.StatusCreated, &newProduct)
 }
 
-func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		res.Error(w, 400, "bad request")
-		return
+		return res.Error(w, http.StatusBadRequest, "bad request", err)
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		res.Error(w, 404, "product not found")
-		return
+		return res.Error(w, http.StatusNotFound, "product not found", err)
 	}
 	err = json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
-		res.Error(w, 400, "bad request")
-		return
+		return res.Error(w, http.StatusBadRequest, "bad request", err)
 	}
 	defer r.Body.Close()
 	err = c.repository.Update(&product)
 	if err != nil {
-		res.Error(w, 500, "internal server error")
-		return
+		return res.Error(w, http.StatusInternalServerError, "internal server error", err)
 	}
-	res.JSON(w, http.StatusOK, &product)
+	return res.JSON(w, http.StatusOK, &product)
 }
 
-func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		res.Error(w, 400, "bad request")
-		return
+		return res.Error(w, http.StatusBadRequest, "bad request", err)
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		res.Error(w, 404, "product not found")
-		return
+		return res.Error(w, http.StatusNotFound, "product not found", err)
 	}
 	err = c.repository.Delete(&product)
 	if err != nil {
-		res.Error(w, 500, "internal server error")
-		return
+		return res.Error(w, http.StatusInternalServerError, "internal server error", err)
 	}
 	w.WriteHeader(http.StatusNoContent)
+	return nil
 }
 
-func (c *Controller) List(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := c.repository.List()
 	if err != nil {
-		res.Error(w, 500, "internal server error")
-		return
+		return res.Error(w, http.StatusInternalServerError, "internal server error", err)
 	}
-	res.JSON(w, http.StatusOK, &products)
+	return res.JSON(w, http.StatusOK, &products)
 }
 
-func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		res.Error(w, 400, "bad request")
-		return
+		return res.Error(w, http.StatusBadRequest, "bad request", err)
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		res.Error(w, 404, "product not found")
-		return
+		return res.Error(w, http.StatusNotFound, "product not found", err)
 	}
-	res.JSON(w, http.StatusOK, &product)
+	return res.JSON(w, http.StatusOK, &product)
 }
