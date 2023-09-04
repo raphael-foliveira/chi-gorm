@@ -1,13 +1,13 @@
 package res
 
 import (
-	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 )
 
-func Error(w http.ResponseWriter, status int, message string) error {
+func Error(w http.ResponseWriter, status int, message string, err error) error {
+	fmt.Println(err)
 	w.WriteHeader(status)
-	return json.NewEncoder(w).Encode(map[string]interface{}{
-		"error": message,
-	})
+	return errors.New(message)
 }

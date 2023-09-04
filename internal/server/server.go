@@ -12,8 +12,19 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/modules/client"
 	"github.com/raphael-foliveira/chi-gorm/internal/modules/order"
 	"github.com/raphael-foliveira/chi-gorm/internal/modules/product"
+	"github.com/raphael-foliveira/chi-gorm/pkg/handler"
 	mw "github.com/raphael-foliveira/chi-gorm/pkg/middleware"
 )
+
+func Start(db *db.DB) error {
+	db.AutoMigrate(&client.Client{}, &product.Product{}, &order.Order{})
+	mainRouter := chi.NewRouter()
+	attachMiddleware(mainRouter)
+	mainRouter.Get("/", handler.Wrap(healthCheck))
+	mountRouters(mainRouter, db)
+	fmt.Println("listening on port 3000")
+	return http.ListenAndServe(":3000", mainRouter)
+}
 
 func attachMiddleware(r *chi.Mux) {
 	r.Use(middleware.Logger)
@@ -32,14 +43,6 @@ func mountRouters(r *chi.Mux, db *db.DB) {
 	r.Mount("/orders", ordersRouter)
 }
 
-func Start(db *db.DB) error {
-	db.AutoMigrate(&client.Client{}, &product.Product{}, &order.Order{})
-	mainRouter := chi.NewRouter()
-	attachMiddleware(mainRouter)
-	mainRouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(map[string]string{"message": "Hello World!"})
-	})
-	mountRouters(mainRouter, db)
-	fmt.Println("listening on port 3000")
-	return http.ListenAndServe(":3000", mainRouter)
+func healthCheck(w http.ResponseWriter, r *http.Request) error {
+	return json.NewEncoder(w).Encode(map[string]string{"message": "ok"})
 }

@@ -18,12 +18,11 @@ func NewController(r interfaces.IRepository[Order]) *Controller {
 	return &Controller{r}
 }
 
-func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Create(w http.ResponseWriter, r *http.Request) error {
 	var createOrderSchema CreateOrderSchema
 	err := json.NewDecoder(r.Body).Decode(&createOrderSchema)
 	if err != nil {
-		res.Error(w, 400, "invalid request body")
-		return
+		return res.Error(w, 400, "invalid request body", err)
 	}
 	newOrder := Order{
 		ClientID:  createOrderSchema.ClientID,
@@ -32,76 +31,73 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	err = c.repository.Create(&newOrder)
 	if err != nil {
-		res.Error(w, 500, "internal server error")
-		return
+		return res.Error(w, 500, "internal server error", err)
 	}
 	defer r.Body.Close()
-	res.JSON(w, http.StatusCreated, &newOrder)
+	return res.JSON(w, http.StatusCreated, &newOrder)
 }
 
-func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		res.Error(w, 400, "invalid id")
-		return
+		return res.Error(w, 400, "invalid id", err)
+
 	}
 	Order, err := c.repository.Get(id)
 	if err != nil {
-		res.Error(w, 404, "order not found")
-		return
+		return res.Error(w, 404, "order not found", err)
+
 	}
 	err = json.NewDecoder(r.Body).Decode(&Order)
 	if err != nil {
-		res.Error(w, 400, "invalid request body")
-		return
+		return res.Error(w, 400, "invalid request body", err)
+
 	}
 	defer r.Body.Close()
 	err = c.repository.Update(&Order)
 	if err != nil {
-		res.Error(w, 500, "internal server error")
-		return
+		return res.Error(w, 500, "internal server error", err)
+
 	}
-	res.JSON(w, http.StatusOK, &Order)
+	return res.JSON(w, http.StatusOK, &Order)
 }
 
-func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		res.Error(w, 400, "invalid id")
-		return
+		return res.Error(w, 400, "invalid id", err)
+
 	}
 	order, err := c.repository.Get(id)
 	if err != nil {
-		res.Error(w, 404, "order not found")
-		return
+		return res.Error(w, 404, "order not found", err)
+
 	}
 	err = c.repository.Delete(&order)
 	if err != nil {
-		res.Error(w, 500, "internal server error")
-		return
+		return res.Error(w, 500, "internal server error", err)
+
 	}
 	w.WriteHeader(http.StatusNoContent)
+	return nil
 }
 
-func (c *Controller) List(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) List(w http.ResponseWriter, r *http.Request) error {
 	orders, err := c.repository.List()
 	if err != nil {
-		res.Error(w, 500, "internal server error")
-		return
+		return res.Error(w, 500, "internal server error", err)
 	}
-	res.JSON(w, http.StatusOK, &orders)
+	return res.JSON(w, http.StatusOK, &orders)
 }
 
-func (c *Controller) Get(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		res.Error(w, 400, "invalid id")
-		return
+		return res.Error(w, 400, "invalid id", err)
 	}
 	order, err := c.repository.Get(id)
 	if err != nil {
-		res.Error(w, 404, "order not found")
-		return
+		return res.Error(w, 404, "order not found", err)
 	}
-	res.JSON(w, http.StatusOK, &order)
+	return res.JSON(w, http.StatusOK, &order)
 }
