@@ -11,10 +11,10 @@ import (
 )
 
 type Controller struct {
-	repository interfaces.IRepository[Order]
+	repository interfaces.Repository[Order]
 }
 
-func NewController(r interfaces.IRepository[Order]) *Controller {
+func NewController(r interfaces.Repository[Order]) *Controller {
 	return &Controller{r}
 }
 
