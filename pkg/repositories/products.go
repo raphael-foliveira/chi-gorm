@@ -18,7 +18,7 @@ func (r *Products) List() ([]models.Product, error) {
 	return c, r.db.Find(&c).Error
 }
 
-func (r *Products) Get(id uint64) (models.Product, error) {
+func (r *Products) Get(id int64) (models.Product, error) {
 	product := models.Product{}
 	return product, r.db.First(&product, id).Error
 }

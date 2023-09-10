@@ -5,7 +5,7 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/controllers"
 )
 
-func NewOrders(controller *controllers.OrdersController) *chi.Mux {
+func NewOrders(controller *controllers.Orders) *chi.Mux {
 	router := chi.NewRouter()
 	router.Get("/", wrap(controller.List))
 	router.Post("/", wrap(controller.Create))

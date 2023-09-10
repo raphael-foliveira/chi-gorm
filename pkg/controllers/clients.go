@@ -4,91 +4,104 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
+	"github.com/raphael-foliveira/chi-gorm/pkg/schemas"
 )
 
-type ClientsController struct {
+type Clients struct {
 	repository interfaces.Repository[models.Client]
 }
 
-func NewClientsController(r interfaces.Repository[models.Client]) *ClientsController {
-	return &ClientsController{r}
+func NewClients(r interfaces.Repository[models.Client]) *Clients {
+	return &Clients{r}
 }
 
-func (c *ClientsController) Create(w http.ResponseWriter, r *http.Request) error {
-	newClient := models.Client{}
-	err := json.NewDecoder(r.Body).Decode(&newClient)
+func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
+	body, err := c.parseCreate(w, r)
 	if err != nil {
-		return res.Error(w, 400, "bad request", err)
+		fmt.Println(err)
+		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
-	defer r.Body.Close()
+	newClient := models.Client{
+		Name:  body.Name,
+		Email: body.Email,
+	}
 	err = c.repository.Create(&newClient)
 	if err != nil {
-		return res.Error(w, 500, "internal server error", err)
+		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
-	return res.JSON(w, http.StatusCreated, &newClient)
+	return res.New(w).Status(http.StatusCreated).JSON(&newClient)
 }
 
-func (c *ClientsController) Update(w http.ResponseWriter, r *http.Request) error {
-	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
+func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
+	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, 400, "invalid user id", err)
+		return res.New(w).Status(http.StatusBadRequest).Error("invalid user id")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, 404, "client not found", err)
+		return res.New(w).Status(http.StatusNotFound).Error("client not found")
 	}
-	err = json.NewDecoder(r.Body).Decode(&client)
+	body, err := c.parseUpdate(w, r)
 	if err != nil {
-		return res.Error(w, 400, "bad request body", err)
+		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
-	defer r.Body.Close()
+	client.Name = body.Name
+	client.Email = body.Email
 	err = c.repository.Update(&client)
 	if err != nil {
-		return res.Error(w, 500, "internal server error", err)
+		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
-	return res.JSON(w, http.StatusOK, &client)
+	return res.New(w).JSON(&client)
 }
 
-func (c *ClientsController) Delete(w http.ResponseWriter, r *http.Request) error {
-	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
+func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
+	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, 400, "invalid user id", err)
+		return res.New(w).Status(http.StatusBadRequest).Error("invalid user id")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, 404, "client not found", err)
+		return res.New(w).Status(http.StatusNotFound).Error("client not found")
 	}
 	err = c.repository.Delete(&client)
 	if err != nil {
-		return res.Error(w, 500, "internal server error", err)
+		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
-	w.WriteHeader(http.StatusNoContent)
-	return nil
+	return res.New(w).Status(http.StatusNoContent).Send()
 }
 
-func (c *ClientsController) List(w http.ResponseWriter, r *http.Request) error {
-	fmt.Println("handling list")
+func (c *Clients) List(w http.ResponseWriter, r *http.Request) error {
 	clients, err := c.repository.List()
 	if err != nil {
-		return res.Error(w, 500, "internal server error", err)
+		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
-	return res.JSON(w, http.StatusOK, clients)
+	return res.New(w).JSON(schemas.NewClients(clients))
 }
 
-func (c *ClientsController) Get(w http.ResponseWriter, r *http.Request) error {
-	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
+func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
+	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, 400, "bad request", err)
+		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, 404, "client not found", err)
+		return res.New(w).Status(http.StatusNotFound).Error("client not found")
 	}
-	return res.JSON(w, http.StatusOK, client)
+	return res.New(w).JSON(client)
+}
+
+func (c *Clients) parseCreate(w http.ResponseWriter, r *http.Request) (*schemas.CreateClient, error) {
+	defer r.Body.Close()
+	body := schemas.CreateClient{}
+	return &body, json.NewDecoder(r.Body).Decode(&body)
+}
+
+func (c *Clients) parseUpdate(w http.ResponseWriter, r *http.Request) (*schemas.UpdateClient, error) {
+	defer r.Body.Close()
+	body := schemas.UpdateClient{}
+	return &body, json.NewDecoder(r.Body).Decode(&body)
 }

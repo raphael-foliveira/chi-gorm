@@ -18,12 +18,7 @@ func (r *Orders) List() ([]models.Order, error) {
 	return orders, r.db.Model(models.Order{}).Preload("Product").Find(&orders).Error
 }
 
-func (r *Orders) ListByClient(id uint) ([]models.Order, error) {
-	orders := []models.Order{}
-	return orders, r.db.Model(models.Order{}).Preload("Product").Where("client_id = ?", id).Find(&orders).Error
-}
-
-func (r *Orders) Get(id uint64) (models.Order, error) {
+func (r *Orders) Get(id int64) (models.Order, error) {
 	order := models.Order{}
 	return order, r.db.First(&order, id).Error
 }

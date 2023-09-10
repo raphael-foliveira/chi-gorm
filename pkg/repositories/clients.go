@@ -22,7 +22,7 @@ func (r *Client) List() ([]models.Client, error) {
 	return clients, nil
 }
 
-func (r *Client) Get(id uint64) (models.Client, error) {
+func (r *Client) Get(id int64) (models.Client, error) {
 	client := models.Client{}
 	return client, r.db.First(&client, id).Error
 }
