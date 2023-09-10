@@ -1,6 +1,6 @@
 package interfaces
 
-type IRepository[T interface{}] interface {
+type Repository[T interface{}] interface {
 	List() ([]T, error)
 	Get(id uint64) (T, error)
 	Create(c *T) error
