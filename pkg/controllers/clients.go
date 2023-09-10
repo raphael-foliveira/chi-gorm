@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/repositories"
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
 	"github.com/raphael-foliveira/chi-gorm/pkg/schemas"
 )
 
 type Clients struct {
-	repository interfaces.Repository[models.Client]
+	repository repositories.Clients
 }
 
-func NewClients(r interfaces.Repository[models.Client]) *Clients {
+func NewClients(r repositories.Clients) *Clients {
 	return &Clients{r}
 }
 

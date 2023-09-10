@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/repositories"
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
 	"github.com/raphael-foliveira/chi-gorm/pkg/schemas"
 )
 
 type Orders struct {
-	repository interfaces.Repository[models.Order]
+	repository repositories.Orders
 }
 
-func NewOrders(r interfaces.Repository[models.Order]) *Orders {
+func NewOrders(r repositories.Orders) *Orders {
 	return &Orders{r}
 }
 

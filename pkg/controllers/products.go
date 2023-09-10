@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/repositories"
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
 	"github.com/raphael-foliveira/chi-gorm/pkg/schemas"
 )
 
 type Products struct {
-	repository interfaces.Repository[models.Product]
+	repository repositories.Products
 }
 
-func NewProducts(r interfaces.Repository[models.Product]) *Products {
+func NewProducts(r repositories.Products) *Products {
 	return &Products{r}
 }
 
