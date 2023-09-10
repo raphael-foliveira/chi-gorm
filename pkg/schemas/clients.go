@@ -33,7 +33,7 @@ func NewClients(clients []models.Client) []*Client {
 
 type ClientOrder struct {
 	ID       uint     `json:"id" faker:"-"`
-	Quantity uint     `json:"quantity" faker:"-"`
+	Quantity int      `json:"quantity" faker:"-"`
 	Product  *Product `json:"product" faker:"-"`
 }
 

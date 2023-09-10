@@ -11,5 +11,5 @@ type Order struct {
 	ClientID  uint      `json:"clientId" gorm:"OnDelete:CASCADE;"`
 	ProductID uint      `json:"productId" gorm:"OnDelete:CASCADE;"`
 	Product   Product   `json:"product" gorm:"OnDelete:CASCADE;"`
-	Quantity  uint      `json:"quantity"`
+	Quantity  int       `json:"quantity"`
 }
