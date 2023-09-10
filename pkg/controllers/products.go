@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
@@ -22,7 +21,6 @@ func NewProducts(r interfaces.Repository[models.Product]) *Products {
 func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := c.parseCreate(w, r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	newProduct := models.Product{
@@ -31,7 +29,6 @@ func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	}
 	err = c.repository.Create(&newProduct)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
 	return res.New(w).Status(http.StatusCreated).JSON(&newProduct)
@@ -40,24 +37,20 @@ func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusNotFound).Error("product not found")
 	}
 	body, err := c.parseUpdate(w, r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	product.Name = body.Name
 	product.Price = body.Price
 	err = c.repository.Update(&product)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
 	return res.New(w).JSON(&product)
@@ -66,17 +59,14 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusNotFound).Error("product not found")
 	}
 	err = c.repository.Delete(&product)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -86,7 +76,6 @@ func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := c.repository.List()
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
 	return res.New(w).JSON(&products)
@@ -95,12 +84,10 @@ func (c *Products) List(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusNotFound).Error("product not found")
 	}
 	return res.New(w).JSON(&product)

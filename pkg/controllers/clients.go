@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
@@ -22,7 +21,6 @@ func NewClients(r interfaces.Repository[models.Client]) *Clients {
 func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := c.parseCreate(w, r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	newClient := models.Client{
@@ -31,7 +29,6 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 	}
 	err = c.repository.Create(&newClient)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
 	return res.New(w).Status(http.StatusCreated).JSON(&newClient)
@@ -40,24 +37,20 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("invalid user id")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusNotFound).Error("client not found")
 	}
 	body, err := c.parseUpdate(w, r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	client.Name = body.Name
 	client.Email = body.Email
 	err = c.repository.Update(&client)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
 	return res.New(w).JSON(&client)
@@ -66,17 +59,14 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("invalid user id")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusNotFound).Error("client not found")
 	}
 	err = c.repository.Delete(&client)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
 	return res.New(w).Status(http.StatusNoContent).Send()
@@ -85,7 +75,6 @@ func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) List(w http.ResponseWriter, r *http.Request) error {
 	clients, err := c.repository.List()
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
 	return res.New(w).JSON(schemas.NewClients(clients))
@@ -94,12 +83,10 @@ func (c *Clients) List(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		fmt.Println(err)
 		return res.New(w).Status(http.StatusNotFound).Error("client not found")
 	}
 	return res.New(w).JSON(client)
