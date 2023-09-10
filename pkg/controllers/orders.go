@@ -1,4 +1,4 @@
-package order
+package controllers
 
 import (
 	"encoding/json"
@@ -6,25 +6,27 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
+	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
+	"github.com/raphael-foliveira/chi-gorm/pkg/schemas"
 )
 
-type Controller struct {
-	repository interfaces.Repository[Order]
+type OrdersController struct {
+	repository interfaces.Repository[models.Order]
 }
 
-func NewController(r interfaces.Repository[Order]) *Controller {
-	return &Controller{r}
+func NewOrdersController(r interfaces.Repository[models.Order]) *OrdersController {
+	return &OrdersController{r}
 }
 
-func (c *Controller) Create(w http.ResponseWriter, r *http.Request) error {
-	var createOrderSchema CreateOrderSchema
+func (c *OrdersController) Create(w http.ResponseWriter, r *http.Request) error {
+	var createOrderSchema schemas.CreateOrder
 	err := json.NewDecoder(r.Body).Decode(&createOrderSchema)
 	if err != nil {
 		return res.Error(w, 400, "invalid request body", err)
 	}
-	newOrder := Order{
+	newOrder := models.Order{
 		ClientID:  createOrderSchema.ClientID,
 		ProductID: createOrderSchema.ProductID,
 		Quantity:  createOrderSchema.Quantity,
@@ -37,7 +39,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, &newOrder)
 }
 
-func (c *Controller) Update(w http.ResponseWriter, r *http.Request) error {
+func (c *OrdersController) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, 400, "invalid id", err)
@@ -62,7 +64,7 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, &Order)
 }
 
-func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) error {
+func (c *OrdersController) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, 400, "invalid id", err)
@@ -82,7 +84,7 @@ func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func (c *Controller) List(w http.ResponseWriter, r *http.Request) error {
+func (c *OrdersController) List(w http.ResponseWriter, r *http.Request) error {
 	orders, err := c.repository.List()
 	if err != nil {
 		return res.Error(w, 500, "internal server error", err)
@@ -90,7 +92,7 @@ func (c *Controller) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, &orders)
 }
 
-func (c *Controller) Get(w http.ResponseWriter, r *http.Request) error {
+func (c *OrdersController) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, 400, "invalid id", err)

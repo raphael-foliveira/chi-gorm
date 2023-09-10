@@ -1,4 +1,4 @@
-package client
+package controllers
 
 import (
 	"encoding/json"
@@ -7,20 +7,21 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
+	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
 )
 
-type Controller struct {
-	repository interfaces.Repository[Client]
+type ClientsController struct {
+	repository interfaces.Repository[models.Client]
 }
 
-func NewController(r interfaces.Repository[Client]) *Controller {
-	return &Controller{r}
+func NewClientsController(r interfaces.Repository[models.Client]) *ClientsController {
+	return &ClientsController{r}
 }
 
-func (c *Controller) Create(w http.ResponseWriter, r *http.Request) error {
-	newClient := Client{}
+func (c *ClientsController) Create(w http.ResponseWriter, r *http.Request) error {
+	newClient := models.Client{}
 	err := json.NewDecoder(r.Body).Decode(&newClient)
 	if err != nil {
 		return res.Error(w, 400, "bad request", err)
@@ -33,7 +34,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, &newClient)
 }
 
-func (c *Controller) Update(w http.ResponseWriter, r *http.Request) error {
+func (c *ClientsController) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, 400, "invalid user id", err)
@@ -54,7 +55,7 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, &client)
 }
 
-func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) error {
+func (c *ClientsController) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, 400, "invalid user id", err)
@@ -71,7 +72,7 @@ func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func (c *Controller) List(w http.ResponseWriter, r *http.Request) error {
+func (c *ClientsController) List(w http.ResponseWriter, r *http.Request) error {
 	fmt.Println("handling list")
 	clients, err := c.repository.List()
 	if err != nil {
@@ -80,7 +81,7 @@ func (c *Controller) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, clients)
 }
 
-func (c *Controller) Get(w http.ResponseWriter, r *http.Request) error {
+func (c *ClientsController) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, 400, "bad request", err)

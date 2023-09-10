@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/raphael-foliveira/chi-gorm/internal/db"
-	"github.com/raphael-foliveira/chi-gorm/internal/server"
+	"github.com/raphael-foliveira/chi-gorm/pkg/db"
+	"github.com/raphael-foliveira/chi-gorm/pkg/server"
 )
 
 func main() {

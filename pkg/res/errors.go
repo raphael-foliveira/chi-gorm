@@ -1,7 +1,7 @@
 package res
 
 import (
-	"errors"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -9,5 +9,8 @@ import (
 func Error(w http.ResponseWriter, status int, message string, err error) error {
 	fmt.Println(err)
 	w.WriteHeader(status)
-	return errors.New(message)
+	return json.NewEncoder(w).Encode(ApiError{
+		Message: message,
+		Status:  status,
+	})
 }

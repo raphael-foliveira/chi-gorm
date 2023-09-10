@@ -1,4 +1,4 @@
-package product
+package controllers
 
 import (
 	"encoding/json"
@@ -6,20 +6,21 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
+	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
 )
 
-type Controller struct {
-	repository interfaces.Repository[Product]
+type ProductsController struct {
+	repository interfaces.Repository[models.Product]
 }
 
-func NewController(r interfaces.Repository[Product]) *Controller {
-	return &Controller{r}
+func NewProductsController(r interfaces.Repository[models.Product]) *ProductsController {
+	return &ProductsController{r}
 }
 
-func (c *Controller) Create(w http.ResponseWriter, r *http.Request) error {
-	var newProduct Product
+func (c *ProductsController) Create(w http.ResponseWriter, r *http.Request) error {
+	var newProduct models.Product
 	err := json.NewDecoder(r.Body).Decode(&newProduct)
 	if err != nil {
 		return res.Error(w, http.StatusBadRequest, "bad request", err)
@@ -32,7 +33,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, &newProduct)
 }
 
-func (c *Controller) Update(w http.ResponseWriter, r *http.Request) error {
+func (c *ProductsController) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, http.StatusBadRequest, "bad request", err)
@@ -53,7 +54,7 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, &product)
 }
 
-func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) error {
+func (c *ProductsController) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, http.StatusBadRequest, "bad request", err)
@@ -70,7 +71,7 @@ func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func (c *Controller) List(w http.ResponseWriter, r *http.Request) error {
+func (c *ProductsController) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := c.repository.List()
 	if err != nil {
 		return res.Error(w, http.StatusInternalServerError, "internal server error", err)
@@ -78,7 +79,7 @@ func (c *Controller) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, &products)
 }
 
-func (c *Controller) Get(w http.ResponseWriter, r *http.Request) error {
+func (c *ProductsController) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return res.Error(w, http.StatusBadRequest, "bad request", err)

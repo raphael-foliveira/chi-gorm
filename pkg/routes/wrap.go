@@ -1,4 +1,4 @@
-package handler
+package routes
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/res"
 )
 
-func Wrap(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
+func wrap(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := fn(w, r)
 		if err != nil {
