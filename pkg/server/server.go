@@ -18,9 +18,27 @@ func Start(db *db.DB) error {
 	db.AutoMigrate(&models.Client{}, &models.Product{}, &models.Order{})
 	mainRouter := chi.NewRouter()
 	attachMiddleware(mainRouter)
-	mountRouters(mainRouter, db)
+	injectDependencies(mainRouter, db)
 	fmt.Println("listening on port 3000")
 	return http.ListenAndServe(":3000", mainRouter)
+}
+
+func injectDependencies(r *chi.Mux, db *db.DB) {
+	clientsRepository := repositories.NewClient(db)
+	productsRepository := repositories.NewProducts(db)
+	ordersRepository := repositories.NewOrders(db)
+
+	clientsController := controllers.NewClients(clientsRepository)
+	productsController := controllers.NewProducts(productsRepository)
+	ordersController := controllers.NewOrders(ordersRepository)
+
+	clientsRoutes := routes.Clients(clientsController)
+	productsRoutes := routes.Products(productsController)
+	ordersRoutes := routes.Orders(ordersController)
+
+	r.Mount("/clients", clientsRoutes)
+	r.Mount("/products", productsRoutes)
+	r.Mount("/orders", ordersRoutes)
 }
 
 func attachMiddleware(r *chi.Mux) {
@@ -28,20 +46,4 @@ func attachMiddleware(r *chi.Mux) {
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"*"},
 	}))
-}
-
-func mountRouters(r *chi.Mux, db *db.DB) {
-	clientsRepository := repositories.NewClient(db)
-	productsRepository := repositories.NewProducts(db)
-	ordersRepository := repositories.NewOrders(db)
-	clientsController := controllers.NewClients(clientsRepository)
-	productsController := controllers.NewProducts(productsRepository)
-	ordersController := controllers.NewOrders(ordersRepository)
-	clientsRoutes := routes.NewClients(clientsController)
-	productsRoutes := routes.NewProducts(productsController)
-	ordersRoutes := routes.NewOrders(ordersController)
-
-	r.Mount("/clients", clientsRoutes)
-	r.Mount("/products", productsRoutes)
-	r.Mount("/orders", ordersRoutes)
 }
