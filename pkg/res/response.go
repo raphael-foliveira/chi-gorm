@@ -2,6 +2,7 @@ package res
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -17,6 +18,7 @@ func JSON(w http.ResponseWriter, status int, data interface{}) error {
 
 func Error(w http.ResponseWriter, err error, status int, message string) error {
 	w.WriteHeader(status)
+	fmt.Println(err)
 	return json.NewEncoder(w).Encode(ApiError{
 		Message: message,
 		Status:  status,
