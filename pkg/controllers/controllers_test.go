@@ -378,6 +378,37 @@ func TestProducts(t *testing.T) {
 			t.Errorf("Status code should be 404, got %v", recorder.Code)
 		}
 	})
+
+	t.Run("Delete", func(t *testing.T) {
+		setUp()
+		addProducts(10)
+		repository.ShouldError = false
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("DELETE", "/1", nil)
+		tx := chi.NewRouteContext()
+		tx.URLParams.Add("id", "1")
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		err := controller.Delete(recorder, request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if recorder.Code != 204 {
+			t.Errorf("Status code should be 204, got %v", recorder.Code)
+		}
+
+		recorder = httptest.NewRecorder()
+		request = httptest.NewRequest("DELETE", "/99", nil)
+		tx = chi.NewRouteContext()
+		tx.URLParams.Add("id", "99")
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		err = controller.Delete(recorder, request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if recorder.Code != 404 {
+			t.Errorf("Status code should be 404, got %v", recorder.Code)
+		}
+	})
 }
 
 func TestOrders(t *testing.T) {
