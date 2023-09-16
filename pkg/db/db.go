@@ -17,9 +17,4 @@ func Connect(dsn string) *DB {
 	return &DB{db}
 }
 
-func (db *DB) ClearAll() {
-	db.Exec("DROP SCHEMA public CASCADE")
-	db.Exec("CREATE SCHEMA public")
-	db.Exec("GRANT ALL ON SCHEMA public TO postgres")
-	db.Exec("GRANT ALL ON SCHEMA public TO public")
-}
+

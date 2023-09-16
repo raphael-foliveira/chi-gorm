@@ -413,12 +413,18 @@ func TestOrders(t *testing.T) {
 }
 
 func setUp() {
-	testDb.ClearAll()
+	clearDatabase()
 	testApp := server.CreateApp(testDb)
 	testServer = httptest.NewServer(testApp)
 	populateTables()
 }
 
+func clearDatabase() {
+	testDb.Exec("DROP SCHEMA public CASCADE")
+	testDb.Exec("CREATE SCHEMA public")
+	testDb.Exec("GRANT ALL ON SCHEMA public TO postgres")
+	testDb.Exec("GRANT ALL ON SCHEMA public TO public")
+}
 func tearDown() {
 	testServer.Close()
 }
