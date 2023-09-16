@@ -5,32 +5,20 @@ import (
 	"net/http"
 )
 
-type response struct {
-	w http.ResponseWriter
-	s int
-}
-
-func New(w http.ResponseWriter) *response {
-	return &response{w, http.StatusOK}
-}
-
-func (r *response) Status(s int) *response {
-	r.s = s
-	r.w.WriteHeader(r.s)
-	return r
-}
-
-func (r *response) JSON(data interface{}) error {
-	return json.NewEncoder(r.w).Encode(data)
-}
-
-func (r *response) Error(message string) error {
-	return r.JSON(ApiError{
-		Message: message,
-		Status:  r.s,
-	})
-}
-
-func (r *response) Send() error {
+func SendStatus(w http.ResponseWriter, status int) error {
+	w.WriteHeader(status)
 	return nil
+}
+
+func JSON(w http.ResponseWriter, status int, data interface{}) error {
+	w.WriteHeader(status)
+	return json.NewEncoder(w).Encode(data)
+}
+
+func Error(w http.ResponseWriter, err error, status int, message string) error {
+	w.WriteHeader(status)
+	return json.NewEncoder(w).Encode(ApiError{
+		Message: message,
+		Status:  status,
+	})
 }

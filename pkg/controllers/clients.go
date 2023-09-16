@@ -21,7 +21,7 @@ func NewClients(r repositories.Clients) *Clients {
 func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := c.parseCreate(w, r)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
+		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
 	newClient := models.Client{
 		Name:  body.Name,
@@ -29,67 +29,67 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 	}
 	err = c.repository.Create(&newClient)
 	if err != nil {
-		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.New(w).Status(http.StatusCreated).JSON(&newClient)
+	return res.JSON(w, http.StatusCreated, &newClient)
 }
 
 func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("invalid user id")
+		return res.Error(w, err, http.StatusBadRequest, "invalid user id")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		return res.New(w).Status(http.StatusNotFound).Error("client not found")
+		return res.Error(w, err, http.StatusNotFound, "client not found")
 	}
 	body, err := c.parseUpdate(w, r)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
+		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
 	client.Name = body.Name
 	client.Email = body.Email
 	err = c.repository.Update(client)
 	if err != nil {
-		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.New(w).JSON(&client)
+	return res.JSON(w, http.StatusOK, &client)
 }
 
 func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("invalid user id")
+		return res.Error(w, err, http.StatusBadRequest, "invalid user id")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		return res.New(w).Status(http.StatusNotFound).Error("client not found")
+		return res.Error(w, err, http.StatusNotFound, "client not found")
 	}
 	err = c.repository.Delete(client)
 	if err != nil {
-		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.New(w).Status(http.StatusNoContent).Send()
+	return res.SendStatus(w, http.StatusNoContent)
 }
 
 func (c *Clients) List(w http.ResponseWriter, r *http.Request) error {
 	clients, err := c.repository.List()
 	if err != nil {
-		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.New(w).JSON(schemas.NewClients(clients))
+	return res.JSON(w, http.StatusOK, schemas.NewClients(clients))
 }
 
 func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
+		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
-		return res.New(w).Status(http.StatusNotFound).Error("client not found")
+		return res.Error(w, err, http.StatusNotFound, "client not found")
 	}
-	return res.New(w).JSON(client)
+	return res.JSON(w, http.StatusOK, client)
 }
 
 func (c *Clients) parseCreate(w http.ResponseWriter, r *http.Request) (*schemas.CreateClient, error) {

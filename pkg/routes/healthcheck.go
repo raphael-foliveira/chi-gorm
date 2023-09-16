@@ -7,7 +7,7 @@ import (
 )
 
 func healthCheck(w http.ResponseWriter, r *http.Request) error {
-	return res.New(w).Status(http.StatusOK).JSON(map[string]string{"status": "ok"})
+	return res.JSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
 func HealthCheckRoute() http.HandlerFunc {
