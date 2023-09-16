@@ -9,7 +9,3 @@ type Product struct {
 	Name      string    `json:"name" gorm:"not null" faker:"name"`
 	Price     float64   `json:"price" gorm:"not null" faker:"amount"`
 }
-
-func (p Product) GetID() int64 {
-	return p.ID
-}

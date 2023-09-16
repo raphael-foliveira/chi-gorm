@@ -13,7 +13,3 @@ type Order struct {
 	Product   Product   `json:"product" gorm:"OnDelete:CASCADE;"`
 	Quantity  int       `json:"quantity"`
 }
-
-func (o Order) GetID() int64 {
-	return o.ID
-}

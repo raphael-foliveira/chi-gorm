@@ -11,7 +11,3 @@ type Client struct {
 	Name      string    `json:"name" gorm:"not null" faker:"name"`
 	Email     string    `json:"email" gorm:"not null" faker:"email"`
 }
-
-func (c Client) GetID() int64 {
-	return c.ID
-}
