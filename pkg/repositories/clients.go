@@ -20,11 +20,7 @@ func NewClient(db *db.DB) *clients {
 
 func (r *clients) List() ([]models.Client, error) {
 	clients := []models.Client{}
-	err := r.db.Find(&clients).Error
-	if err != nil {
-		return nil, err
-	}
-	return clients, nil
+	return clients, r.db.Find(&clients).Error
 }
 
 func (r *clients) Get(id int64) (*models.Client, error) {
