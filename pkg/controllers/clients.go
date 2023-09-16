@@ -49,7 +49,7 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	}
 	client.Name = body.Name
 	client.Email = body.Email
-	err = c.repository.Update(&client)
+	err = c.repository.Update(client)
 	if err != nil {
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
@@ -65,7 +65,7 @@ func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.New(w).Status(http.StatusNotFound).Error("client not found")
 	}
-	err = c.repository.Delete(&client)
+	err = c.repository.Delete(client)
 	if err != nil {
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}

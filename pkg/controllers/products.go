@@ -49,7 +49,7 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	}
 	product.Name = body.Name
 	product.Price = body.Price
-	err = c.repository.Update(&product)
+	err = c.repository.Update(product)
 	if err != nil {
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
@@ -65,7 +65,7 @@ func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.New(w).Status(http.StatusNotFound).Error("product not found")
 	}
-	err = c.repository.Delete(&product)
+	err = c.repository.Delete(product)
 	if err != nil {
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}

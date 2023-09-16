@@ -10,21 +10,21 @@ type CreateClient struct {
 type UpdateClient CreateClient
 
 type Client struct {
-	ID    uint   `json:"id" faker:"-"`
+	ID    int64  `json:"id" faker:"-"`
 	Name  string `json:"name" faker:"name"`
 	Email string `json:"email" faker:"email"`
 }
 
-func NewClient(clientModel models.Client) *Client {
-	return &Client{
+func NewClient(clientModel models.Client) Client {
+	return Client{
 		ID:    clientModel.ID,
 		Name:  clientModel.Name,
 		Email: clientModel.Email,
 	}
 }
 
-func NewClients(clients []models.Client) []*Client {
-	var c []*Client
+func NewClients(clients []models.Client) []Client {
+	var c []Client
 	for _, client := range clients {
 		c = append(c, NewClient(client))
 	}
@@ -32,13 +32,13 @@ func NewClients(clients []models.Client) []*Client {
 }
 
 type ClientOrder struct {
-	ID       uint     `json:"id" faker:"-"`
-	Quantity int      `json:"quantity" faker:"-"`
-	Product  *Product `json:"product" faker:"-"`
+	ID       int64   `json:"id" faker:"-"`
+	Quantity int     `json:"quantity" faker:"-"`
+	Product  Product `json:"product" faker:"-"`
 }
 
-func NewClientOrder(orderModel models.Order, productModel models.Product) *ClientOrder {
-	return &ClientOrder{
+func NewClientOrder(orderModel models.Order, productModel models.Product) ClientOrder {
+	return ClientOrder{
 		ID:       orderModel.ID,
 		Quantity: orderModel.Quantity,
 		Product:  NewProduct(productModel),
@@ -46,14 +46,14 @@ func NewClientOrder(orderModel models.Order, productModel models.Product) *Clien
 }
 
 type ClientDetail struct {
-	ID     uint           `json:"id" faker:"-"`
-	Name   string         `json:"name" faker:"name"`
-	Email  string         `json:"email" faker:"email"`
-	Orders []*ClientOrder `json:"orders" faker:"-"`
+	ID     int64         `json:"id" faker:"-"`
+	Name   string        `json:"name" faker:"name"`
+	Email  string        `json:"email" faker:"email"`
+	Orders []ClientOrder `json:"orders" faker:"-"`
 }
 
-func NewClientDetail(clientModel models.Client, orders []models.Order) *ClientDetail {
-	c := new(ClientDetail)
+func NewClientDetail(clientModel models.Client, orders []models.Order) ClientDetail {
+	c := ClientDetail{}
 	c.ID = clientModel.ID
 	c.Name = clientModel.Name
 	c.Email = clientModel.Email

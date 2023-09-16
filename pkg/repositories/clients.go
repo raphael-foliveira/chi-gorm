@@ -27,9 +27,9 @@ func (r *clients) List() ([]models.Client, error) {
 	return clients, nil
 }
 
-func (r *clients) Get(id int64) (models.Client, error) {
+func (r *clients) Get(id int64) (*models.Client, error) {
 	client := models.Client{}
-	return client, r.db.First(&client, id).Error
+	return &client, r.db.First(&client, id).Error
 }
 
 func (r *clients) Create(client *models.Client) error {

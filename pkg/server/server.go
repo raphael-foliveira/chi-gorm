@@ -15,12 +15,17 @@ import (
 )
 
 func Start(db *db.DB) error {
+	app := CreateApp(db)
+	fmt.Println("listening on port 3000")
+	return http.ListenAndServe(":3000", app)
+}
+
+func CreateApp(db *db.DB) *chi.Mux {
 	db.AutoMigrate(&models.Client{}, &models.Product{}, &models.Order{})
 	mainRouter := chi.NewRouter()
 	attachMiddleware(mainRouter)
 	injectDependencies(mainRouter, db)
-	fmt.Println("listening on port 3000")
-	return http.ListenAndServe(":3000", mainRouter)
+	return mainRouter
 }
 
 func injectDependencies(r *chi.Mux, db *db.DB) {

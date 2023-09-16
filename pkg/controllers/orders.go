@@ -49,7 +49,7 @@ func (c *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
 	}
 	order.Quantity = body.Quantity
-	err = c.repository.Update(&order)
+	err = c.repository.Update(order)
 	if err != nil {
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 	}
@@ -67,7 +67,7 @@ func (c *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
 		return res.New(w).Status(http.StatusNotFound).Error("order not found")
 
 	}
-	err = c.repository.Delete(&order)
+	err = c.repository.Delete(order)
 	if err != nil {
 		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
 

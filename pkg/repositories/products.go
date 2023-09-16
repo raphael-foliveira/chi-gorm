@@ -23,9 +23,9 @@ func (r *products) List() ([]models.Product, error) {
 	return c, r.db.Find(&c).Error
 }
 
-func (r *products) Get(id int64) (models.Product, error) {
+func (r *products) Get(id int64) (*models.Product, error) {
 	product := models.Product{}
-	return product, r.db.First(&product, id).Error
+	return &product, r.db.First(&product, id).Error
 }
 
 func (r *products) Create(product *models.Product) error {
