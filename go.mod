@@ -3,6 +3,7 @@ module github.com/raphael-foliveira/chi-gorm
 go 1.20
 
 require (
+	github.com/bxcodec/faker v2.0.1+incompatible
 	github.com/bxcodec/faker/v4 v4.0.0-beta.3
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
