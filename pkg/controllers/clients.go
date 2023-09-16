@@ -21,7 +21,7 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 	var body schemas.CreateClient
 	err := parseBody(r, &body)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	newClient := models.Client{
 		Name:  body.Name,
@@ -37,7 +37,7 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "invalid user id")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
@@ -60,7 +60,7 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "invalid user id")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {

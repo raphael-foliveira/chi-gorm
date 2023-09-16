@@ -37,7 +37,7 @@ func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
@@ -46,7 +46,7 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	var body schemas.UpdateProduct
 	err = parseBody(r, &body)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	product.Name = body.Name
 	product.Price = body.Price
@@ -60,7 +60,7 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
@@ -85,7 +85,7 @@ func (c *Products) List(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {

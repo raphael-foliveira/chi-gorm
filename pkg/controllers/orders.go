@@ -38,7 +38,7 @@ func (c *Orders) Create(w http.ResponseWriter, r *http.Request) error {
 func (c *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "invalid id")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	order, err := c.repository.Get(id)
 	if err != nil {
@@ -60,7 +60,7 @@ func (c *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 func (c *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "invalid id")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 
 	}
 	order, err := c.repository.Get(id)
@@ -87,7 +87,7 @@ func (c *Orders) List(w http.ResponseWriter, r *http.Request) error {
 func (c *Orders) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "invalid id")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	order, err := c.repository.Get(id)
 	if err != nil {
