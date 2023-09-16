@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
@@ -19,7 +18,8 @@ func NewProducts(r repositories.Products) *Products {
 }
 
 func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
-	body, err := c.parseCreate(w, r)
+	var body schemas.CreateProduct
+	err := parseBody(r, &body)
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
@@ -43,7 +43,8 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "product not found")
 	}
-	body, err := c.parseUpdate(w, r)
+	var body schemas.UpdateProduct
+	err = parseBody(r, &body)
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
@@ -91,16 +92,4 @@ func (c *Products) Get(w http.ResponseWriter, r *http.Request) error {
 		return res.Error(w, err, http.StatusNotFound, "product not found")
 	}
 	return res.JSON(w, http.StatusOK, &product)
-}
-
-func (c *Products) parseCreate(w http.ResponseWriter, r *http.Request) (*schemas.CreateProduct, error) {
-	defer r.Body.Close()
-	body := schemas.CreateProduct{}
-	return &body, json.NewDecoder(r.Body).Decode(&body)
-}
-
-func (c *Products) parseUpdate(w http.ResponseWriter, r *http.Request) (*schemas.UpdateProduct, error) {
-	defer r.Body.Close()
-	body := schemas.UpdateProduct{}
-	return &body, json.NewDecoder(r.Body).Decode(&body)
 }

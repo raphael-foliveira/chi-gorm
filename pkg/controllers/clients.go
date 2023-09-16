@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
@@ -19,7 +18,8 @@ func NewClients(r repositories.Clients) *Clients {
 }
 
 func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
-	body, err := c.parseCreate(w, r)
+	var body schemas.CreateClient
+	err := parseBody(r, &body)
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
@@ -43,7 +43,8 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "client not found")
 	}
-	body, err := c.parseUpdate(w, r)
+	var body schemas.UpdateClient
+	err = parseBody(r, &body)
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
@@ -90,16 +91,4 @@ func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 		return res.Error(w, err, http.StatusNotFound, "client not found")
 	}
 	return res.JSON(w, http.StatusOK, client)
-}
-
-func (c *Clients) parseCreate(w http.ResponseWriter, r *http.Request) (*schemas.CreateClient, error) {
-	defer r.Body.Close()
-	body := schemas.CreateClient{}
-	return &body, json.NewDecoder(r.Body).Decode(&body)
-}
-
-func (c *Clients) parseUpdate(w http.ResponseWriter, r *http.Request) (*schemas.UpdateClient, error) {
-	defer r.Body.Close()
-	body := schemas.UpdateClient{}
-	return &body, json.NewDecoder(r.Body).Decode(&body)
 }
