@@ -6,12 +6,12 @@ import (
 
 var db *gorm.DB
 
-func InitSqlDb(conn gorm.Dialector) {
+func InitSqlDb(d gorm.Dialector) {
 	if db != nil {
 		return
 	}
 	var err error
-	db, err = gorm.Open(conn, &gorm.Config{})
+	db, err = gorm.Open(d, &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
