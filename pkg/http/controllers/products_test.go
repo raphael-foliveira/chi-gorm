@@ -15,11 +15,11 @@ import (
 )
 
 func TestProducts(t *testing.T) {
-	repository := &mocks.ProductsRepository{}
+	repository := &mocks.ProductsStore{}
 	controller := NewProducts(repository)
 
 	setUp := func() {
-		repository = &mocks.ProductsRepository{}
+		repository = &mocks.ProductsStore{}
 		controller = NewProducts(repository)
 	}
 

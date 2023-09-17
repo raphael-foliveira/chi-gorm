@@ -6,19 +6,19 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 )
 
-type ProductsRepository struct {
-	Store       []models.Product
+type OrdersStore struct {
+	Store       []models.Order
 	ShouldError bool
 }
 
-func (cr *ProductsRepository) List() ([]models.Product, error) {
+func (cr *OrdersStore) List() ([]models.Order, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
 	}
 	return cr.Store, nil
 }
 
-func (cr *ProductsRepository) Get(id int64) (*models.Product, error) {
+func (cr *OrdersStore) Get(id int64) (*models.Order, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
 	}
@@ -30,7 +30,7 @@ func (cr *ProductsRepository) Get(id int64) (*models.Product, error) {
 	return nil, errors.New("not found")
 }
 
-func (cr *ProductsRepository) Create(client *models.Product) error {
+func (cr *OrdersStore) Create(client *models.Order) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}
@@ -38,7 +38,7 @@ func (cr *ProductsRepository) Create(client *models.Product) error {
 	return nil
 }
 
-func (cr *ProductsRepository) Update(client *models.Product) error {
+func (cr *OrdersStore) Update(client *models.Order) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}
@@ -51,7 +51,7 @@ func (cr *ProductsRepository) Update(client *models.Product) error {
 	return errors.New("not found")
 }
 
-func (cr *ProductsRepository) Delete(client *models.Product) error {
+func (cr *OrdersStore) Delete(client *models.Order) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}

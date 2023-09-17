@@ -26,13 +26,13 @@ func CreateApp() *chi.Mux {
 }
 
 func injectDependencies(r *chi.Mux) {
-	clientsRepository := store.NewClients()
-	productsRepository := store.NewProducts()
-	ordersRepository := store.NewOrders()
+	clientsStore := store.NewClients()
+	productsStore := store.NewProducts()
+	ordersStore := store.NewOrders()
 
-	clientsController := controllers.NewClients(clientsRepository)
-	productsController := controllers.NewProducts(productsRepository)
-	ordersController := controllers.NewOrders(ordersRepository)
+	clientsController := controllers.NewClients(clientsStore)
+	productsController := controllers.NewProducts(productsStore)
+	ordersController := controllers.NewOrders(ordersStore)
 
 	clientsRoutes := routes.Clients(clientsController)
 	productsRoutes := routes.Products(productsController)
