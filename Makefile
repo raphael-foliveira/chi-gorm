@@ -2,7 +2,7 @@ cover:
 	go tool cover -html=c.out;
 
 test:
-	go test ./... -coverprofile=c.out;
+	go test ./... -cover -coverprofile=c.out;
 
 run:
 	go run cmd/main.go

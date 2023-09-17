@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
@@ -19,9 +18,10 @@ func NewProducts(r repositories.Products) *Products {
 }
 
 func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
-	body, err := c.parseCreate(w, r)
+	var body schemas.CreateProduct
+	err := parseBody(r, &body)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
+		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
 	newProduct := models.Product{
 		Name:  body.Name,
@@ -29,45 +29,46 @@ func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	}
 	err = c.repository.Create(&newProduct)
 	if err != nil {
-		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.New(w).Status(http.StatusCreated).JSON(&newProduct)
+	return res.JSON(w, http.StatusCreated, &newProduct)
 }
 
 func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		return res.New(w).Status(http.StatusNotFound).Error("product not found")
+		return res.Error(w, err, http.StatusNotFound, "product not found")
 	}
-	body, err := c.parseUpdate(w, r)
+	var body schemas.UpdateProduct
+	err = parseBody(r, &body)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	product.Name = body.Name
 	product.Price = body.Price
-	err = c.repository.Update(&product)
+	err = c.repository.Update(product)
 	if err != nil {
-		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.New(w).JSON(&product)
+	return res.JSON(w, http.StatusOK, &product)
 }
 
 func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		return res.New(w).Status(http.StatusNotFound).Error("product not found")
+		return res.Error(w, err, http.StatusNotFound, "product not found")
 	}
-	err = c.repository.Delete(&product)
+	err = c.repository.Delete(product)
 	if err != nil {
-		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
 	w.WriteHeader(http.StatusNoContent)
 	return nil
@@ -76,31 +77,19 @@ func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := c.repository.List()
 	if err != nil {
-		return res.New(w).Status(http.StatusInternalServerError).Error("internal server error")
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.New(w).JSON(&products)
+	return res.JSON(w, http.StatusOK, &products)
 }
 
 func (c *Products) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.New(w).Status(http.StatusBadRequest).Error("bad request")
+		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		return res.New(w).Status(http.StatusNotFound).Error("product not found")
+		return res.Error(w, err, http.StatusNotFound, "product not found")
 	}
-	return res.New(w).JSON(&product)
-}
-
-func (c *Products) parseCreate(w http.ResponseWriter, r *http.Request) (*schemas.CreateProduct, error) {
-	defer r.Body.Close()
-	body := schemas.CreateProduct{}
-	return &body, json.NewDecoder(r.Body).Decode(&body)
-}
-
-func (c *Products) parseUpdate(w http.ResponseWriter, r *http.Request) (*schemas.UpdateProduct, error) {
-	defer r.Body.Close()
-	body := schemas.UpdateProduct{}
-	return &body, json.NewDecoder(r.Body).Decode(&body)
+	return res.JSON(w, http.StatusOK, &product)
 }

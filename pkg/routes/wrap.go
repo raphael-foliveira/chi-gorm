@@ -15,7 +15,6 @@ func wrap(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFun
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-			return
 		}
 	}
 }

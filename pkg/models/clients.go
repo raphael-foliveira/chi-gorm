@@ -5,7 +5,7 @@ import (
 )
 
 type Client struct {
-	ID        uint      `json:"id" gorm:"primarykey" faker:"-"`
+	ID        int64      `json:"id" gorm:"primarykey" faker:"-"`
 	CreatedAt time.Time `json:"-" faker:"-"`
 	UpdatedAt time.Time `json:"-" faker:"-"`
 	Name      string    `json:"name" gorm:"not null" faker:"name"`

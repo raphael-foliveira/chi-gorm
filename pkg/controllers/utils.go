@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -16,4 +17,13 @@ func getIdFromPath(r *http.Request) (int64, error) {
 		return 0, errors.New("invalid id")
 	}
 	return id, nil
+}
+
+func parseBody(r *http.Request, v interface{}) error {
+	err := json.NewDecoder(r.Body).Decode(v)
+	if err != nil {
+		fmt.Println(err)
+		return errors.New("invalid body")
+	}
+	return nil
 }

@@ -16,3 +16,5 @@ func Connect(dsn string) *DB {
 	}
 	return &DB{db}
 }
+
+
