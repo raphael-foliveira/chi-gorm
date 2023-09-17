@@ -27,7 +27,7 @@ func NewProduct(productModel models.Product) Product {
 }
 
 func NewProducts(products []models.Product) []Product {
-	var p []Product
+	p := []Product{}
 	for _, product := range products {
 		p = append(p, NewProduct(product))
 	}

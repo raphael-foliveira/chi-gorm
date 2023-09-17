@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/controllers"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/routes"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/db"
 	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
 )
 
@@ -26,9 +27,9 @@ func CreateApp() *chi.Mux {
 }
 
 func injectDependencies(r *chi.Mux) {
-	clientsStore := store.NewClients()
-	productsStore := store.NewProducts()
-	ordersStore := store.NewOrders()
+	clientsStore := store.NewClients(db.Db)
+	productsStore := store.NewProducts(db.Db)
+	ordersStore := store.NewOrders(db.Db)
 
 	clientsController := controllers.NewClients(clientsStore)
 	productsController := controllers.NewProducts(productsStore)

@@ -9,23 +9,16 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
-	"github.com/joho/godotenv"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/server"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/db"
 )
 
 var testServer *httptest.Server
-var testDb *gorm.DB
 
 func TestMain(m *testing.M) {
-	godotenv.Load()
-	gormDialector := sqlite.Open(":memory:")
-	store.InitSqlDb(gormDialector)
-	testDb = store.GetDB()
+	db.InitMemory()
 	m.Run()
 }
 
@@ -33,7 +26,7 @@ func TestClients(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		clients := []models.Client{}
-		testDb.Find(&clients)
+		db.Db.Find(&clients)
 		expectedBody := schemas.NewClients(clients)
 
 		response, err := makeRequest("GET", "/clients", nil)
@@ -58,7 +51,7 @@ func TestClients(t *testing.T) {
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
 		client := models.Client{}
-		testDb.First(&client)
+		db.Db.First(&client)
 		expectedBody := schemas.NewClient(client)
 
 		response, err := makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
@@ -110,7 +103,7 @@ func TestClients(t *testing.T) {
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
 		client := models.Client{}
-		testDb.First(&client)
+		db.Db.First(&client)
 		update := schemas.UpdateClient{}
 		faker.FakeData(&update)
 		expectedBody := schemas.Client{}
@@ -139,7 +132,7 @@ func TestClients(t *testing.T) {
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
 		client := models.Client{}
-		testDb.First(&client)
+		db.Db.First(&client)
 
 		response, err := makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
 		if err != nil {
@@ -161,7 +154,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		products := []models.Product{}
-		testDb.Find(&products)
+		db.Db.Find(&products)
 		expectedBody := schemas.NewProducts(products)
 
 		response, err := makeRequest("GET", "/products", nil)
@@ -186,7 +179,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
 		product := models.Product{}
-		testDb.First(&product)
+		db.Db.First(&product)
 		expectedBody := schemas.NewProduct(product)
 
 		response, err := makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
@@ -238,7 +231,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
 		product := models.Product{}
-		testDb.First(&product)
+		db.Db.First(&product)
 		update := schemas.UpdateProduct{}
 		faker.FakeData(&update)
 		expectedBody := schemas.Product{}
@@ -267,7 +260,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
 		product := models.Product{}
-		testDb.First(&product)
+		db.Db.First(&product)
 
 		response, err := makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
 		if err != nil {
@@ -288,7 +281,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		orders := []models.Order{}
-		testDb.Find(&orders)
+		db.Db.Find(&orders)
 		expectedBody := schemas.NewOrders(orders)
 
 		response, err := makeRequest("GET", "/orders", nil)
@@ -313,7 +306,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
 		order := models.Order{}
-		testDb.First(&order)
+		db.Db.First(&order)
 		expectedBody := schemas.NewOrder(order)
 
 		response, err := makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
@@ -338,9 +331,9 @@ func TestOrders(t *testing.T) {
 	t.Run("Test create", func(t *testing.T) {
 		setUp()
 		product := models.Product{}
-		testDb.First(&product)
+		db.Db.First(&product)
 		client := models.Client{}
-		testDb.First(&client)
+		db.Db.First(&client)
 		order := schemas.CreateOrder{
 			ProductID: product.ID,
 			ClientID:  client.ID,
@@ -371,7 +364,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
 		order := models.Order{}
-		testDb.First(&order)
+		db.Db.First(&order)
 		update := schemas.UpdateOrder{}
 		faker.FakeData(&update)
 		expectedBody := schemas.Order{}
@@ -399,7 +392,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
 		order := models.Order{}
-		testDb.First(&order)
+		db.Db.First(&order)
 
 		response, err := makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 		if err != nil {
@@ -424,11 +417,9 @@ func setUp() {
 }
 
 func clearDatabase() {
-	testDb.Exec("DROP SCHEMA public CASCADE")
-	testDb.Exec("CREATE SCHEMA public")
-	testDb.Exec("GRANT ALL ON SCHEMA public TO postgres")
-	testDb.Exec("GRANT ALL ON SCHEMA public TO public")
+	db.InitMemory()
 }
+
 func tearDown() {
 	testServer.Close()
 }
@@ -476,7 +467,7 @@ func populateTables() {
 		orders = append(orders, o)
 	}
 
-	testDb.Create(&clients)
-	testDb.Create(&products)
-	testDb.Create(&orders)
+	db.Db.Create(&clients)
+	db.Db.Create(&products)
+	db.Db.Create(&orders)
 }

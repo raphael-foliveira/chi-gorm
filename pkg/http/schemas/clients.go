@@ -24,7 +24,7 @@ func NewClient(clientModel models.Client) Client {
 }
 
 func NewClients(clients []models.Client) []Client {
-	var c []Client
+	c := []Client{}
 	for _, client := range clients {
 		c = append(c, NewClient(client))
 	}
