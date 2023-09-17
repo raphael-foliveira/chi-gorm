@@ -1,6 +1,6 @@
 package schemas
 
-import "github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
+import "github.com/raphael-foliveira/chi-gorm/pkg/models"
 
 type CreateOrder struct {
 	ClientID  int64 `json:"client_id" faker:"-"`

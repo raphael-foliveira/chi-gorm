@@ -2,7 +2,7 @@ package store
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 )
 
 type Orders interface {

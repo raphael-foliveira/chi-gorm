@@ -3,7 +3,7 @@ package mocks
 import (
 	"errors"
 
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 )
 
 type OrdersRepository struct {

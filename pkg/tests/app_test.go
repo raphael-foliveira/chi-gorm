@@ -12,7 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/server"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

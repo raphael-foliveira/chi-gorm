@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
 )
 
 type Clients struct {

@@ -1,6 +1,6 @@
 package schemas
 
-import "github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
+import "github.com/raphael-foliveira/chi-gorm/pkg/models"
 
 type CreateProduct struct {
 	Name  string  `json:"name" faker:"name"`

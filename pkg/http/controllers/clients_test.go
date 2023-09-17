@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/pkg/mocks"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 )
 
 func TestClient(t *testing.T) {
