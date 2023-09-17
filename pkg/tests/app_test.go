@@ -28,6 +28,9 @@ func setUp() {
 }
 
 func clearDatabase() {
+	sqlDb, _ := db.Db.DB()
+	sqlDb.Close()
+	db.Db = nil
 	db.InitMemory()
 }
 

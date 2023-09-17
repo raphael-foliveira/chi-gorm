@@ -24,6 +24,9 @@ func InitPg() {
 }
 
 func InitMemory() {
+	if Db != nil {
+		panic("Db already initialized")
+	}
 	var err error
 	Db, err = gorm.Open(sqlite.Open(":memory:"))
 	if err != nil {
