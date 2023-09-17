@@ -3,7 +3,7 @@ package routes
 import (
 	"net/http"
 
-	"github.com/raphael-foliveira/chi-gorm/pkg/res"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
 )
 
 func healthCheck(w http.ResponseWriter, r *http.Request) error {

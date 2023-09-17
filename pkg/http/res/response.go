@@ -21,6 +21,7 @@ func Error(w http.ResponseWriter, err error, status int, message string) error {
 	fmt.Println(err)
 	return json.NewEncoder(w).Encode(ApiError{
 		Message: message,
+		Error:   err.Error(),
 		Status:  status,
 	})
 }

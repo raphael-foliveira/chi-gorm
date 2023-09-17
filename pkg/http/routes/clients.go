@@ -2,10 +2,10 @@ package routes
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/pkg/controllers"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/controllers"
 )
 
-func Products(controller *controllers.Products) *chi.Mux {
+func Clients(controller *controllers.Clients) *chi.Mux {
 	router := chi.NewRouter()
 	router.Get("/", wrap(controller.List))
 	router.Post("/", wrap(controller.Create))

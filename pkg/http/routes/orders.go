@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/pkg/controllers"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/controllers"
 )
 
 func Orders(controller *controllers.Orders) *chi.Mux {

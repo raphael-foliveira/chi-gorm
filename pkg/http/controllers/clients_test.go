@@ -9,11 +9,10 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/pkg/mocks"
-	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/schemas"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
 )
-
 
 func TestClient(t *testing.T) {
 	repository := &mocks.ClientsRepository{}
@@ -208,5 +207,3 @@ func TestClient(t *testing.T) {
 		}
 	})
 }
-
-

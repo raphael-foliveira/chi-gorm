@@ -9,23 +9,27 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/pkg"
-	"github.com/raphael-foliveira/chi-gorm/pkg/db"
-	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/schemas"
-	"github.com/raphael-foliveira/chi-gorm/pkg/server"
+	"github.com/joho/godotenv"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/server"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-var testDb *db.DB
 var testServer *httptest.Server
+var testDb *gorm.DB
 
 func TestMain(m *testing.M) {
-	testDb = db.Connect(pkg.TestConfig.DatabaseURL)
+	godotenv.Load()
+	gormDialector := sqlite.Open(":memory:")
+	store.InitSqlDb(gormDialector)
+	testDb = store.GetDB()
 	m.Run()
 }
 
 func TestClients(t *testing.T) {
-
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		clients := []models.Client{}
@@ -414,7 +418,7 @@ func TestOrders(t *testing.T) {
 
 func setUp() {
 	clearDatabase()
-	testApp := server.CreateApp(testDb)
+	testApp := server.CreateApp()
 	testServer = httptest.NewServer(testApp)
 	populateTables()
 }

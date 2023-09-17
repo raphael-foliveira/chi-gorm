@@ -3,17 +3,17 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/repositories"
-	"github.com/raphael-foliveira/chi-gorm/pkg/res"
-	"github.com/raphael-foliveira/chi-gorm/pkg/schemas"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
 )
 
 type Orders struct {
-	repository repositories.Orders
+	repository store.Orders
 }
 
-func NewOrders(r repositories.Orders) *Orders {
+func NewOrders(r store.Orders) *Orders {
 	return &Orders{r}
 }
 

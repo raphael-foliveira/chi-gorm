@@ -5,14 +5,17 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/raphael-foliveira/chi-gorm/pkg/db"
-	"github.com/raphael-foliveira/chi-gorm/pkg/server"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/server"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
+	"gorm.io/driver/postgres"
 )
 
 func main() {
 	godotenv.Load()
-	db := db.Connect(os.Getenv("DATABASE_URL"))
-	err := server.Start(db)
+	databaseUrl := os.Getenv("DATABASE_URL")
+	gormDialector := postgres.Open(databaseUrl)
+	store.InitSqlDb(gormDialector)
+	err := server.Start()
 	if err != nil {
 		fmt.Println(err)
 	}

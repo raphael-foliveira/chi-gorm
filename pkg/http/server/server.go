@@ -7,31 +7,28 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/raphael-foliveira/chi-gorm/pkg/controllers"
-	"github.com/raphael-foliveira/chi-gorm/pkg/db"
-	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/repositories"
-	"github.com/raphael-foliveira/chi-gorm/pkg/routes"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/controllers"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/routes"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
 )
 
-func Start(db *db.DB) error {
-	app := CreateApp(db)
+func Start() error {
+	app := CreateApp()
 	fmt.Println("listening on port 3000")
 	return http.ListenAndServe(":3000", app)
 }
 
-func CreateApp(db *db.DB) *chi.Mux {
-	db.AutoMigrate(&models.Client{}, &models.Product{}, &models.Order{})
+func CreateApp() *chi.Mux {
 	mainRouter := chi.NewRouter()
 	attachMiddleware(mainRouter)
-	injectDependencies(mainRouter, db)
+	injectDependencies(mainRouter)
 	return mainRouter
 }
 
-func injectDependencies(r *chi.Mux, db *db.DB) {
-	clientsRepository := repositories.NewClient(db)
-	productsRepository := repositories.NewProducts(db)
-	ordersRepository := repositories.NewOrders(db)
+func injectDependencies(r *chi.Mux) {
+	clientsRepository := store.NewClients()
+	productsRepository := store.NewProducts()
+	ordersRepository := store.NewOrders()
 
 	clientsController := controllers.NewClients(clientsRepository)
 	productsController := controllers.NewProducts(productsRepository)

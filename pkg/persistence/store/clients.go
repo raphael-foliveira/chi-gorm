@@ -1,41 +1,39 @@
-package repositories
+package store
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/pkg/db"
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
-	"github.com/raphael-foliveira/chi-gorm/pkg/models"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/models"
 )
 
 type Clients interface {
-	interfaces.Repository[models.Client]
+	interfaces.Store[models.Client]
 }
 
-type clients struct {
-	db *db.DB
-}
+type clients struct{}
 
-func NewClient(db *db.DB) *clients {
-	return &clients{db}
+func NewClients() Clients {
+	db.AutoMigrate(&models.Client{})
+	return &clients{}
 }
 
 func (r *clients) List() ([]models.Client, error) {
 	clients := []models.Client{}
-	return clients, r.db.Find(&clients).Error
+	return clients, db.Find(&clients).Error
 }
 
 func (r *clients) Get(id int64) (*models.Client, error) {
 	client := models.Client{}
-	return &client, r.db.First(&client, id).Error
+	return &client, db.First(&client, id).Error
 }
 
 func (r *clients) Create(client *models.Client) error {
-	return r.db.Create(client).Error
+	return db.Create(client).Error
 }
 
 func (r *clients) Update(client *models.Client) error {
-	return r.db.Save(client).Error
+	return db.Save(client).Error
 }
 
 func (r *clients) Delete(client *models.Client) error {
-	return r.db.Delete(client).Error
+	return db.Delete(client).Error
 }
