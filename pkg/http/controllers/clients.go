@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
@@ -109,7 +108,6 @@ func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	for _, o := range orders {
 		for _, p := range products {
 			if o.ProductID == p.ID {
-				fmt.Println("are equals")
 				clientOrders = append(clientOrders, schemas.ClientOrder{
 					ID:       o.ID,
 					Quantity: o.Quantity,
