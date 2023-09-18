@@ -96,10 +96,7 @@ func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	productIds := []int64{}
-	for _, o := range orders {
-		productIds = append(productIds, o.ProductID)
-	}
+	productIds := getProductIdsFromOrders(orders)
 	products, err := c.productsStore.FindMany(productIds)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
@@ -108,17 +105,17 @@ func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	for _, o := range orders {
 		for _, p := range products {
 			if o.ProductID == p.ID {
-				clientOrders = append(clientOrders, schemas.ClientOrder{
-					ID:       o.ID,
-					Quantity: o.Quantity,
-					Product: schemas.Product{
-						ID:    p.ID,
-						Name:  p.Name,
-						Price: p.Price,
-					},
-				})
+				clientOrders = append(clientOrders, schemas.NewClientOrder(o, p))
 			}
 		}
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewClientDetail(*client, clientOrders))
+}
+
+func getProductIdsFromOrders(orders []models.Order) []int64 {
+	productIds := []int64{}
+	for _, o := range orders {
+		productIds = append(productIds, o.ProductID)
+	}
+	return productIds
 }
