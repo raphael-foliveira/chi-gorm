@@ -2,17 +2,14 @@ package main
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/joho/godotenv"
-	"github.com/raphael-foliveira/chi-gorm/pkg/db"
-	"github.com/raphael-foliveira/chi-gorm/pkg/server"
+	"github.com/raphael-foliveira/chi-gorm/pkg/http/server"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/db"
 )
 
 func main() {
-	godotenv.Load()
-	db := db.Connect(os.Getenv("DATABASE_URL"))
-	err := server.Start(db)
+	db.InitPg()
+	err := server.Start()
 	if err != nil {
 		fmt.Println(err)
 	}
