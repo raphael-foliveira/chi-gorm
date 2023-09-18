@@ -15,12 +15,12 @@ import (
 )
 
 func TestProducts(t *testing.T) {
-	repository := &mocks.ProductsStore{}
-	controller := NewProducts(repository)
+	store := &mocks.ProductsStore{}
+	controller := NewProducts(store)
 
 	setUp := func() {
-		repository = &mocks.ProductsStore{}
-		controller = NewProducts(repository)
+		store = &mocks.ProductsStore{}
+		controller = NewProducts(store)
 	}
 
 	addProducts := func(q int) {
@@ -28,14 +28,14 @@ func TestProducts(t *testing.T) {
 			var product models.Product
 			faker.FakeData(&product)
 			product.ID = int64(i + 1)
-			repository.Store = append(repository.Store, product)
+			store.Store = append(store.Store, product)
 		}
 	}
 
 	t.Run("List", func(t *testing.T) {
 		setUp()
 		addProducts(10)
-		repository.ShouldError = false
+		store.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		err := controller.List(recorder, request)
@@ -46,7 +46,7 @@ func TestProducts(t *testing.T) {
 			t.Errorf("Status code should be 200, got %v", recorder.Code)
 		}
 
-		repository.ShouldError = true
+		store.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("GET", "/", nil)
 		err = controller.List(recorder, request)
@@ -61,7 +61,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		setUp()
 		addProducts(10)
-		repository.ShouldError = false
+		store.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/1", nil)
 		tx := chi.NewRouteContext()
@@ -90,7 +90,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		setUp()
-		repository.ShouldError = false
+		store.ShouldError = false
 		recorder := httptest.NewRecorder()
 		var newProduct schemas.CreateProduct
 		faker.FakeData(&newProduct)
@@ -115,7 +115,7 @@ func TestProducts(t *testing.T) {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
-		repository.ShouldError = true
+		store.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		err = controller.Create(recorder, request)
@@ -130,7 +130,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Update", func(t *testing.T) {
 		setUp()
 		addProducts(10)
-		repository.ShouldError = false
+		store.ShouldError = false
 		recorder := httptest.NewRecorder()
 		var newProduct schemas.UpdateProduct
 		faker.FakeData(&newProduct)
@@ -178,7 +178,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Delete", func(t *testing.T) {
 		setUp()
 		addProducts(10)
-		repository.ShouldError = false
+		store.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("DELETE", "/1", nil)
 		tx := chi.NewRouteContext()
