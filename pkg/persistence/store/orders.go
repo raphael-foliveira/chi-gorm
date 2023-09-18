@@ -3,7 +3,7 @@ package store
 import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"gorm.io/gorm"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/db"
 )
 
 type Orders interface {
@@ -11,38 +11,36 @@ type Orders interface {
 	GetByClientId(clientId int64) ([]models.Order, error)
 }
 
-type orders struct {
-	db *gorm.DB
-}
+type orders struct{}
 
-func NewOrders(db *gorm.DB) Orders {
-	db.AutoMigrate(&models.Order{})
-	return &orders{db}
+func NewOrders() Orders {
+	db.Db.AutoMigrate(&models.Order{})
+	return &orders{}
 }
 
 func (r *orders) List() ([]models.Order, error) {
 	orders := []models.Order{}
-	return orders, r.db.Find(&orders).Error
+	return orders, db.Db.Find(&orders).Error
 }
 
 func (r *orders) Get(id int64) (*models.Order, error) {
 	order := models.Order{}
-	return &order, r.db.First(&order, id).Error
+	return &order, db.Db.First(&order, id).Error
 }
 
 func (r *orders) Create(order *models.Order) error {
-	return r.db.Create(order).Error
+	return db.Db.Create(order).Error
 }
 
 func (r *orders) Update(order *models.Order) error {
-	return r.db.Save(order).Error
+	return db.Db.Save(order).Error
 }
 
 func (r *orders) Delete(order *models.Order) error {
-	return r.db.Delete(order).Error
+	return db.Db.Delete(order).Error
 }
 
 func (r *orders) GetByClientId(clientId int64) ([]models.Order, error) {
 	orders := []models.Order{}
-	return orders, r.db.Where("client_id = ?", clientId).Find(&orders).Error
+	return orders, db.Db.Where("client_id = ?", clientId).Find(&orders).Error
 }
