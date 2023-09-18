@@ -25,3 +25,14 @@ func TestWrap(t *testing.T) {
 		}
 	})
 }
+
+func TestHealthCheck(t *testing.T) {
+	router := chi.NewRouter()
+	router.Get("/", HealthCheckRoute())
+	recorder := httptest.NewRecorder()
+	request, _ := http.NewRequest(http.MethodGet, "/", nil)
+	router.ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusOK {
+		t.Errorf("expected status code %d, got %d", http.StatusOK, recorder.Code)
+	}
+}
