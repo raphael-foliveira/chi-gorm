@@ -63,3 +63,18 @@ func (cr *ProductsStore) Delete(client *models.Product) error {
 	}
 	return errors.New("not found")
 }
+
+func (cr *ProductsStore) FindMany(ids []int64) ([]models.Product, error) {
+	if cr.ShouldError {
+		return nil, errors.New("")
+	}
+	products := []models.Product{}
+	for _, id := range ids {
+		for _, product := range cr.Store {
+			if product.ID == id {
+				products = append(products, product)
+			}
+		}
+	}
+	return products, nil
+}

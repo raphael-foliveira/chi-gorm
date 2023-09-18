@@ -30,7 +30,17 @@ func TestClient(t *testing.T) {
 	addClients := func(q int) {
 		for i := 0; i < q; i++ {
 			var client models.Client
+			var product models.Product
 			faker.FakeData(&client)
+			faker.FakeData(&product)
+			productsStore.Store = append(productsStore.Store, product)
+			for j := 0; j < 10; j++ {
+				var order models.Order
+				faker.FakeData(&order)
+				order.ClientID = client.ID
+				order.ProductID = product.ID
+				ordersStore.Store = append(ordersStore.Store, order)
+			}
 			client.ID = int64(i + 1)
 			clientsStore.Store = append(clientsStore.Store, client)
 		}

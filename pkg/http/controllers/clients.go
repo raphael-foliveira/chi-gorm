@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
@@ -96,13 +97,30 @@ func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
+	productIds := []int64{}
+	for _, o := range orders {
+		productIds = append(productIds, o.ProductID)
+	}
+	products, err := c.productsStore.FindMany(productIds)
+	if err != nil {
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
+	}
 	clientOrders := []schemas.ClientOrder{}
 	for _, o := range orders {
-		product, err := c.productsStore.Get(o.ProductID)
-		if err != nil {
-			return res.Error(w, err, http.StatusInternalServerError, "internal server error")
+		for _, p := range products {
+			if o.ProductID == p.ID {
+				fmt.Println("are equals")
+				clientOrders = append(clientOrders, schemas.ClientOrder{
+					ID:       o.ID,
+					Quantity: o.Quantity,
+					Product: schemas.Product{
+						ID:    p.ID,
+						Name:  p.Name,
+						Price: p.Price,
+					},
+				})
+			}
 		}
-		clientOrders = append(clientOrders, schemas.NewClientOrder(o, *product))
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewClientDetail(*client, clientOrders))
 }

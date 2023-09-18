@@ -8,6 +8,7 @@ import (
 
 type Products interface {
 	interfaces.Store[models.Product]
+	FindMany(ids []int64) ([]models.Product, error)
 }
 
 type products struct {
@@ -39,4 +40,9 @@ func (r *products) Update(product *models.Product) error {
 
 func (r *products) Delete(product *models.Product) error {
 	return r.db.Delete(product).Error
+}
+
+func (r *products) FindMany(ids []int64) ([]models.Product, error) {
+	products := []models.Product{}
+	return products, r.db.Find(&products, ids).Error
 }
