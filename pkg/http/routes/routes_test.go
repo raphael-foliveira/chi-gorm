@@ -18,7 +18,10 @@ func TestWrap(t *testing.T) {
 		router := chi.NewRouter()
 		router.Get("/", wrap(cf))
 		recorder := httptest.NewRecorder()
-		request, _ := http.NewRequest(http.MethodGet, "/", nil)
+		request, err := http.NewRequest(http.MethodGet, "/", nil)
+		if err != nil {
+			t.Error(err)
+		}
 		router.ServeHTTP(recorder, request)
 		if recorder.Code != http.StatusInternalServerError {
 			t.Errorf("expected status code %d, got %d", http.StatusInternalServerError, recorder.Code)
@@ -30,7 +33,10 @@ func TestHealthCheck(t *testing.T) {
 	router := chi.NewRouter()
 	router.Get("/", HealthCheckRoute())
 	recorder := httptest.NewRecorder()
-	request, _ := http.NewRequest(http.MethodGet, "/", nil)
+	request, err := http.NewRequest(http.MethodGet, "/", nil)
+	if err != nil {
+		t.Error(err)
+	}
 	router.ServeHTTP(recorder, request)
 	if recorder.Code != http.StatusOK {
 		t.Errorf("expected status code %d, got %d", http.StatusOK, recorder.Code)
