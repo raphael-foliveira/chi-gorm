@@ -18,13 +18,13 @@ func (cr *OrdersStore) List() ([]models.Order, error) {
 	return cr.Store, nil
 }
 
-func (cr *OrdersStore) Get(id int64) (*models.Order, error) {
-	if cr.ShouldError {
+func (os *OrdersStore) Get(id int64) (*models.Order, error) {
+	if os.ShouldError {
 		return nil, errors.New("")
 	}
-	for _, client := range cr.Store {
-		if client.ID == id {
-			return &client, nil
+	for _, order := range os.Store {
+		if order.ID == id {
+			return &order, nil
 		}
 	}
 	return nil, errors.New("not found")
@@ -62,4 +62,17 @@ func (cr *OrdersStore) Delete(client *models.Order) error {
 		}
 	}
 	return errors.New("not found")
+}
+
+func (cr *OrdersStore) GetByClientId(clientId int64) ([]models.Order, error) {
+	if cr.ShouldError {
+		return nil, errors.New("")
+	}
+	orders := []models.Order{}
+	for _, order := range cr.Store {
+		if order.ClientID == clientId {
+			orders = append(orders, order)
+		}
+	}
+	return orders, nil
 }

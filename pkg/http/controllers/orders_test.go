@@ -15,27 +15,41 @@ import (
 )
 
 func TestOrders(t *testing.T) {
-	repository := &mocks.OrdersStore{}
-	controller := NewOrders(repository)
+	var ordersStore *mocks.OrdersStore
+	var clientsStore *mocks.ClientsStore
+	var productsStore *mocks.ProductsStore
+	var controller *Orders
 
 	setUp := func() {
-		repository = &mocks.OrdersStore{}
-		controller = NewOrders(repository)
+		ordersStore = &mocks.OrdersStore{}
+		clientsStore = &mocks.ClientsStore{}
+		productsStore = &mocks.ProductsStore{}
+		controller = NewOrders(ordersStore, clientsStore, productsStore)
 	}
 
 	addOrders := func(q int) {
 		for i := 0; i < q; i++ {
-			var order models.Order
+			var order *models.Order
+			var client *models.Client
+			var product *models.Product
 			faker.FakeData(&order)
+			faker.FakeData(&client)
+			faker.FakeData(&product)
 			order.ID = int64(i + 1)
-			repository.Store = append(repository.Store, order)
+			client.ID = int64(i + 1)
+			product.ID = int64(i + 1)
+			order.ClientID = client.ID
+			order.ProductID = product.ID
+			ordersStore.Store = append(ordersStore.Store, *order)
+			clientsStore.Store = append(clientsStore.Store, *client)
+			productsStore.Store = append(productsStore.Store, *product)
 		}
 	}
 
 	t.Run("List", func(t *testing.T) {
 		setUp()
 		addOrders(10)
-		repository.ShouldError = false
+		ordersStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		err := controller.List(recorder, request)
@@ -46,7 +60,7 @@ func TestOrders(t *testing.T) {
 			t.Errorf("Status code should be 200, got %v", recorder.Code)
 		}
 
-		repository.ShouldError = true
+		ordersStore.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("GET", "/", nil)
 		err = controller.List(recorder, request)
@@ -61,7 +75,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		setUp()
 		addOrders(10)
-		repository.ShouldError = false
+		ordersStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/1", nil)
 		tx := chi.NewRouteContext()
@@ -90,7 +104,7 @@ func TestOrders(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		setUp()
-		repository.ShouldError = false
+		ordersStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		var newOrder schemas.CreateOrder
 		faker.FakeData(&newOrder)
@@ -115,7 +129,7 @@ func TestOrders(t *testing.T) {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
-		repository.ShouldError = true
+		ordersStore.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		err = controller.Create(recorder, request)
@@ -130,7 +144,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Update", func(t *testing.T) {
 		setUp()
 		addOrders(10)
-		repository.ShouldError = false
+		ordersStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		var newOrder schemas.UpdateOrder
 		faker.FakeData(&newOrder)
@@ -178,7 +192,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Delete", func(t *testing.T) {
 		setUp()
 		addOrders(10)
-		repository.ShouldError = false
+		ordersStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("DELETE", "/1", nil)
 		tx := chi.NewRouteContext()

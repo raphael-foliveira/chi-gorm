@@ -15,12 +15,16 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	repository := &mocks.ClientsStore{}
-	controller := NewClients(repository)
+	var ordersStore *mocks.OrdersStore
+	var clientsStore *mocks.ClientsStore
+	var productsStore *mocks.ProductsStore
+	var controller *Clients
 
 	setUp := func() {
-		repository = &mocks.ClientsStore{}
-		controller = NewClients(repository)
+		ordersStore = &mocks.OrdersStore{}
+		clientsStore = &mocks.ClientsStore{}
+		productsStore = &mocks.ProductsStore{}
+		controller = NewClients(clientsStore, ordersStore, productsStore)
 	}
 
 	addClients := func(q int) {
@@ -28,14 +32,14 @@ func TestClient(t *testing.T) {
 			var client models.Client
 			faker.FakeData(&client)
 			client.ID = int64(i + 1)
-			repository.Store = append(repository.Store, client)
+			clientsStore.Store = append(clientsStore.Store, client)
 		}
 	}
 
 	t.Run("List", func(t *testing.T) {
 		setUp()
 		addClients(10)
-		repository.ShouldError = false
+		clientsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		err := controller.List(recorder, request)
@@ -46,7 +50,7 @@ func TestClient(t *testing.T) {
 			t.Errorf("Status code should be 200, got %v", recorder.Code)
 		}
 
-		repository.ShouldError = true
+		clientsStore.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("GET", "/", nil)
 		err = controller.List(recorder, request)
@@ -61,7 +65,7 @@ func TestClient(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		setUp()
 		addClients(10)
-		repository.ShouldError = false
+		clientsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/1", nil)
 		tx := chi.NewRouteContext()
@@ -90,7 +94,7 @@ func TestClient(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		setUp()
-		repository.ShouldError = false
+		clientsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		var newClient schemas.CreateClient
 		faker.FakeData(&newClient)
@@ -115,7 +119,7 @@ func TestClient(t *testing.T) {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
-		repository.ShouldError = true
+		clientsStore.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		err = controller.Create(recorder, request)
@@ -130,7 +134,7 @@ func TestClient(t *testing.T) {
 	t.Run("Update", func(t *testing.T) {
 		setUp()
 		addClients(10)
-		repository.ShouldError = false
+		clientsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		var newClient schemas.UpdateClient
 		faker.FakeData(&newClient)
@@ -179,7 +183,7 @@ func TestClient(t *testing.T) {
 	t.Run("Delete", func(t *testing.T) {
 		setUp()
 		addClients(10)
-		repository.ShouldError = false
+		clientsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("DELETE", "/1", nil)
 		tx := chi.NewRouteContext()

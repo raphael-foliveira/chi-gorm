@@ -37,21 +37,17 @@ func NewOrders(orders []models.Order) []Order {
 }
 
 type OrderDetail struct {
-	ID        int64   `json:"id" faker:"-"`
-	ClientID  int64   `json:"client_id" faker:"-"`
-	ProductID int64   `json:"product_id" faker:"-"`
-	Quantity  int     `json:"quantity" faker:"-"`
-	Client    Client  `json:"client" faker:"-"`
-	Product   Product `json:"product" faker:"-"`
+	ID       int64   `json:"id" faker:"-"`
+	Quantity int     `json:"quantity" faker:"-"`
+	Client   Client  `json:"client" faker:"-"`
+	Product  Product `json:"product" faker:"-"`
 }
 
 func NewOrderDetail(orderModel models.Order, clientModel models.Client, productModel models.Product) OrderDetail {
 	return OrderDetail{
-		ID:        orderModel.ID,
-		ClientID:  orderModel.ClientID,
-		ProductID: orderModel.ProductID,
-		Quantity:  orderModel.Quantity,
-		Client:    NewClient(clientModel),
-		Product:   NewProduct(productModel),
+		ID:       orderModel.ID,
+		Quantity: orderModel.Quantity,
+		Client:   NewClient(clientModel),
+		Product:  NewProduct(productModel),
 	}
 }

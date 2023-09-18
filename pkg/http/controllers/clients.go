@@ -10,11 +10,13 @@ import (
 )
 
 type Clients struct {
-	repository store.Clients
+	clientsStore  store.Clients
+	ordersStore   store.Orders
+	productsStore store.Products
 }
 
-func NewClients(r store.Clients) *Clients {
-	return &Clients{r}
+func NewClients(clientsStore store.Clients, ordersStore store.Orders, productsStore store.Products) *Clients {
+	return &Clients{clientsStore, ordersStore, productsStore}
 }
 
 func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
@@ -27,7 +29,7 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 		Name:  body.Name,
 		Email: body.Email,
 	}
-	err = c.repository.Create(&newClient)
+	err = c.clientsStore.Create(&newClient)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
@@ -39,7 +41,7 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
-	client, err := c.repository.Get(id)
+	client, err := c.clientsStore.Get(id)
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "client not found")
 	}
@@ -50,7 +52,7 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	}
 	client.Name = body.Name
 	client.Email = body.Email
-	err = c.repository.Update(client)
+	err = c.clientsStore.Update(client)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
@@ -62,11 +64,11 @@ func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
-	client, err := c.repository.Get(id)
+	client, err := c.clientsStore.Get(id)
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "client not found")
 	}
-	err = c.repository.Delete(client)
+	err = c.clientsStore.Delete(client)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
@@ -74,7 +76,7 @@ func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *Clients) List(w http.ResponseWriter, r *http.Request) error {
-	clients, err := c.repository.List()
+	clients, err := c.clientsStore.List()
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
@@ -86,9 +88,21 @@ func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
-	client, err := c.repository.Get(id)
+	client, err := c.clientsStore.Get(id)
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "client not found")
 	}
-	return res.JSON(w, http.StatusOK, client)
+	orders, err := c.ordersStore.GetByClientId(client.ID)
+	if err != nil {
+		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
+	}
+	clientOrders := []schemas.ClientOrder{}
+	for _, o := range orders {
+		product, err := c.productsStore.Get(o.ProductID)
+		if err != nil {
+			return res.Error(w, err, http.StatusInternalServerError, "internal server error")
+		}
+		clientOrders = append(clientOrders, schemas.NewClientOrder(o, *product))
+	}
+	return res.JSON(w, http.StatusOK, schemas.NewClientDetail(*client, clientOrders))
 }

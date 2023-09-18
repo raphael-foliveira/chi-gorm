@@ -1,6 +1,8 @@
 package schemas
 
-import "github.com/raphael-foliveira/chi-gorm/pkg/models"
+import (
+	"github.com/raphael-foliveira/chi-gorm/pkg/models"
+)
 
 type CreateClient struct {
 	Name  string `json:"name" faker:"name"`
@@ -52,13 +54,11 @@ type ClientDetail struct {
 	Orders []ClientOrder `json:"orders" faker:"-"`
 }
 
-func NewClientDetail(clientModel models.Client, orders []models.Order) ClientDetail {
+func NewClientDetail(clientModel models.Client, orders []ClientOrder) ClientDetail {
 	c := ClientDetail{}
 	c.ID = clientModel.ID
 	c.Name = clientModel.Name
 	c.Email = clientModel.Email
-	for _, order := range orders {
-		c.Orders = append(c.Orders, NewClientOrder(order, order.Product))
-	}
+	c.Orders = orders
 	return c
 }

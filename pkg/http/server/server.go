@@ -31,9 +31,9 @@ func injectDependencies(r *chi.Mux) {
 	productsStore := store.NewProducts(db.Db)
 	ordersStore := store.NewOrders(db.Db)
 
-	clientsController := controllers.NewClients(clientsStore)
+	clientsController := controllers.NewClients(clientsStore, ordersStore, productsStore)
 	productsController := controllers.NewProducts(productsStore)
-	ordersController := controllers.NewOrders(ordersStore)
+	ordersController := controllers.NewOrders(ordersStore, clientsStore, productsStore)
 
 	clientsRoutes := routes.Clients(clientsController)
 	productsRoutes := routes.Products(productsController)
