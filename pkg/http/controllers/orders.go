@@ -63,17 +63,14 @@ func (c *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, err.Error())
-
 	}
 	order, err := c.ordersStore.Get(id)
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "order not found")
-
 	}
 	err = c.ordersStore.Delete(order)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
-
 	}
 	return res.SendStatus(w, http.StatusNoContent)
 }
