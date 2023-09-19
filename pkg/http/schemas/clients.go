@@ -48,12 +48,20 @@ type ClientOrder struct {
 	Product  *Product `json:"product" faker:"-"`
 }
 
-func NewClientOrder(orderModel *models.Order, productModel *models.Product) *ClientOrder {
+func NewClientOrder(orderModel *models.Order) *ClientOrder {
 	return &ClientOrder{
 		ID:       orderModel.ID,
 		Quantity: orderModel.Quantity,
-		Product:  NewProduct(productModel),
+		Product:  NewProduct(&orderModel.Product),
 	}
+}
+
+func NewClientOrders(orders []models.Order) []*ClientOrder {
+	o := []*ClientOrder{}
+	for _, order := range orders {
+		o = append(o, NewClientOrder(&order))
+	}
+	return o
 }
 
 type ClientDetail struct {
@@ -63,11 +71,11 @@ type ClientDetail struct {
 	Orders []*ClientOrder `json:"orders" faker:"-"`
 }
 
-func NewClientDetail(clientModel *models.Client, orders []*ClientOrder) *ClientDetail {
+func NewClientDetail(clientModel *models.Client) *ClientDetail {
 	c := &ClientDetail{}
 	c.ID = clientModel.ID
 	c.Name = clientModel.Name
 	c.Email = clientModel.Email
-	c.Orders = orders
+	c.Orders = NewClientOrders(clientModel.Orders)
 	return c
 }

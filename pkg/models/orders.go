@@ -5,10 +5,12 @@ import (
 )
 
 type Order struct {
-	ID        int64     `json:"id" gorm:"primarykey" faker:"-"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"-"`
-	ClientID  int64     `json:"clientId" gorm:"OnDelete:CASCADE;"`
-	ProductID int64     `json:"productId" gorm:"OnDelete:CASCADE;"`
-	Quantity  int       `json:"quantity"`
+	ID        int64 `gorm:"primarykey" faker:"-"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	ClientID  int64 ` gorm:"OnDelete:CASCADE;"`
+	Client    Client
+	ProductID int64 ` gorm:"OnDelete:CASCADE;"`
+	Product   Product
+	Quantity  int
 }

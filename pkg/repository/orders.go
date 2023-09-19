@@ -22,12 +22,12 @@ func NewOrders(db *gorm.DB) Orders {
 
 func (r *orders) List() ([]models.Order, error) {
 	orders := []models.Order{}
-	return orders, r.db.Find(&orders).Error
+	return orders, r.db.Model(&models.Order{}).Preload("Client").Preload("Product").Find(&orders).Error
 }
 
 func (r *orders) Get(id int64) (*models.Order, error) {
 	order := models.Order{}
-	return &order, r.db.First(&order, id).Error
+	return &order, r.db.Model(&models.Order{}).Preload("Client").Preload("Product").First(&order, id).Error
 }
 
 func (r *orders) Create(order *models.Order) error {
