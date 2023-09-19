@@ -25,10 +25,7 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
-	newClient := models.Client{
-		Name:  body.Name,
-		Email: body.Email,
-	}
+	newClient := body.ToModel()
 	err = c.clientsStore.Create(&newClient)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")

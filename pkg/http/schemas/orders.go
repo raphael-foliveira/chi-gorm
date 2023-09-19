@@ -8,6 +8,14 @@ type CreateOrder struct {
 	Quantity  int   `json:"quantity"`
 }
 
+func (co *CreateOrder) ToModel() models.Order {
+	return models.Order{
+		ClientID:  co.ClientID,
+		ProductID: co.ProductID,
+		Quantity:  co.Quantity,
+	}
+}
+
 type UpdateOrder struct {
 	Quantity int `json:"quantity"`
 }

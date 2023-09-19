@@ -9,7 +9,16 @@ type CreateClient struct {
 	Email string `json:"email" faker:"email"`
 }
 
-type UpdateClient CreateClient
+func (cc *CreateClient) ToModel() models.Client {
+	return models.Client{
+		Name:  cc.Name,
+		Email: cc.Email,
+	}
+}
+
+type UpdateClient struct {
+	CreateClient
+}
 
 type Client struct {
 	ID    int64  `json:"id" faker:"-"`

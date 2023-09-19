@@ -5,7 +5,6 @@ import (
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/sqlstore"
 )
 
@@ -23,10 +22,7 @@ func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
-	newProduct := models.Product{
-		Name:  body.Name,
-		Price: body.Price,
-	}
+	newProduct := body.ToModel()
 	err = c.productsStore.Create(&newProduct)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
