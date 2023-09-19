@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/pkg/database"
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"gorm.io/gorm"
@@ -16,8 +15,7 @@ type products struct {
 	db *gorm.DB
 }
 
-func NewProducts() Products {
-	db := database.GetDb()
+func NewProducts(db *gorm.DB) Products {
 	db.AutoMigrate(&models.Product{})
 	return &products{db}
 }

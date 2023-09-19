@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/pkg/database"
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"gorm.io/gorm"
@@ -15,8 +14,7 @@ type clients struct {
 	db *gorm.DB
 }
 
-func NewClients() Clients {
-	db := database.GetDb()
+func NewClients(db *gorm.DB) Clients {
 	db.AutoMigrate(&models.Client{})
 	return &clients{db}
 }

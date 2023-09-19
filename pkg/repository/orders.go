@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/pkg/database"
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
 	"gorm.io/gorm"
@@ -16,8 +15,7 @@ type orders struct {
 	db *gorm.DB
 }
 
-func NewOrders() Orders {
-	db := database.GetDb()
+func NewOrders(db *gorm.DB) Orders {
 	db.AutoMigrate(&models.Order{})
 	return &orders{db}
 }

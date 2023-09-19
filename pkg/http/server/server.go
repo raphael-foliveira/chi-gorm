@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/raphael-foliveira/chi-gorm/pkg/database"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/controllers"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/routes"
 	"github.com/raphael-foliveira/chi-gorm/pkg/repository"
@@ -26,9 +27,10 @@ func CreateApp() *chi.Mux {
 }
 
 func injectDependencies(r *chi.Mux) {
-	clientsStore := repository.NewClients()
-	productsStore := repository.NewProducts()
-	ordersStore := repository.NewOrders()
+	db := database.GetDb()
+	clientsStore := repository.NewClients(db)
+	productsStore := repository.NewProducts(db)
+	ordersStore := repository.NewOrders(db)
 
 	clientsController := controllers.NewClients(clientsStore, ordersStore, productsStore)
 	productsController := controllers.NewProducts(productsStore)
