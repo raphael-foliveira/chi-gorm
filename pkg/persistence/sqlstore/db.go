@@ -34,7 +34,7 @@ func InitMemory() {
 	}
 }
 
-func GetInstance() *gorm.DB {
+func GetDbInstance() *gorm.DB {
 	return db
 }
 

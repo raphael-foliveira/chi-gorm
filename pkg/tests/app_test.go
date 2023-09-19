@@ -18,7 +18,7 @@ var testServer *httptest.Server
 var testDb *gorm.DB
 
 func TestMain(m *testing.M) {
-	testDb = sqlstore.GetInstance()
+	testDb = sqlstore.GetDbInstance()
 	sqlstore.InitMemory()
 	m.Run()
 }
@@ -33,7 +33,7 @@ func setUp() {
 func clearDatabase() {
 	sqlstore.CloseDb()
 	sqlstore.InitMemory()
-	testDb = sqlstore.GetInstance()
+	testDb = sqlstore.GetDbInstance()
 }
 
 func tearDown() {
