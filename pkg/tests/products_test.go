@@ -15,7 +15,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
-		products := []*models.Product{}
+		products := []models.Product{}
 		testDb.Find(&products)
 		expectedBody := schemas.NewProducts(products)
 
