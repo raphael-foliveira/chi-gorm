@@ -9,7 +9,6 @@ import (
 	"github.com/bxcodec/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/db"
 )
 
 func TestProducts(t *testing.T) {
@@ -17,7 +16,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		products := []models.Product{}
-		db.Db.Find(&products)
+		testDb.Find(&products)
 		expectedBody := schemas.NewProducts(products)
 
 		response, err := makeRequest("GET", "/products", nil)
@@ -42,7 +41,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
 		product := models.Product{}
-		db.Db.First(&product)
+		testDb.First(&product)
 		expectedBody := schemas.NewProduct(product)
 
 		response, err := makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
@@ -94,7 +93,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
 		product := models.Product{}
-		db.Db.First(&product)
+		testDb.First(&product)
 		update := schemas.UpdateProduct{}
 		faker.FakeData(&update)
 		expectedBody := schemas.Product{}
@@ -123,7 +122,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
 		product := models.Product{}
-		db.Db.First(&product)
+		testDb.First(&product)
 
 		response, err := makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
 		if err != nil {

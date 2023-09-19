@@ -6,14 +6,14 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/sqlstore"
 )
 
 type Products struct {
-	productsStore store.Products
+	productsStore sqlstore.Products
 }
 
-func NewProducts(r store.Products) *Products {
+func NewProducts(r sqlstore.Products) *Products {
 	return &Products{r}
 }
 

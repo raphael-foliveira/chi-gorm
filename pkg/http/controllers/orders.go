@@ -6,16 +6,16 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/store"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/sqlstore"
 )
 
 type Orders struct {
-	ordersStore   store.Orders
-	clientsStore  store.Clients
-	productsStore store.Products
+	ordersStore   sqlstore.Orders
+	clientsStore  sqlstore.Clients
+	productsStore sqlstore.Products
 }
 
-func NewOrders(ordersStore store.Orders, clientsStore store.Clients, productsStore store.Products) *Orders {
+func NewOrders(ordersStore sqlstore.Orders, clientsStore sqlstore.Clients, productsStore sqlstore.Products) *Orders {
 	return &Orders{ordersStore, clientsStore, productsStore}
 }
 

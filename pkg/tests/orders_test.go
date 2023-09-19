@@ -9,7 +9,6 @@ import (
 	"github.com/bxcodec/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/db"
 )
 
 func TestOrders(t *testing.T) {
@@ -17,7 +16,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		orders := []models.Order{}
-		db.Db.Find(&orders)
+		testDb.Find(&orders)
 		expectedBody := schemas.NewOrders(orders)
 
 		response, err := makeRequest("GET", "/orders", nil)
@@ -42,7 +41,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
 		order := models.Order{}
-		db.Db.First(&order)
+		testDb.First(&order)
 		expectedBody := schemas.NewOrder(order)
 
 		response, err := makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
@@ -67,9 +66,9 @@ func TestOrders(t *testing.T) {
 	t.Run("Test create", func(t *testing.T) {
 		setUp()
 		product := models.Product{}
-		db.Db.First(&product)
+		testDb.First(&product)
 		client := models.Client{}
-		db.Db.First(&client)
+		testDb.First(&client)
 		order := schemas.CreateOrder{
 			ProductID: product.ID,
 			ClientID:  client.ID,
@@ -100,7 +99,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
 		order := models.Order{}
-		db.Db.First(&order)
+		testDb.First(&order)
 		update := schemas.UpdateOrder{}
 		faker.FakeData(&update)
 		expectedBody := schemas.Order{}
@@ -128,7 +127,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
 		order := models.Order{}
-		db.Db.First(&order)
+		testDb.First(&order)
 
 		response, err := makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 		if err != nil {
