@@ -10,13 +10,16 @@ import (
 	"github.com/bxcodec/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/server"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/db"
+	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/sqlstore"
+	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
+var testDb *gorm.DB
 
 func TestMain(m *testing.M) {
-	db.InitMemory()
+	testDb = sqlstore.GetInstance()
+	sqlstore.InitMemory()
 	m.Run()
 }
 
@@ -28,10 +31,9 @@ func setUp() {
 }
 
 func clearDatabase() {
-	sqlDb, _ := db.Db.DB()
-	sqlDb.Close()
-	db.Db = nil
-	db.InitMemory()
+	sqlstore.CloseDb()
+	sqlstore.InitMemory()
+	testDb = sqlstore.GetInstance()
 }
 
 func tearDown() {
@@ -81,7 +83,7 @@ func populateTables() {
 		orders = append(orders, o)
 	}
 
-	db.Db.Create(&clients)
-	db.Db.Create(&products)
-	db.Db.Create(&orders)
+	testDb.Create(&clients)
+	testDb.Create(&products)
+	testDb.Create(&orders)
 }
