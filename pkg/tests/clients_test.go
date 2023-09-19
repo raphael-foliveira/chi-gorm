@@ -41,7 +41,7 @@ func TestClients(t *testing.T) {
 		setUp()
 		client := models.Client{}
 		testDb.First(&client)
-		expectedBody := schemas.NewClient(client)
+		expectedBody := schemas.NewClient(&client)
 
 		response, err := makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
 		if err != nil {

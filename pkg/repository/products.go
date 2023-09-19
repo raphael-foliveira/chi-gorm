@@ -1,45 +1,50 @@
-package sqlstore
+package repository
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/pkg/database"
 	"github.com/raphael-foliveira/chi-gorm/pkg/interfaces"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
+	"gorm.io/gorm"
 )
 
 type Products interface {
-	interfaces.Store[models.Product]
+	interfaces.Repository[models.Product]
 	FindMany(ids []int64) ([]models.Product, error)
 }
 
-type products struct{}
+type products struct {
+	db *gorm.DB
+}
 
 func NewProducts() Products {
+	db := database.GetDb()
 	db.AutoMigrate(&models.Product{})
-	return &products{}
+	return &products{db}
 }
 
 func (r *products) List() ([]models.Product, error) {
 	c := []models.Product{}
-	return c, db.Find(&c).Error
+	return c, r.db.Find(&c).Error
 }
 
 func (r *products) Get(id int64) (*models.Product, error) {
 	product := models.Product{}
-	return &product, db.First(&product, id).Error
+	return &product, r.db.First(&product, id).Error
 }
 
 func (r *products) Create(product *models.Product) error {
-	return db.Create(product).Error
+	return r.db.Create(product).Error
 }
 
 func (r *products) Update(product *models.Product) error {
-	return db.Save(product).Error
+	return r.db.Save(product).Error
 }
 
 func (r *products) Delete(product *models.Product) error {
-	return db.Delete(product).Error
+	return r.db.Delete(product).Error
 }
 
 func (r *products) FindMany(ids []int64) ([]models.Product, error) {
 	products := []models.Product{}
-	return products, db.Find(&products, ids).Error
+	return products, r.db.Find(&products, ids).Error
 }

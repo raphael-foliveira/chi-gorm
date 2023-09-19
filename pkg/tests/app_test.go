@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/pkg/database"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/server"
 	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/sqlstore"
 	"gorm.io/gorm"
 )
 
@@ -18,8 +18,8 @@ var testServer *httptest.Server
 var testDb *gorm.DB
 
 func TestMain(m *testing.M) {
-	testDb = sqlstore.GetDbInstance()
-	sqlstore.InitMemory()
+	testDb = database.GetDb()
+	database.InitMemory()
 	m.Run()
 }
 
@@ -31,9 +31,9 @@ func setUp() {
 }
 
 func clearDatabase() {
-	sqlstore.CloseDb()
-	sqlstore.InitMemory()
-	testDb = sqlstore.GetDbInstance()
+	database.CloseDb()
+	database.InitMemory()
+	testDb = database.GetDb()
 }
 
 func tearDown() {
