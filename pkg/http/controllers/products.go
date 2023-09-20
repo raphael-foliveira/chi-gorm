@@ -5,16 +5,15 @@ import (
 
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/res"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/pkg/models"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/sqlstore"
+	"github.com/raphael-foliveira/chi-gorm/pkg/repository"
 )
 
 type Products struct {
-	productsStore sqlstore.Products
+	repository repository.Products
 }
 
-func NewProducts(r sqlstore.Products) *Products {
-	return &Products{r}
+func NewProducts(productsRepo repository.Products) *Products {
+	return &Products{productsRepo}
 }
 
 func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
@@ -23,15 +22,12 @@ func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, "bad request")
 	}
-	newProduct := models.Product{
-		Name:  body.Name,
-		Price: body.Price,
-	}
-	err = c.productsStore.Create(&newProduct)
+	newProduct := body.ToModel()
+	err = c.repository.Create(newProduct)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.JSON(w, http.StatusCreated, &newProduct)
+	return res.JSON(w, http.StatusCreated, schemas.NewProduct(newProduct))
 }
 
 func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
@@ -39,7 +35,7 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
-	product, err := c.productsStore.Get(id)
+	product, err := c.repository.Get(id)
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "product not found")
 	}
@@ -50,11 +46,11 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	}
 	product.Name = body.Name
 	product.Price = body.Price
-	err = c.productsStore.Update(product)
+	err = c.repository.Update(product)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.JSON(w, http.StatusOK, &product)
+	return res.JSON(w, http.StatusOK, schemas.NewProduct(product))
 }
 
 func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
@@ -62,24 +58,23 @@ func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
-	product, err := c.productsStore.Get(id)
+	product, err := c.repository.Get(id)
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "product not found")
 	}
-	err = c.productsStore.Delete(product)
+	err = c.repository.Delete(product)
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	w.WriteHeader(http.StatusNoContent)
-	return nil
+	return res.SendStatus(w, http.StatusNoContent)
 }
 
 func (c *Products) List(w http.ResponseWriter, r *http.Request) error {
-	products, err := c.productsStore.List()
+	products, err := c.repository.List()
 	if err != nil {
 		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
 	}
-	return res.JSON(w, http.StatusOK, &products)
+	return res.JSON(w, http.StatusOK, schemas.NewProducts(products))
 }
 
 func (c *Products) Get(w http.ResponseWriter, r *http.Request) error {
@@ -87,7 +82,7 @@ func (c *Products) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return res.Error(w, err, http.StatusBadRequest, err.Error())
 	}
-	product, err := c.productsStore.Get(id)
+	product, err := c.repository.Get(id)
 	if err != nil {
 		return res.Error(w, err, http.StatusNotFound, "product not found")
 	}

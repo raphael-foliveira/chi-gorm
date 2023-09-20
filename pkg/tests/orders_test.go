@@ -42,7 +42,7 @@ func TestOrders(t *testing.T) {
 		setUp()
 		order := models.Order{}
 		testDb.First(&order)
-		expectedBody := schemas.NewOrder(order)
+		expectedBody := schemas.NewOrder(&order)
 
 		response, err := makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
 		if err != nil {

@@ -7,9 +7,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/raphael-foliveira/chi-gorm/pkg/database"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/controllers"
 	"github.com/raphael-foliveira/chi-gorm/pkg/http/routes"
-	"github.com/raphael-foliveira/chi-gorm/pkg/persistence/sqlstore"
+	"github.com/raphael-foliveira/chi-gorm/pkg/repository"
 )
 
 func Start() error {
@@ -26,13 +27,14 @@ func CreateApp() *chi.Mux {
 }
 
 func injectDependencies(r *chi.Mux) {
-	clientsStore := sqlstore.NewClients()
-	productsStore := sqlstore.NewProducts()
-	ordersStore := sqlstore.NewOrders()
+	db := database.GetDb()
+	clientsRepo := repository.NewClients(db)
+	productsRepo := repository.NewProducts(db)
+	ordersRepo := repository.NewOrders(db)
 
-	clientsController := controllers.NewClients(clientsStore, ordersStore, productsStore)
-	productsController := controllers.NewProducts(productsStore)
-	ordersController := controllers.NewOrders(ordersStore, clientsStore, productsStore)
+	clientsController := controllers.NewClients(clientsRepo)
+	productsController := controllers.NewProducts(productsRepo)
+	ordersController := controllers.NewOrders(ordersRepo)
 
 	clientsRoutes := routes.Clients(clientsController)
 	productsRoutes := routes.Products(productsController)

@@ -24,7 +24,7 @@ func TestClient(t *testing.T) {
 		ordersStore = &mocks.OrdersStore{}
 		clientsStore = &mocks.ClientsStore{}
 		productsStore = &mocks.ProductsStore{}
-		controller = NewClients(clientsStore, ordersStore, productsStore)
+		controller = NewClients(clientsStore)
 	}
 
 	addClients := func(q int) {

@@ -1,4 +1,4 @@
-package sqlstore
+package database
 
 import (
 	"os"
@@ -34,7 +34,7 @@ func InitMemory() {
 	}
 }
 
-func GetDbInstance() *gorm.DB {
+func GetDb() *gorm.DB {
 	return db
 }
 

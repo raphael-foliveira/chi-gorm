@@ -42,7 +42,7 @@ func TestProducts(t *testing.T) {
 		setUp()
 		product := models.Product{}
 		testDb.First(&product)
-		expectedBody := schemas.NewProduct(product)
+		expectedBody := schemas.NewProduct(&product)
 
 		response, err := makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
 		if err != nil {
