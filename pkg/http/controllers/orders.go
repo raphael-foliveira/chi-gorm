@@ -20,12 +20,12 @@ func (c *Orders) Create(w http.ResponseWriter, r *http.Request) error {
 	var body schemas.CreateOrder
 	err := parseBody(r, &body)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "bad request")
+		return err
 	}
 	newOrder := body.ToModel()
 	err = c.repository.Create(newOrder)
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
+		return err
 	}
 	return res.JSON(w, http.StatusCreated, schemas.NewOrder(newOrder))
 }
@@ -33,21 +33,24 @@ func (c *Orders) Create(w http.ResponseWriter, r *http.Request) error {
 func (c *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, err.Error())
+		return err
 	}
 	order, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, err, http.StatusNotFound, "order not found")
+		return res.ApiError{
+			Message: "order not found",
+			Status:  http.StatusNotFound,
+		}
 	}
 	var body schemas.UpdateOrder
 	err = parseBody(r, &body)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, "bad request")
+		return err
 	}
 	order.Quantity = body.Quantity
 	err = c.repository.Update(order)
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
+		return err
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewOrder(order))
 }
@@ -55,15 +58,18 @@ func (c *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 func (c *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, err.Error())
+		return err
 	}
 	order, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, err, http.StatusNotFound, "order not found")
+		return res.ApiError{
+			Message: "order not found",
+			Status:  http.StatusNotFound,
+		}
 	}
 	err = c.repository.Delete(order)
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
+		return err
 	}
 	return res.SendStatus(w, http.StatusNoContent)
 }
@@ -71,7 +77,7 @@ func (c *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
 func (c *Orders) List(w http.ResponseWriter, r *http.Request) error {
 	orders, err := c.repository.List()
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError, "internal server error")
+		return err
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewOrders(orders))
 }
@@ -79,11 +85,14 @@ func (c *Orders) List(w http.ResponseWriter, r *http.Request) error {
 func (c *Orders) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest, err.Error())
+		return err
 	}
 	order, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, err, http.StatusNotFound, "order not found")
+		return res.ApiError{
+			Message: "order not found",
+			Status:  http.StatusNotFound,
+		}
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewOrder(order))
 }
