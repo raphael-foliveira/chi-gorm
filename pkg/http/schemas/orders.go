@@ -36,10 +36,10 @@ func NewOrder(orderModel *models.Order) *Order {
 	}
 }
 
-func NewOrders(orders []models.Order) []*Order {
-	o := []*Order{}
+func NewOrders(orders []models.Order) []Order {
+	o := []Order{}
 	for _, order := range orders {
-		o = append(o, NewOrder(&order))
+		o = append(o, *NewOrder(&order))
 	}
 	return o
 }

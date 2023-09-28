@@ -34,10 +34,10 @@ func NewClient(clientModel *models.Client) *Client {
 	}
 }
 
-func NewClients(clients []models.Client) []*Client {
-	c := []*Client{}
+func NewClients(clients []models.Client) []Client {
+	c := []Client{}
 	for _, client := range clients {
-		c = append(c, NewClient(&client))
+		c = append(c, *NewClient(&client))
 	}
 	return c
 }
@@ -56,19 +56,19 @@ func NewClientOrder(orderModel *models.Order) *ClientOrder {
 	}
 }
 
-func NewClientOrders(orders []models.Order) []*ClientOrder {
-	o := []*ClientOrder{}
+func NewClientOrders(orders []models.Order) []ClientOrder {
+	o := []ClientOrder{}
 	for _, order := range orders {
-		o = append(o, NewClientOrder(&order))
+		o = append(o, *NewClientOrder(&order))
 	}
 	return o
 }
 
 type ClientDetail struct {
-	ID     int64          `json:"id" faker:"-"`
-	Name   string         `json:"name" faker:"name"`
-	Email  string         `json:"email" faker:"email"`
-	Orders []*ClientOrder `json:"orders" faker:"-"`
+	ID     int64         `json:"id" faker:"-"`
+	Name   string        `json:"name" faker:"name"`
+	Email  string        `json:"email" faker:"email"`
+	Orders []ClientOrder `json:"orders" faker:"-"`
 }
 
 func NewClientDetail(clientModel *models.Client) *ClientDetail {
