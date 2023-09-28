@@ -8,7 +8,8 @@ run:
 	go run cmd/main.go
 
 build:
-	go build -o bin/main cmd/main.go
+	GOOS=linux go build -o bin/main cmd/main.go
+	GOOS=windows go build -o bin/main.exe cmd/main.go
 
 dev:
 	air
