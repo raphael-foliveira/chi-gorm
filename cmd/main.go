@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/raphael-foliveira/chi-gorm/pkg/database"
-	"github.com/raphael-foliveira/chi-gorm/pkg/http/server"
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
 )
 
 func main() {
