@@ -11,5 +11,5 @@ var MainConfig = Config{
 }
 
 var TestConfig = Config{
-	DatabaseURL: "postgres://postgres:postgres@localhost:5432/test?sslmode=disable",
+	DatabaseURL: os.Getenv("TEST_DATABASE_URL"),
 }
