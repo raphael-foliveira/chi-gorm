@@ -9,14 +9,13 @@ import (
 
 func wrap(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		handleApiErr(w, fn(w, r))
+		if err := fn(w, r); err != nil {
+			handleApiErr(w, err)
+		}
 	}
 }
 
 func handleApiErr(w http.ResponseWriter, err error) {
-	if err == nil {
-		return
-	}
 	fmt.Println(err.Error())
 	apiErr, ok := err.(res.ApiError)
 	if ok {
