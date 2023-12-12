@@ -7,3 +7,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+
+  api:
+    build: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      - database
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@database:5432/postgres
