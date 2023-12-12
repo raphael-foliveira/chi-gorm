@@ -25,7 +25,7 @@ func (c *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	newProduct := body.ToModel()
 	err = c.repository.Create(newProduct)
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError)
+		return res.Error(w, http.StatusInternalServerError, err.Error())
 	}
 	return res.JSON(w, http.StatusCreated, schemas.NewProduct(newProduct))
 }
@@ -37,7 +37,7 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, err, http.StatusNotFound)
+		return res.Error(w, http.StatusNotFound, err.Error())
 	}
 	var body schemas.UpdateProduct
 	err = parseBody(r, &body)
@@ -48,7 +48,7 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	product.Price = body.Price
 	err = c.repository.Update(product)
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError)
+		return res.Error(w, http.StatusInternalServerError, err.Error())
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewProduct(product))
 }
@@ -56,15 +56,15 @@ func (c *Products) Update(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError)
+		return res.Error(w, http.StatusInternalServerError, err.Error())
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, err, http.StatusNotFound)
+		return res.Error(w, http.StatusNotFound, err.Error())
 	}
 	err = c.repository.Delete(product)
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError)
+		return res.Error(w, http.StatusInternalServerError, err.Error())
 	}
 	return res.SendStatus(w, http.StatusNoContent)
 }
@@ -72,7 +72,7 @@ func (c *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 func (c *Products) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := c.repository.List()
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError)
+		return res.Error(w, http.StatusInternalServerError, err.Error())
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewProducts(products))
 }
@@ -84,7 +84,7 @@ func (c *Products) Get(w http.ResponseWriter, r *http.Request) error {
 	}
 	product, err := c.repository.Get(id)
 	if err != nil {
-		return res.Error(w, err, http.StatusNotFound)
+		return res.Error(w, http.StatusNotFound, err.Error())
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewProduct(product))
 }
