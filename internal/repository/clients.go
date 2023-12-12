@@ -6,9 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Clients interface {
-	interfaces.Repository[entities.Client]
-}
+type Clients interfaces.Repository[entities.Client]
 
 type clients struct {
 	db *gorm.DB

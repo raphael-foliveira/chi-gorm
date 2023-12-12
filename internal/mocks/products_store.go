@@ -63,18 +63,3 @@ func (cr *ProductsStore) Delete(client *entities.Product) error {
 	}
 	return errors.New("not found")
 }
-
-func (cr *ProductsStore) FindMany(ids []int64) ([]entities.Product, error) {
-	if cr.ShouldError {
-		return nil, errors.New("")
-	}
-	products := []entities.Product{}
-	for _, id := range ids {
-		for _, product := range cr.Store {
-			if product.ID == id {
-				products = append(products, product)
-			}
-		}
-	}
-	return products, nil
-}

@@ -63,16 +63,3 @@ func (cr *OrdersStore) Delete(client *entities.Order) error {
 	}
 	return errors.New("not found")
 }
-
-func (cr *OrdersStore) GetByClientId(clientId int64) ([]entities.Order, error) {
-	if cr.ShouldError {
-		return nil, errors.New("")
-	}
-	orders := []entities.Order{}
-	for _, order := range cr.Store {
-		if order.ClientID == clientId {
-			orders = append(orders, order)
-		}
-	}
-	return orders, nil
-}

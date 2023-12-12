@@ -6,10 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Products interface {
-	interfaces.Repository[entities.Product]
-	FindMany(ids []int64) ([]entities.Product, error)
-}
+type Products interfaces.Repository[entities.Product]
 
 type products struct {
 	db *gorm.DB

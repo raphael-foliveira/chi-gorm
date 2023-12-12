@@ -6,10 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Orders interface {
-	interfaces.Repository[entities.Order]
-	GetByClientId(clientId int64) ([]entities.Order, error)
-}
+type Orders interfaces.Repository[entities.Order]
 
 type orders struct {
 	db *gorm.DB
@@ -40,9 +37,4 @@ func (r *orders) Update(order *entities.Order) error {
 
 func (r *orders) Delete(order *entities.Order) error {
 	return r.db.Delete(order).Error
-}
-
-func (r *orders) GetByClientId(clientId int64) ([]entities.Order, error) {
-	orders := []entities.Order{}
-	return orders, r.db.Where("client_id = ?", clientId).Find(&orders).Error
 }
