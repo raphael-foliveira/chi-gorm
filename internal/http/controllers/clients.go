@@ -20,7 +20,7 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 	var body schemas.CreateClient
 	err := parseBody(r, &body)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest)
+		return err
 	}
 	newClient := body.ToModel()
 	err = c.repository.Create(&newClient)
@@ -33,7 +33,7 @@ func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest)
+		return err
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
@@ -42,7 +42,7 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	var body schemas.UpdateClient
 	err = parseBody(r, &body)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest)
+		return err
 	}
 	client.Name = body.Name
 	client.Email = body.Email
@@ -56,7 +56,7 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusBadRequest)
+		return err
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {
@@ -80,7 +80,7 @@ func (c *Clients) List(w http.ResponseWriter, r *http.Request) error {
 func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
-		return res.Error(w, err, http.StatusInternalServerError)
+		return err
 	}
 	client, err := c.repository.Get(id)
 	if err != nil {

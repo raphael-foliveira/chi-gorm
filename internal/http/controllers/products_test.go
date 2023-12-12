@@ -10,6 +10,7 @@ import (
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
 )
@@ -104,8 +105,12 @@ func TestProducts(t *testing.T) {
 		invalidReqBody := `{"foo: 95}`
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
-		controller.Create(recorder, request)
-		if recorder.Code != 400 {
+		err = controller.Create(recorder, request)
+		apiErr, ok := err.(res.ApiError)
+		if !ok {
+			t.Fatal("err should be an ApiError")
+		}
+		if apiErr.Status != 400 {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
@@ -144,8 +149,12 @@ func TestProducts(t *testing.T) {
 		tx = chi.NewRouteContext()
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		controller.Update(recorder, request)
-		if recorder.Code != 400 {
+		err = controller.Update(recorder, request)
+		apiErr, ok := err.(res.ApiError)
+		if !ok {
+			t.Fatal("err should be an ApiError")
+		}
+		if apiErr.Status != 400 {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
