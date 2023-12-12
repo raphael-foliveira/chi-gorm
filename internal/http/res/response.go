@@ -16,11 +16,11 @@ func JSON(w http.ResponseWriter, status int, data interface{}) error {
 	return json.NewEncoder(w).Encode(data)
 }
 
-func Error(w http.ResponseWriter, err error, status int, message string) error {
+func Error(w http.ResponseWriter, err error, status int) error {
 	w.WriteHeader(status)
 	fmt.Println(err)
 	return json.NewEncoder(w).Encode(ApiError{
-		Message: message,
+		Message: err.Error(),
 		Status:  status,
 	})
 }

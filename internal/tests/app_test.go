@@ -9,8 +9,8 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
 	"gorm.io/gorm"
 )
 
@@ -61,22 +61,22 @@ func makeRequest(method string, endpoint string, body interface{}) (*http.Respon
 }
 
 func populateTables() {
-	clients := []models.Client{}
-	products := []models.Product{}
-	orders := []models.Order{}
+	clients := []entities.Client{}
+	products := []entities.Product{}
+	orders := []entities.Order{}
 
 	for i := 0; i < 20; i++ {
-		var c models.Client
+		var c entities.Client
 		faker.FakeData(&c)
 		clients = append(clients, c)
 	}
 	for i := 0; i < 20; i++ {
-		var p models.Product
+		var p entities.Product
 		faker.FakeData(&p)
 		products = append(products, p)
 	}
 	for i := 0; i < 20; i++ {
-		var o models.Order
+		var o entities.Order
 		faker.FakeData(&o)
 		o.ClientID = int64(i + 1)
 		o.ProductID = int64(i + 1)

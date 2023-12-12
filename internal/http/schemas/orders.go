@@ -1,6 +1,6 @@
 package schemas
 
-import "github.com/raphael-foliveira/chi-gorm/internal/models"
+import "github.com/raphael-foliveira/chi-gorm/internal/entities"
 
 type CreateOrder struct {
 	ClientID  int64 `json:"client_id" faker:"-"`
@@ -8,8 +8,8 @@ type CreateOrder struct {
 	Quantity  int   `json:"quantity"`
 }
 
-func (co *CreateOrder) ToModel() *models.Order {
-	return &models.Order{
+func (co *CreateOrder) ToModel() *entities.Order {
+	return &entities.Order{
 		ClientID:  co.ClientID,
 		ProductID: co.ProductID,
 		Quantity:  co.Quantity,
@@ -27,7 +27,7 @@ type Order struct {
 	Product  *Product `json:"product" faker:"-"`
 }
 
-func NewOrder(orderModel *models.Order) *Order {
+func NewOrder(orderModel *entities.Order) *Order {
 	return &Order{
 		ID:       orderModel.ID,
 		Quantity: orderModel.Quantity,
@@ -36,7 +36,7 @@ func NewOrder(orderModel *models.Order) *Order {
 	}
 }
 
-func NewOrders(orders []models.Order) []Order {
+func NewOrders(orders []entities.Order) []Order {
 	o := []Order{}
 	for _, order := range orders {
 		o = append(o, *NewOrder(&order))

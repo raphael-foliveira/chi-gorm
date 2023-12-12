@@ -7,14 +7,14 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
 )
 
 func TestClients(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
-		clients := []models.Client{}
+		clients := []entities.Client{}
 		testDb.Find(&clients)
 		expectedBody := schemas.NewClients(clients)
 
@@ -39,7 +39,7 @@ func TestClients(t *testing.T) {
 
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
-		client := models.Client{}
+		client := entities.Client{}
 		testDb.First(&client)
 		expectedBody := schemas.NewClient(&client)
 
@@ -76,7 +76,7 @@ func TestClients(t *testing.T) {
 		}
 		defer response.Body.Close()
 
-		responseBody := models.Client{}
+		responseBody := entities.Client{}
 		json.NewDecoder(response.Body).Decode(&responseBody)
 		if response.StatusCode != http.StatusCreated {
 			t.Errorf("Expected status code %d, got %d", http.StatusCreated, response.StatusCode)
@@ -91,7 +91,7 @@ func TestClients(t *testing.T) {
 
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
-		client := models.Client{}
+		client := entities.Client{}
 		testDb.First(&client)
 		update := schemas.UpdateClient{}
 		faker.FakeData(&update)
@@ -105,7 +105,7 @@ func TestClients(t *testing.T) {
 		}
 		defer response.Body.Close()
 
-		responseBody := models.Client{}
+		responseBody := entities.Client{}
 		json.NewDecoder(response.Body).Decode(&responseBody)
 		if response.StatusCode != http.StatusOK {
 			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
@@ -120,7 +120,7 @@ func TestClients(t *testing.T) {
 
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
-		client := models.Client{}
+		client := entities.Client{}
 		testDb.First(&client)
 
 		response, err := makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)

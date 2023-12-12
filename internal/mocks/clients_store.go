@@ -3,22 +3,22 @@ package mocks
 import (
 	"errors"
 
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
 type ClientsStore struct {
-	Store       []models.Client
+	Store       []entities.Client
 	ShouldError bool
 }
 
-func (cr *ClientsStore) List() ([]models.Client, error) {
+func (cr *ClientsStore) List() ([]entities.Client, error) {
 	if cr.ShouldError {
 		return nil, errors.New("Error")
 	}
 	return cr.Store, nil
 }
 
-func (cr *ClientsStore) Get(id int64) (*models.Client, error) {
+func (cr *ClientsStore) Get(id int64) (*entities.Client, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
 	}
@@ -30,7 +30,7 @@ func (cr *ClientsStore) Get(id int64) (*models.Client, error) {
 	return nil, errors.New("not found")
 }
 
-func (cr *ClientsStore) Create(client *models.Client) error {
+func (cr *ClientsStore) Create(client *entities.Client) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}
@@ -38,7 +38,7 @@ func (cr *ClientsStore) Create(client *models.Client) error {
 	return nil
 }
 
-func (cr *ClientsStore) Update(client *models.Client) error {
+func (cr *ClientsStore) Update(client *entities.Client) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}
@@ -51,7 +51,7 @@ func (cr *ClientsStore) Update(client *models.Client) error {
 	return errors.New("not found")
 }
 
-func (cr *ClientsStore) Delete(client *models.Client) error {
+func (cr *ClientsStore) Delete(client *entities.Client) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}

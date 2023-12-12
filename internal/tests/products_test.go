@@ -7,15 +7,15 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
 )
 
 func TestProducts(t *testing.T) {
 
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
-		products := []models.Product{}
+		products := []entities.Product{}
 		testDb.Find(&products)
 		expectedBody := schemas.NewProducts(products)
 
@@ -40,7 +40,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
-		product := models.Product{}
+		product := entities.Product{}
 		testDb.First(&product)
 		expectedBody := schemas.NewProduct(&product)
 
@@ -77,7 +77,7 @@ func TestProducts(t *testing.T) {
 		}
 		defer response.Body.Close()
 
-		responseBody := models.Product{}
+		responseBody := entities.Product{}
 		json.NewDecoder(response.Body).Decode(&responseBody)
 		if response.StatusCode != http.StatusCreated {
 			t.Errorf("Expected status code %d, got %d", http.StatusCreated, response.StatusCode)
@@ -92,7 +92,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
-		product := models.Product{}
+		product := entities.Product{}
 		testDb.First(&product)
 		update := schemas.UpdateProduct{}
 		faker.FakeData(&update)
@@ -106,7 +106,7 @@ func TestProducts(t *testing.T) {
 		}
 		defer response.Body.Close()
 
-		responseBody := models.Product{}
+		responseBody := entities.Product{}
 		json.NewDecoder(response.Body).Decode(&responseBody)
 		if response.StatusCode != http.StatusOK {
 			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
@@ -121,7 +121,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
-		product := models.Product{}
+		product := entities.Product{}
 		testDb.First(&product)
 
 		response, err := makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)

@@ -9,9 +9,9 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
 )
 
 func TestProducts(t *testing.T) {
@@ -25,7 +25,7 @@ func TestProducts(t *testing.T) {
 
 	addProducts := func(q int) {
 		for i := 0; i < q; i++ {
-			var product models.Product
+			var product entities.Product
 			faker.FakeData(&product)
 			product.ID = int64(i + 1)
 			store.Store = append(store.Store, product)
@@ -79,10 +79,7 @@ func TestProducts(t *testing.T) {
 		request = httptest.NewRequest("GET", "/99", nil)
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		err = controller.Get(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
+		controller.Get(recorder, request)
 		if recorder.Code != 404 {
 			t.Errorf("Status code should be 404, got %v", recorder.Code)
 		}
@@ -107,10 +104,7 @@ func TestProducts(t *testing.T) {
 		invalidReqBody := `{"foo: 95}`
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
-		err = controller.Create(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
+		controller.Create(recorder, request)
 		if recorder.Code != 400 {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
@@ -118,10 +112,7 @@ func TestProducts(t *testing.T) {
 		store.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
-		err = controller.Create(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
+		controller.Create(recorder, request)
 		if recorder.Code != 500 {
 			t.Errorf("Status code should be 500, got %v", recorder.Code)
 		}
@@ -153,10 +144,7 @@ func TestProducts(t *testing.T) {
 		tx = chi.NewRouteContext()
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		err = controller.Update(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
+		controller.Update(recorder, request)
 		if recorder.Code != 400 {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
@@ -166,10 +154,7 @@ func TestProducts(t *testing.T) {
 		tx = chi.NewRouteContext()
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		err = controller.Update(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
+		controller.Update(recorder, request)
 		if recorder.Code != 404 {
 			t.Errorf("Status code should be 404, got %v", recorder.Code)
 		}
@@ -197,10 +182,7 @@ func TestProducts(t *testing.T) {
 		tx = chi.NewRouteContext()
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		err = controller.Delete(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
+		controller.Delete(recorder, request)
 		if recorder.Code != 404 {
 			t.Errorf("Status code should be 404, got %v", recorder.Code)
 		}
