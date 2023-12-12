@@ -2,11 +2,10 @@ package repository
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
 	"gorm.io/gorm"
 )
 
-type Clients interfaces.Repository[entities.Client]
+type Clients Repository[entities.Client]
 
 type clients struct {
 	db *gorm.DB

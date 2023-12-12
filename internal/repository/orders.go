@@ -2,11 +2,10 @@ package repository
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
 	"gorm.io/gorm"
 )
 
-type Orders interfaces.Repository[entities.Order]
+type Orders Repository[entities.Order]
 
 type orders struct {
 	db *gorm.DB

@@ -2,11 +2,10 @@ package repository
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
 	"gorm.io/gorm"
 )
 
-type Products interfaces.Repository[entities.Product]
+type Products Repository[entities.Product]
 
 type products struct {
 	db *gorm.DB
