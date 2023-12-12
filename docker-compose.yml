@@ -16,3 +16,7 @@ services:
       - database
     environment:
       DATABASE_URL: postgres://postgres:postgres@database:5432/postgres
+    volumes:
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+    command: air
