@@ -1,45 +1,18 @@
 package database
 
 import (
-	"os"
-
-	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 var db *gorm.DB
 
-func InitPg() {
+func InitDb(dialector gorm.Dialector) *gorm.DB {
 	if db != nil {
-		panic("db already initialized")
+		return db
 	}
-	godotenv.Load()
-	var err error
-	db, err = gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")))
+	db, err := gorm.Open(dialector)
 	if err != nil {
 		panic(err)
 	}
-}
-
-func InitMemory() {
-	if db != nil {
-		panic("db already initialized")
-	}
-	var err error
-	db, err = gorm.Open(sqlite.Open(":memory:"))
-	if err != nil {
-		panic(err)
-	}
-}
-
-func GetDb() *gorm.DB {
 	return db
-}
-
-func CloseDb() {
-	sqlDb, _ := db.DB()
-	sqlDb.Close()
-	db = nil
 }

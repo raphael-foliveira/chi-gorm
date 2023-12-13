@@ -3,40 +3,49 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
 var testDb *gorm.DB
+var dialector = sqlite.Open(":memory:")
+var testAppServer *server.Server
 
 func TestMain(m *testing.M) {
-	testDb = database.GetDb()
-	database.InitMemory()
 	m.Run()
 }
 
 func setUp() {
-	clearDatabase()
-	testApp := server.CreateApp()
+	testAppServer = server.NewServer(dialector)
+	testApp := testAppServer.CreateApp()
+	testDb = testAppServer.Db
+	fmt.Println(testDb)
 	testServer = httptest.NewServer(testApp)
 	populateTables()
 }
 
-func clearDatabase() {
-	database.CloseDb()
-	database.InitMemory()
-	testDb = database.GetDb()
+func clearDatabase() error {
+	sqlDb, err := testAppServer.Db.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDb.Close()
 }
 
 func tearDown() {
+	err := clearDatabase()
+	if err != nil {
+		panic(err)
+	}
 	testServer.Close()
 }
 
