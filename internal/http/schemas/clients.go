@@ -1,16 +1,14 @@
 package schemas
 
-import (
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
-)
+import "github.com/raphael-foliveira/chi-gorm/internal/entities"
 
 type CreateClient struct {
 	Name  string `json:"name" faker:"name"`
 	Email string `json:"email" faker:"email"`
 }
 
-func (cc *CreateClient) ToModel() models.Client {
-	return models.Client{
+func (cc *CreateClient) ToModel() *entities.Client {
+	return &entities.Client{
 		Name:  cc.Name,
 		Email: cc.Email,
 	}
@@ -26,7 +24,7 @@ type Client struct {
 	Email string `json:"email" faker:"email"`
 }
 
-func NewClient(clientModel *models.Client) *Client {
+func NewClient(clientModel *entities.Client) *Client {
 	return &Client{
 		ID:    clientModel.ID,
 		Name:  clientModel.Name,
@@ -34,7 +32,7 @@ func NewClient(clientModel *models.Client) *Client {
 	}
 }
 
-func NewClients(clients []models.Client) []Client {
+func NewClients(clients []entities.Client) []Client {
 	c := []Client{}
 	for _, client := range clients {
 		c = append(c, *NewClient(&client))
@@ -48,7 +46,7 @@ type ClientOrder struct {
 	Product  *Product `json:"product" faker:"-"`
 }
 
-func NewClientOrder(orderModel *models.Order) *ClientOrder {
+func NewClientOrder(orderModel *entities.Order) *ClientOrder {
 	return &ClientOrder{
 		ID:       orderModel.ID,
 		Quantity: orderModel.Quantity,
@@ -56,7 +54,7 @@ func NewClientOrder(orderModel *models.Order) *ClientOrder {
 	}
 }
 
-func NewClientOrders(orders []models.Order) []ClientOrder {
+func NewClientOrders(orders []entities.Order) []ClientOrder {
 	o := []ClientOrder{}
 	for _, order := range orders {
 		o = append(o, *NewClientOrder(&order))
@@ -71,7 +69,7 @@ type ClientDetail struct {
 	Orders []ClientOrder `json:"orders" faker:"-"`
 }
 
-func NewClientDetail(clientModel *models.Client) *ClientDetail {
+func NewClientDetail(clientModel *entities.Client) *ClientDetail {
 	c := &ClientDetail{}
 	c.ID = clientModel.ID
 	c.Name = clientModel.Name

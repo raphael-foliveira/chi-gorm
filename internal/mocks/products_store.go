@@ -3,22 +3,22 @@ package mocks
 import (
 	"errors"
 
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
 type ProductsStore struct {
-	Store       []models.Product
+	Store       []entities.Product
 	ShouldError bool
 }
 
-func (cr *ProductsStore) List() ([]models.Product, error) {
+func (cr *ProductsStore) List() ([]entities.Product, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
 	}
 	return cr.Store, nil
 }
 
-func (cr *ProductsStore) Get(id int64) (*models.Product, error) {
+func (cr *ProductsStore) Get(id int64) (*entities.Product, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
 	}
@@ -30,7 +30,7 @@ func (cr *ProductsStore) Get(id int64) (*models.Product, error) {
 	return nil, errors.New("not found")
 }
 
-func (cr *ProductsStore) Create(client *models.Product) error {
+func (cr *ProductsStore) Create(client *entities.Product) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}
@@ -38,7 +38,7 @@ func (cr *ProductsStore) Create(client *models.Product) error {
 	return nil
 }
 
-func (cr *ProductsStore) Update(client *models.Product) error {
+func (cr *ProductsStore) Update(client *entities.Product) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}
@@ -51,7 +51,7 @@ func (cr *ProductsStore) Update(client *models.Product) error {
 	return errors.New("not found")
 }
 
-func (cr *ProductsStore) Delete(client *models.Product) error {
+func (cr *ProductsStore) Delete(client *entities.Product) error {
 	if cr.ShouldError {
 		return errors.New("")
 	}
@@ -62,19 +62,4 @@ func (cr *ProductsStore) Delete(client *models.Product) error {
 		}
 	}
 	return errors.New("not found")
-}
-
-func (cr *ProductsStore) FindMany(ids []int64) ([]models.Product, error) {
-	if cr.ShouldError {
-		return nil, errors.New("")
-	}
-	products := []models.Product{}
-	for _, id := range ids {
-		for _, product := range cr.Store {
-			if product.ID == id {
-				products = append(products, product)
-			}
-		}
-	}
-	return products, nil
 }

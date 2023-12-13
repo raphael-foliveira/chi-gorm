@@ -10,7 +10,6 @@ import (
 )
 
 func TestWrap(t *testing.T) {
-
 	t.Run("should handle an uncaught error", func(t *testing.T) {
 		cf := func(w http.ResponseWriter, r *http.Request) error {
 			return errors.New("uncaught error")

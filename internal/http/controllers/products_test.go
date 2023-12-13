@@ -9,23 +9,27 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
+	"github.com/raphael-foliveira/chi-gorm/internal/services"
 )
 
 func TestProducts(t *testing.T) {
-	store := &mocks.ProductsStore{}
-	controller := NewProducts(store)
+	var store *mocks.ProductsStore
+	var service *services.Products
+	var controller *Products
 
 	setUp := func() {
 		store = &mocks.ProductsStore{}
-		controller = NewProducts(store)
+		service = services.NewProducts(store)
+		controller = NewProducts(service)
 	}
 
 	addProducts := func(q int) {
 		for i := 0; i < q; i++ {
-			var product models.Product
+			var product entities.Product
 			faker.FakeData(&product)
 			product.ID = int64(i + 1)
 			store.Store = append(store.Store, product)
@@ -50,11 +54,8 @@ func TestProducts(t *testing.T) {
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("GET", "/", nil)
 		err = controller.List(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 500 {
-			t.Errorf("Status code should be 500, got %v", recorder.Code)
+		if err == nil {
+			t.Error("Should return an error")
 		}
 	})
 
@@ -80,11 +81,8 @@ func TestProducts(t *testing.T) {
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		err = controller.Get(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 404 {
-			t.Errorf("Status code should be 404, got %v", recorder.Code)
+		if err == nil {
+			t.Error("Should return an error")
 		}
 	})
 
@@ -108,10 +106,11 @@ func TestProducts(t *testing.T) {
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
 		err = controller.Create(recorder, request)
-		if err != nil {
-			t.Fatal(err)
+		apiErr, ok := err.(exceptions.ApiError)
+		if !ok {
+			t.Fatal("err should be an ApiError")
 		}
-		if recorder.Code != 400 {
+		if apiErr.Status != 400 {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
@@ -119,11 +118,8 @@ func TestProducts(t *testing.T) {
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		err = controller.Create(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 500 {
-			t.Errorf("Status code should be 500, got %v", recorder.Code)
+		if err == nil {
+			t.Error("Should return an error")
 		}
 	})
 
@@ -154,10 +150,11 @@ func TestProducts(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		err = controller.Update(recorder, request)
-		if err != nil {
-			t.Fatal(err)
+		apiErr, ok := err.(exceptions.ApiError)
+		if !ok {
+			t.Fatal("err should be an ApiError")
 		}
-		if recorder.Code != 400 {
+		if apiErr.Status != 400 {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
@@ -167,11 +164,8 @@ func TestProducts(t *testing.T) {
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		err = controller.Update(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 404 {
-			t.Errorf("Status code should be 404, got %v", recorder.Code)
+		if err == nil {
+			t.Error("Should return an error")
 		}
 	})
 
@@ -198,11 +192,8 @@ func TestProducts(t *testing.T) {
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		err = controller.Delete(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 404 {
-			t.Errorf("Status code should be 404, got %v", recorder.Code)
+		if err == nil {
+			t.Error("Should return an error")
 		}
 	})
 }

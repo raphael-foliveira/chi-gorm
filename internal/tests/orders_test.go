@@ -7,15 +7,15 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/models"
 )
 
 func TestOrders(t *testing.T) {
 
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
-		orders := []models.Order{}
+		orders := []entities.Order{}
 		testDb.Find(&orders)
 		expectedBody := schemas.NewOrders(orders)
 
@@ -40,7 +40,7 @@ func TestOrders(t *testing.T) {
 
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
-		order := models.Order{}
+		order := entities.Order{}
 		testDb.First(&order)
 		expectedBody := schemas.NewOrder(&order)
 
@@ -65,9 +65,9 @@ func TestOrders(t *testing.T) {
 
 	t.Run("Test create", func(t *testing.T) {
 		setUp()
-		product := models.Product{}
+		product := entities.Product{}
 		testDb.First(&product)
-		client := models.Client{}
+		client := entities.Client{}
 		testDb.First(&client)
 		order := schemas.CreateOrder{
 			ProductID: product.ID,
@@ -83,7 +83,7 @@ func TestOrders(t *testing.T) {
 		}
 		defer response.Body.Close()
 
-		responseBody := models.Order{}
+		responseBody := entities.Order{}
 		json.NewDecoder(response.Body).Decode(&responseBody)
 		if response.StatusCode != http.StatusCreated {
 			t.Errorf("Expected status code %d, got %d", http.StatusCreated, response.StatusCode)
@@ -98,7 +98,7 @@ func TestOrders(t *testing.T) {
 
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
-		order := models.Order{}
+		order := entities.Order{}
 		testDb.First(&order)
 		update := schemas.UpdateOrder{}
 		faker.FakeData(&update)
@@ -111,7 +111,7 @@ func TestOrders(t *testing.T) {
 		}
 		defer response.Body.Close()
 
-		responseBody := models.Order{}
+		responseBody := entities.Order{}
 		json.NewDecoder(response.Body).Decode(&responseBody)
 		if response.StatusCode != http.StatusOK {
 			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
@@ -126,7 +126,7 @@ func TestOrders(t *testing.T) {
 
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
-		order := models.Order{}
+		order := entities.Order{}
 		testDb.First(&order)
 
 		response, err := makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)

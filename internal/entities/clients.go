@@ -1,4 +1,4 @@
-package models
+package entities
 
 import (
 	"time"
@@ -10,5 +10,5 @@ type Client struct {
 	UpdatedAt time.Time `faker:"-"`
 	Name      string    `gorm:"not null" faker:"name"`
 	Email     string    `gorm:"not null" faker:"email"`
-	Orders    []Order	`faker:"-"`
+	Orders    []Order   `faker:"-"`
 }

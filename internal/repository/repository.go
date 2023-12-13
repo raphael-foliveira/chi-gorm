@@ -1,4 +1,4 @@
-package interfaces
+package repository
 
 type Repository[T interface{}] interface {
 	List() ([]T, error)
@@ -7,3 +7,4 @@ type Repository[T interface{}] interface {
 	Update(c *T) error
 	Delete(c *T) error
 }
+

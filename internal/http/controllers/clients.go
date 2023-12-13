@@ -5,25 +5,23 @@ import (
 
 	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
+	"github.com/raphael-foliveira/chi-gorm/internal/services"
 )
 
 type Clients struct {
-	repository repository.Clients
+	service *services.Clients
 }
 
-func NewClients(clientsRepo repository.Clients) *Clients {
-	return &Clients{clientsRepo}
+func NewClients(service *services.Clients) *Clients {
+	return &Clients{service}
 }
 
 func (c *Clients) Create(w http.ResponseWriter, r *http.Request) error {
-	var body schemas.CreateClient
-	err := parseBody(r, &body)
+	body, err := parseBody(r, &schemas.CreateClient{})
 	if err != nil {
 		return err
 	}
-	newClient := body.ToModel()
-	err = c.repository.Create(&newClient)
+	newClient, err := c.service.Create(body)
 	if err != nil {
 		return err
 	}
@@ -35,25 +33,15 @@ func (c *Clients) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	client, err := c.repository.Get(id)
-	if err != nil {
-		return res.ApiError{
-			Message: "client not found",
-			Status:  http.StatusNotFound,
-		}
-	}
-	var body schemas.UpdateClient
-	err = parseBody(r, &body)
+	body, err := parseBody(r, &schemas.UpdateClient{})
 	if err != nil {
 		return err
 	}
-	client.Name = body.Name
-	client.Email = body.Email
-	err = c.repository.Update(client)
+	updatedClient, err := c.service.Update(id, body)
 	if err != nil {
 		return err
 	}
-	return res.JSON(w, http.StatusOK, &client)
+	return res.JSON(w, http.StatusOK, updatedClient)
 }
 
 func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
@@ -61,14 +49,7 @@ func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	client, err := c.repository.Get(id)
-	if err != nil {
-		return res.ApiError{
-			Message: "client not found",
-			Status:  http.StatusNotFound,
-		}
-	}
-	err = c.repository.Delete(client)
+	err = c.service.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -76,7 +57,7 @@ func (c *Clients) Delete(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *Clients) List(w http.ResponseWriter, r *http.Request) error {
-	clients, err := c.repository.List()
+	clients, err := c.service.List()
 	if err != nil {
 		return err
 	}
@@ -88,12 +69,9 @@ func (c *Clients) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	client, err := c.repository.Get(id)
+	client, err := c.service.Get(id)
 	if err != nil {
-		return res.ApiError{
-			Message: "client not found",
-			Status:  http.StatusNotFound,
-		}
+		return err
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewClientDetail(client))
 }
