@@ -11,6 +11,7 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controllers"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/routes"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
+	"github.com/raphael-foliveira/chi-gorm/internal/services"
 )
 
 func Start() error {
@@ -32,9 +33,13 @@ func injectDependencies(r *chi.Mux) {
 	productsRepo := repository.NewProducts(db)
 	ordersRepo := repository.NewOrders(db)
 
-	clientsController := controllers.NewClients(clientsRepo)
-	productsController := controllers.NewProducts(productsRepo)
-	ordersController := controllers.NewOrders(ordersRepo)
+	clientsService := services.NewClients(clientsRepo)
+	productsService := services.NewProducts(productsRepo)
+	ordersService := services.NewOrders(ordersRepo)
+
+	clientsController := controllers.NewClients(clientsService)
+	productsController := controllers.NewProducts(productsService)
+	ordersController := controllers.NewOrders(ordersService)
 
 	clientsRoutes := routes.Clients(clientsController)
 	productsRoutes := routes.Products(productsController)

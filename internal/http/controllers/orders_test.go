@@ -10,9 +10,10 @@ import (
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
+	"github.com/raphael-foliveira/chi-gorm/internal/services"
 )
 
 func TestOrders(t *testing.T) {
@@ -25,7 +26,8 @@ func TestOrders(t *testing.T) {
 		ordersStore = &mocks.OrdersStore{}
 		clientsStore = &mocks.ClientsStore{}
 		productsStore = &mocks.ProductsStore{}
-		controller = NewOrders(ordersStore)
+		service := services.NewOrders(ordersStore)
+		controller = NewOrders(service)
 	}
 
 	addOrders := func(q int) {
@@ -65,11 +67,8 @@ func TestOrders(t *testing.T) {
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("GET", "/", nil)
 		err = controller.List(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 500 {
-			t.Errorf("Status code should be 500, got %v", recorder.Code)
+		if err == nil {
+			t.Fatal("err should not be nil")
 		}
 	})
 
@@ -94,9 +93,9 @@ func TestOrders(t *testing.T) {
 		request = httptest.NewRequest("GET", "/99", nil)
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		controller.Get(recorder, request)
-		if recorder.Code != 404 {
-			t.Errorf("Status code should be 404, got %v", recorder.Code)
+		err = controller.Get(recorder, request)
+		if err == nil {
+			t.Fatal("err should not be nil")
 		}
 	})
 
@@ -120,7 +119,7 @@ func TestOrders(t *testing.T) {
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
 		err = controller.Create(recorder, request)
-		apiErr, ok := err.(res.ApiError)
+		apiErr, ok := err.(exceptions.ApiError)
 		if !ok {
 			t.Fatal("err should be an ApiError")
 		}
@@ -132,11 +131,8 @@ func TestOrders(t *testing.T) {
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		err = controller.Create(recorder, request)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 500 {
-			t.Errorf("Status code should be 500, got %v", recorder.Code)
+		if err == nil {
+			t.Error("Should return an error")
 		}
 	})
 
@@ -167,7 +163,7 @@ func TestOrders(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		err = controller.Update(recorder, request)
-		apiErr, ok := err.(res.ApiError)
+		apiErr, ok := err.(exceptions.ApiError)
 		if !ok {
 			t.Fatal("err should be an ApiError")
 		}
@@ -180,9 +176,9 @@ func TestOrders(t *testing.T) {
 		tx = chi.NewRouteContext()
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		controller.Update(recorder, request)
-		if recorder.Code != 404 {
-			t.Errorf("Status code should be 404, got %v", recorder.Code)
+		err = controller.Update(recorder, request)
+		if err == nil {
+			t.Error("Should return an error")
 		}
 	})
 
@@ -208,9 +204,9 @@ func TestOrders(t *testing.T) {
 		tx = chi.NewRouteContext()
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		controller.Delete(recorder, request)
-		if recorder.Code != 404 {
-			t.Errorf("Status code should be 404, got %v", recorder.Code)
+		err = controller.Delete(recorder, request)
+		if err == nil {
+			t.Error("Should return an error")
 		}
 	})
 

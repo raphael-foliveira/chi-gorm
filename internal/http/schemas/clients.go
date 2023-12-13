@@ -7,8 +7,8 @@ type CreateClient struct {
 	Email string `json:"email" faker:"email"`
 }
 
-func (cc *CreateClient) ToModel() entities.Client {
-	return entities.Client{
+func (cc *CreateClient) ToModel() *entities.Client {
+	return &entities.Client{
 		Name:  cc.Name,
 		Email: cc.Email,
 	}
