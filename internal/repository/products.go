@@ -5,15 +5,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type Products Repository[entities.Product]
+type Products interface {
+	Repository[entities.Product]
+	FindMany(ids []int64) ([]entities.Product, error)
+}
 
 type products struct {
-	db *gorm.DB
+	*repository[entities.Product]
 }
 
 func NewProducts(db *gorm.DB) Products {
 	db.AutoMigrate(&entities.Product{})
-	return &products{db}
+	return &products{newRepository[entities.Product](db)}
 }
 
 func (r *products) List() ([]entities.Product, error) {

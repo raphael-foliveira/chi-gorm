@@ -7,59 +7,24 @@ import (
 )
 
 type ProductsStore struct {
-	Store       []entities.Product
-	ShouldError bool
+	store[entities.Product]
 }
 
-func (cr *ProductsStore) List() ([]entities.Product, error) {
+func NewProductsStore() *ProductsStore {
+	return &ProductsStore{newStore[entities.Product]()}
+}
+
+func (cr *ProductsStore) FindMany(ids []int64) ([]entities.Product, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
 	}
-	return cr.Store, nil
-}
-
-func (cr *ProductsStore) Get(id int64) (*entities.Product, error) {
-	if cr.ShouldError {
-		return nil, errors.New("")
-	}
-	for _, client := range cr.Store {
-		if client.ID == id {
-			return &client, nil
+	products := []entities.Product{}
+	for _, id := range ids {
+		for _, product := range cr.Store {
+			if product.ID == id {
+				products = append(products, product)
+			}
 		}
 	}
-	return nil, errors.New("not found")
-}
-
-func (cr *ProductsStore) Create(client *entities.Product) error {
-	if cr.ShouldError {
-		return errors.New("")
-	}
-	cr.Store = append(cr.Store, *client)
-	return nil
-}
-
-func (cr *ProductsStore) Update(client *entities.Product) error {
-	if cr.ShouldError {
-		return errors.New("")
-	}
-	for i, c := range cr.Store {
-		if c.ID == client.ID {
-			cr.Store[i] = *client
-			return nil
-		}
-	}
-	return errors.New("not found")
-}
-
-func (cr *ProductsStore) Delete(client *entities.Product) error {
-	if cr.ShouldError {
-		return errors.New("")
-	}
-	for i, c := range cr.Store {
-		if c.ID == client.ID {
-			cr.Store = append(cr.Store[:i], cr.Store[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("not found")
+	return products, nil
 }

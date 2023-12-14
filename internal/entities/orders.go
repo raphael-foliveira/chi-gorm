@@ -14,3 +14,7 @@ type Order struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+func (p Order) GetId() int64 {
+	return p.ID
+}

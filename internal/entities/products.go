@@ -9,3 +9,7 @@ type Product struct {
 	Name      string    `gorm:"not null" faker:"name"`
 	Price     float64   `gorm:"not null" faker:"amount"`
 }
+
+func (p Product) GetId() int64 {
+	return p.ID
+}
