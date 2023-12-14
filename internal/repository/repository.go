@@ -28,7 +28,7 @@ func (r *repository[T]) List() ([]T, error) {
 
 func (r *repository[T]) Get(id int64) (*T, error) {
 	entity := new(T)
-	return entity, r.db.Model(new(T)).First(&entity, id).Error
+	return entity, r.db.Model(new(T)).First(entity, id).Error
 }
 
 func (r *repository[T]) Create(entity *T) error {
