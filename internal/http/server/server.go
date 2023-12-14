@@ -12,26 +12,35 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/http/routes"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/raphael-foliveira/chi-gorm/internal/services"
+	"gorm.io/gorm"
 )
 
-func Start() error {
-	app := CreateApp()
+type Server struct {
+	Db *gorm.DB
+}
+
+func NewServer(dialector gorm.Dialector) *Server {
+	db := database.InitDb(dialector)
+	return &Server{db}
+}
+
+func (s *Server) Start() error {
+	app := s.CreateApp()
 	fmt.Println("listening on port 3000")
 	return http.ListenAndServe(":3000", app)
 }
 
-func CreateApp() *chi.Mux {
+func (s *Server) CreateApp() *chi.Mux {
 	mainRouter := chi.NewRouter()
-	attachMiddleware(mainRouter)
-	injectDependencies(mainRouter)
+	s.attachMiddleware(mainRouter)
+	s.injectDependencies(mainRouter)
 	return mainRouter
 }
 
-func injectDependencies(r *chi.Mux) {
-	db := database.GetDb()
-	clientsRepo := repository.NewClients(db)
-	productsRepo := repository.NewProducts(db)
-	ordersRepo := repository.NewOrders(db)
+func (s *Server) injectDependencies(r *chi.Mux) {
+	clientsRepo := repository.NewClients(s.Db)
+	productsRepo := repository.NewProducts(s.Db)
+	ordersRepo := repository.NewOrders(s.Db)
 
 	clientsService := services.NewClients(clientsRepo)
 	productsService := services.NewProducts(productsRepo)
@@ -50,7 +59,7 @@ func injectDependencies(r *chi.Mux) {
 	r.Mount("/orders", ordersRoutes)
 }
 
-func attachMiddleware(r *chi.Mux) {
+func (s *Server) attachMiddleware(r *chi.Mux) {
 	r.Use(middleware.Logger)
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"*"},

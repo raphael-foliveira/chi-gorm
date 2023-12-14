@@ -5,7 +5,7 @@ cover:
 	go tool cover -html=c.out;
 
 test:
-	go test ./... -v -cover -coverpkg=../... -coverprofile=c.out;
+	go test ./... -cover -coverpkg=../... -coverprofile=c.out;
 
 build:
 	GOOS=linux go build -o bin/main cmd/main.go
