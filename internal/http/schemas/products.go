@@ -1,6 +1,11 @@
 package schemas
 
-import "github.com/raphael-foliveira/chi-gorm/internal/entities"
+import (
+	"errors"
+
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
+)
 
 type CreateProduct struct {
 	Name  string  `json:"name" faker:"name"`
@@ -14,9 +19,23 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 	}
 }
 
+func (cp *CreateProduct) Validate() error {
+	var err error
+	if cp.Name == "" {
+		err = errors.Join(err, &exceptions.ValidationError{
+			Message: "Name is required",
+		})
+	}
+	if cp.Price <= 0 {
+		err = errors.Join(err, &exceptions.ValidationError{
+			Message: "Price must be greater than zero",
+		})
+	}
+	return err
+}
+
 type UpdateProduct struct {
-	Name  string  `json:"name" faker:"name"`
-	Price float64 `json:"price" faker:"amount"`
+	CreateProduct
 }
 
 type Product struct {

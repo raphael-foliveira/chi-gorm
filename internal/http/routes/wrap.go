@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
@@ -21,6 +22,7 @@ func handleApiErr(w http.ResponseWriter, err error) {
 	fmt.Println(err.Error())
 	apiErr := &exceptions.ApiError{}
 	notFoundErr := &exceptions.NotFoundError{}
+	validationErr := &exceptions.ValidationError{}
 	if errors.As(err, &apiErr) {
 		res.JSON(w, apiErr.Status, apiErr)
 		return
@@ -29,6 +31,13 @@ func handleApiErr(w http.ResponseWriter, err error) {
 		res.JSON(w, http.StatusNotFound, exceptions.ApiError{
 			Message: err.Error(),
 			Status:  http.StatusNotFound,
+		})
+		return
+	}
+	if errors.As(err, &validationErr) {
+		res.JSON(w, http.StatusUnprocessableEntity, exceptions.ApiError{
+			Message: strings.ReplaceAll(err.Error(), "\n", ", "),
+			Status:  http.StatusUnprocessableEntity,
 		})
 		return
 	}

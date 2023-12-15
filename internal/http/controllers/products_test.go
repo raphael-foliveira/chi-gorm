@@ -106,7 +106,7 @@ func TestProducts(t *testing.T) {
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
 		err = controller.Create(recorder, request)
-		apiErr, ok := err.(exceptions.ApiError)
+		apiErr, ok := err.(*exceptions.ApiError)
 		if !ok {
 			t.Fatal("err should be an ApiError")
 		}
@@ -150,7 +150,7 @@ func TestProducts(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		err = controller.Update(recorder, request)
-		apiErr, ok := err.(exceptions.ApiError)
+		apiErr, ok := err.(*exceptions.ApiError)
 		if !ok {
 			t.Fatal("err should be an ApiError")
 		}

@@ -1,6 +1,12 @@
 package schemas
 
-import "github.com/raphael-foliveira/chi-gorm/internal/entities"
+import (
+	"errors"
+	"strings"
+
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
+)
 
 type CreateClient struct {
 	Name  string `json:"name" faker:"name"`
@@ -12,6 +18,26 @@ func (cc *CreateClient) ToModel() *entities.Client {
 		Name:  cc.Name,
 		Email: cc.Email,
 	}
+}
+
+func (cc *CreateClient) Validate() error {
+	var err error
+	if cc.Name == "" {
+		err = errors.Join(err, &exceptions.ValidationError{
+			Message: "Name is required",
+		})
+	}
+	if cc.Email == "" {
+		err = errors.Join(err, &exceptions.ValidationError{
+			Message: "Email is required",
+		})
+	}
+	if !strings.Contains(cc.Email, "@") {
+		err = errors.Join(err, &exceptions.ValidationError{
+			Message: "Email is invalid",
+		})
+	}
+	return err
 }
 
 type UpdateClient struct {

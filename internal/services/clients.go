@@ -18,12 +18,20 @@ func NewClients(clientsRepo repository.Clients) *Clients {
 }
 
 func (c *Clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
+	validationErr := schema.Validate()
+	if validationErr != nil {
+		return nil, validationErr
+	}
 	newClient := schema.ToModel()
 	err := c.repository.Create(newClient)
 	return newClient, err
 }
 
 func (c *Clients) Update(id int64, schema *schemas.UpdateClient) (*entities.Client, error) {
+	validationErr := schema.Validate()
+	if validationErr != nil {
+		return nil, validationErr
+	}
 	entity, err := c.repository.Get(id)
 	if err != nil {
 		return nil, err
