@@ -13,6 +13,14 @@ type ApiError struct {
 	Status  int    `json:"status"`
 }
 
-func (ae ApiError) Error() string {
+func (ae *ApiError) Error() string {
 	return ae.Message
+}
+
+type ValidationError struct {
+	Message string `json:"message"`
+}
+
+func (ve *ValidationError) Error() string {
+	return ve.Message
 }

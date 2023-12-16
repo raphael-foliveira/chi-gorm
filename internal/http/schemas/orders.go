@@ -1,6 +1,9 @@
 package schemas
 
-import "github.com/raphael-foliveira/chi-gorm/internal/entities"
+import (
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
+)
 
 type CreateOrder struct {
 	ClientID  int64 `json:"client_id" faker:"-"`
@@ -16,8 +19,26 @@ func (co *CreateOrder) ToModel() *entities.Order {
 	}
 }
 
+func (co *CreateOrder) Validate() error {
+	if co.Quantity <= 0 {
+		return &exceptions.ValidationError{
+			Message: "Quantity must be greater than zero",
+		}
+	}
+	return nil
+}
+
 type UpdateOrder struct {
 	Quantity int `json:"quantity"`
+}
+
+func (uo *UpdateOrder) Validate() error {
+	if uo.Quantity <= 0 {
+		return &exceptions.ValidationError{
+			Message: "Quantity must be greater than zero",
+		}
+	}
+	return nil
 }
 
 type Order struct {

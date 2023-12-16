@@ -9,7 +9,7 @@ import (
 
 func main() {
 	dialector := postgres.Open(os.Getenv("DATABASE_URL"))
-	err := server.NewServer(dialector).CreateApp()
+	err := server.NewServer(dialector).Start()
 	if err != nil {
 		panic(err)
 	}

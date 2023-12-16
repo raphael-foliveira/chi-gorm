@@ -3,7 +3,6 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -28,7 +27,6 @@ func setUp() {
 	testAppServer = server.NewServer(dialector)
 	testApp := testAppServer.CreateApp()
 	testDb = testAppServer.Db
-	fmt.Println(testDb)
 	testServer = httptest.NewServer(testApp)
 	populateTables()
 }

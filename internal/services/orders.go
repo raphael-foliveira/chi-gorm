@@ -18,12 +18,20 @@ func NewOrders(productsRepo repository.Orders) *Orders {
 }
 
 func (c *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
+	validationErr := schema.Validate()
+	if validationErr != nil {
+		return nil, validationErr
+	}
 	newOrder := schema.ToModel()
 	err := c.repository.Create(newOrder)
 	return newOrder, err
 }
 
 func (c *Orders) Update(id int64, schema *schemas.UpdateOrder) (*entities.Order, error) {
+	validationErr := schema.Validate()
+	if validationErr != nil {
+		return nil, validationErr
+	}
 	entity, err := c.repository.Get(id)
 	if err != nil {
 		return nil, err

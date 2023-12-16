@@ -12,3 +12,7 @@ type Client struct {
 	Email     string    `gorm:"not null" faker:"email"`
 	Orders    []Order   `faker:"-"`
 }
+
+func (p Client) GetId() int64 {
+	return p.ID
+}

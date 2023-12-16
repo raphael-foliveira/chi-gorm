@@ -18,12 +18,20 @@ func NewProducts(productsRepo repository.Products) *Products {
 }
 
 func (c *Products) Create(schema *schemas.CreateProduct) (*entities.Product, error) {
+	validationErr := schema.Validate()
+	if validationErr != nil {
+		return nil, validationErr
+	}
 	newProduct := schema.ToModel()
 	err := c.repository.Create(newProduct)
 	return newProduct, err
 }
 
 func (c *Products) Update(id int64, schema *schemas.UpdateProduct) (*entities.Product, error) {
+	validationErr := schema.Validate()
+	if validationErr != nil {
+		return nil, validationErr
+	}
 	entity, err := c.repository.Get(id)
 	if err != nil {
 		return nil, err
