@@ -7,21 +7,13 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/controllers"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/routes"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
-	"github.com/raphael-foliveira/chi-gorm/internal/services"
-	"gorm.io/gorm"
 )
 
-type Server struct {
-	Db *gorm.DB
-}
+type Server struct{}
 
-func NewServer(dialector gorm.Dialector) *Server {
-	db := database.InitDb(dialector)
-	return &Server{db}
+func NewServer() *Server {
+	return &Server{}
 }
 
 func (s *Server) Start() error {
@@ -33,26 +25,14 @@ func (s *Server) Start() error {
 func (s *Server) CreateApp() *chi.Mux {
 	mainRouter := chi.NewRouter()
 	s.attachMiddleware(mainRouter)
-	s.injectDependencies(mainRouter)
+	s.mountRoutes(mainRouter)
 	return mainRouter
 }
 
-func (s *Server) injectDependencies(r *chi.Mux) {
-	clientsRepo := repository.NewClients(s.Db)
-	productsRepo := repository.NewProducts(s.Db)
-	ordersRepo := repository.NewOrders(s.Db)
-
-	clientsService := services.NewClients(clientsRepo)
-	productsService := services.NewProducts(productsRepo)
-	ordersService := services.NewOrders(ordersRepo)
-
-	clientsController := controllers.NewClients(clientsService)
-	productsController := controllers.NewProducts(productsService)
-	ordersController := controllers.NewOrders(ordersService)
-
-	clientsRoutes := routes.Clients(clientsController)
-	productsRoutes := routes.Products(productsController)
-	ordersRoutes := routes.Orders(ordersController)
+func (s *Server) mountRoutes(r *chi.Mux) {
+	clientsRoutes := routes.Clients()
+	productsRoutes := routes.Products()
+	ordersRoutes := routes.Orders()
 
 	r.Mount("/clients", clientsRoutes)
 	r.Mount("/products", productsRoutes)

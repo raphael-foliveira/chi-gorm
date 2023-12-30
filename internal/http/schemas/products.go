@@ -39,7 +39,7 @@ type UpdateProduct struct {
 }
 
 type Product struct {
-	ID    int64   `json:"id"`
+	ID    uint    `json:"id"`
 	Name  string  `json:"name" faker:"name"`
 	Price float64 `json:"price" faker:"amount"`
 }

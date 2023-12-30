@@ -8,60 +8,55 @@ import (
 )
 
 var productNotFoundErr = &exceptions.NotFoundError{Entity: "product"}
+var Products = &products{}
 
-type Products struct {
-	repository repository.Products
-}
+type products struct{}
 
-func NewProducts(productsRepo repository.Products) *Products {
-	return &Products{productsRepo}
-}
-
-func (c *Products) Create(schema *schemas.CreateProduct) (*entities.Product, error) {
+func (c *products) Create(schema *schemas.CreateProduct) (*entities.Product, error) {
 	validationErr := schema.Validate()
 	if validationErr != nil {
 		return nil, validationErr
 	}
 	newProduct := schema.ToModel()
-	err := c.repository.Create(newProduct)
+	err := repository.Products.Create(newProduct)
 	return newProduct, err
 }
 
-func (c *Products) Update(id int64, schema *schemas.UpdateProduct) (*entities.Product, error) {
+func (c *products) Update(id uint, schema *schemas.UpdateProduct) (*entities.Product, error) {
 	validationErr := schema.Validate()
 	if validationErr != nil {
 		return nil, validationErr
 	}
-	entity, err := c.repository.Get(id)
+	entity, err := repository.Products.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	entity.Name = schema.Name
 	entity.Price = schema.Price
-	err = c.repository.Update(entity)
+	err = repository.Products.Update(entity)
 	return entity, err
 }
 
-func (c *Products) Delete(id int64) error {
-	client, err := c.repository.Get(id)
+func (c *products) Delete(id uint) error {
+	client, err := repository.Products.Get(id)
 	if err != nil {
 		return err
 	}
-	err = c.repository.Delete(client)
+	err = repository.Products.Delete(client)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Products) List() ([]entities.Product, error) {
-	return c.repository.List()
+func (c *products) List() ([]entities.Product, error) {
+	return repository.Products.List()
 }
 
-func (c *Products) Get(id int64) (*entities.Product, error) {
-	client, err := c.repository.Get(id)
-	if err != nil {
+func (c *products) Get(id uint) (*entities.Product, error) {
+	product, err := repository.Products.Get(id)
+	if err != nil || product == nil {
 		return nil, productNotFoundErr
 	}
-	return client, nil
+	return product, nil
 }

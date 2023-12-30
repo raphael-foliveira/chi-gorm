@@ -9,58 +9,54 @@ import (
 
 var orderNotFoundErr = &exceptions.NotFoundError{Entity: "order"}
 
-type Orders struct {
-	repository repository.Orders
-}
+var Orders = &orders{}
 
-func NewOrders(productsRepo repository.Orders) *Orders {
-	return &Orders{productsRepo}
-}
+type orders struct{}
 
-func (c *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
+func (c *orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 	validationErr := schema.Validate()
 	if validationErr != nil {
 		return nil, validationErr
 	}
 	newOrder := schema.ToModel()
-	err := c.repository.Create(newOrder)
+	err := repository.Orders.Create(newOrder)
 	return newOrder, err
 }
 
-func (c *Orders) Update(id int64, schema *schemas.UpdateOrder) (*entities.Order, error) {
+func (c *orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
 	validationErr := schema.Validate()
 	if validationErr != nil {
 		return nil, validationErr
 	}
-	entity, err := c.repository.Get(id)
+	entity, err := repository.Orders.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	entity.Quantity = schema.Quantity
-	err = c.repository.Update(entity)
+	err = repository.Orders.Update(entity)
 	return entity, err
 }
 
-func (c *Orders) Delete(id int64) error {
-	client, err := c.repository.Get(id)
+func (c *orders) Delete(id uint) error {
+	client, err := repository.Orders.Get(id)
 	if err != nil {
 		return err
 	}
-	err = c.repository.Delete(client)
+	err = repository.Orders.Delete(client)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Orders) List() ([]entities.Order, error) {
-	return c.repository.List()
+func (c *orders) List() ([]entities.Order, error) {
+	return repository.Orders.List()
 }
 
-func (c *Orders) Get(id int64) (*entities.Order, error) {
-	client, err := c.repository.Get(id)
-	if err != nil {
+func (c *orders) Get(id uint) (*entities.Order, error) {
+	order, err := repository.Orders.Get(id)
+	if err != nil || order == nil {
 		return nil, orderNotFoundErr
 	}
-	return client, nil
+	return order, nil
 }

@@ -4,10 +4,8 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
-type OrdersStore struct {
-	store[entities.Order]
-}
+var OrdersStore = &OrdersStoreImpl{store[entities.Order]{}}
 
-func NewOrdersStore() *OrdersStore {
-	return &OrdersStore{newStore[entities.Order]()}
+type OrdersStoreImpl struct {
+	store[entities.Order]
 }

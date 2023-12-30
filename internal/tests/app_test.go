@@ -8,43 +8,41 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
-var testDb *gorm.DB
-var dialector = sqlite.Open(":memory:")
 var testAppServer *server.Server
 
 func TestMain(m *testing.M) {
+	err := cfg.LoadEnv("../../.env")
+	if err != nil {
+		panic(err)
+	}
+	err = database.InitDb(cfg.TestConfig.DatabaseURL)
+	if err != nil {
+		panic(err)
+	}
 	m.Run()
 }
 
 func setUp() {
-	testAppServer = server.NewServer(dialector)
 	testApp := testAppServer.CreateApp()
-	testDb = testAppServer.Db
 	testServer = httptest.NewServer(testApp)
 	populateTables()
 }
 
-func clearDatabase() error {
-	sqlDb, err := testAppServer.Db.DB()
-	if err != nil {
-		return err
-	}
-	return sqlDb.Close()
+func clearDatabase() {
+	database.Db.Delete(&entities.Product{}).Where("1=1")
+	database.Db.Delete(&entities.Order{}).Where("1=1")
+	database.Db.Delete(&entities.Client{}).Where("1=1")
 }
 
 func tearDown() {
-	err := clearDatabase()
-	if err != nil {
-		panic(err)
-	}
-	testServer.Close()
+	clearDatabase()
 }
 
 func makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
@@ -68,29 +66,26 @@ func makeRequest(method string, endpoint string, body interface{}) (*http.Respon
 }
 
 func populateTables() {
-	clients := []entities.Client{}
-	products := []entities.Product{}
-	orders := []entities.Order{}
+	clients := [10]entities.Client{}
+	products := [10]entities.Product{}
+	orders := [10]entities.Order{}
+	faker.FakeData(&clients)
+	faker.FakeData(&products)
+	faker.FakeData(&orders)
 
-	for i := 0; i < 20; i++ {
-		var c entities.Client
-		faker.FakeData(&c)
-		clients = append(clients, c)
+	for i := 0; i < 10; i++ {
+		clients[i].ID = 0
+		products[i].ID = 0
+		orders[i].ID = 0
 	}
-	for i := 0; i < 20; i++ {
-		var p entities.Product
-		faker.FakeData(&p)
-		products = append(products, p)
-	}
-	for i := 0; i < 20; i++ {
-		var o entities.Order
-		faker.FakeData(&o)
-		o.ClientID = int64(i + 1)
-		o.ProductID = int64(i + 1)
-		orders = append(orders, o)
-	}
+	database.Db.Create(&clients)
+	database.Db.Create(&products)
 
-	testDb.Create(&clients)
-	testDb.Create(&products)
-	testDb.Create(&orders)
+	for i := 0; i < 10; i++ {
+		orders[i].ID = 0
+		orders[i].ClientID = clients[i].ID
+		orders[i].ProductID = products[i].ID
+	}
+	database.Db.Create(&orders)
+
 }

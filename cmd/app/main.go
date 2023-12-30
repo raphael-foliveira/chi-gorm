@@ -1,17 +1,19 @@
 package main
 
 import (
-	"os"
-
+	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"gorm.io/driver/postgres"
 )
 
 func main() {
-	dialector := postgres.Open(os.Getenv("DATABASE_URL"))
-	err := server.NewServer(dialector).Start()
-	if err != nil {
+	if err := cfg.LoadEnv(".env"); err != nil {
 		panic(err)
 	}
-
+	if err := database.InitDb(cfg.MainConfig.DatabaseURL); err != nil {
+		panic(err)
+	}
+	if err := server.NewServer().Start(); err != nil {
+		panic(err)
+	}
 }

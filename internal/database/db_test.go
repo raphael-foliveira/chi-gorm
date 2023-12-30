@@ -3,15 +3,29 @@ package database
 import (
 	"testing"
 
-	"gorm.io/gorm"
+	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
 )
 
 func TestInitDb(t *testing.T) {
-	t.Run("should return a db instance when db is already initialized", func(t *testing.T) {
-		db = &gorm.DB{}
-		if InitDb(nil) != db {
-			t.Error("Should return db instance")
+	cfg.LoadEnv("../../.env")
+	t.Run("should initialize the database", func(t *testing.T) {
+		Db = nil
+		err := InitDb(cfg.TestConfig.DatabaseURL)
+		if err != nil {
+			t.Error(err)
 		}
-		db = nil
+		if Db == nil {
+			t.Error("Db not initialized")
+		}
+	})
+
+	t.Run("should close the database", func(t *testing.T) {
+		err := CloseDb()
+		if err != nil {
+			t.Error(err)
+		}
+		if Db != nil {
+			t.Error("Db not closed")
+		}
 	})
 }

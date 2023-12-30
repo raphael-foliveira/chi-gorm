@@ -8,27 +8,23 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/services"
 )
 
-type Orders struct {
-	service *services.Orders
-}
+var Orders = &orders{}
 
-func NewOrders(service *services.Orders) *Orders {
-	return &Orders{service}
-}
+type orders struct{}
 
-func (c *Orders) Create(w http.ResponseWriter, r *http.Request) error {
+func (c *orders) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateOrder{})
 	if err != nil {
 		return err
 	}
-	newOrder, err := c.service.Create(body)
+	newOrder, err := services.Orders.Create(body)
 	if err != nil {
 		return err
 	}
 	return res.JSON(w, http.StatusCreated, schemas.NewOrder(newOrder))
 }
 
-func (c *Orders) Update(w http.ResponseWriter, r *http.Request) error {
+func (c *orders) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
 		return err
@@ -37,39 +33,39 @@ func (c *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	updatedOrder, err := c.service.Update(id, body)
+	updatedOrder, err := services.Orders.Update(id, body)
 	if err != nil {
 		return err
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewOrder(updatedOrder))
 }
 
-func (c *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
+func (c *orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
 		return err
 	}
-	err = c.service.Delete(id)
+	err = services.Orders.Delete(id)
 	if err != nil {
 		return err
 	}
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (c *Orders) List(w http.ResponseWriter, r *http.Request) error {
-	orders, err := c.service.List()
+func (c *orders) List(w http.ResponseWriter, r *http.Request) error {
+	orders, err := services.Orders.List()
 	if err != nil {
 		return err
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewOrders(orders))
 }
 
-func (c *Orders) Get(w http.ResponseWriter, r *http.Request) error {
+func (c *orders) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
 		return err
 	}
-	order, err := c.service.Get(id)
+	order, err := services.Orders.Get(id)
 	if err != nil {
 		return err
 	}
