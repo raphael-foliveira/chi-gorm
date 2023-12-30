@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http/httptest"
 	"testing"
 
@@ -18,7 +19,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("List", func(t *testing.T) {
 		addProducts(10)
-		mocks.ProductsStore.ShouldError = false
+		mocks.ProductsStore.Error = nil
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		err := Products.List(recorder, request)
@@ -29,7 +30,7 @@ func TestProducts(t *testing.T) {
 			t.Errorf("Status code should be 200, got %v", recorder.Code)
 		}
 
-		mocks.ProductsStore.ShouldError = true
+		mocks.ProductsStore.Error = errors.New("")
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("GET", "/", nil)
 		err = Products.List(recorder, request)
@@ -40,7 +41,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Get", func(t *testing.T) {
 		addProducts(10)
-		mocks.ProductsStore.ShouldError = false
+		mocks.ProductsStore.Error = nil
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/1", nil)
 		tx := chi.NewRouteContext()
@@ -65,7 +66,7 @@ func TestProducts(t *testing.T) {
 	})
 
 	t.Run("Create", func(t *testing.T) {
-		mocks.ProductsStore.ShouldError = false
+		mocks.ProductsStore.Error = nil
 		recorder := httptest.NewRecorder()
 		var newProduct schemas.CreateProduct
 		faker.FakeData(&newProduct)
@@ -91,7 +92,7 @@ func TestProducts(t *testing.T) {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
-		mocks.ProductsStore.ShouldError = true
+		mocks.ProductsStore.Error = errors.New("")
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		err = Products.Create(recorder, request)
@@ -102,7 +103,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Update", func(t *testing.T) {
 		addProducts(10)
-		mocks.ProductsStore.ShouldError = false
+		mocks.ProductsStore.Error = nil
 		recorder := httptest.NewRecorder()
 		var newProduct schemas.UpdateProduct
 		faker.FakeData(&newProduct)
@@ -147,7 +148,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Delete", func(t *testing.T) {
 		addProducts(10)
-		mocks.ProductsStore.ShouldError = false
+		mocks.ProductsStore.Error = nil
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("DELETE", "/1", nil)
 		tx := chi.NewRouteContext()
