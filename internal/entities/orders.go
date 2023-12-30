@@ -8,7 +8,7 @@ type Order struct {
 	Client    Client `faker:"-" gorm:"OnDelete:CASCADE;"`
 	ProductID uint
 	Product   Product `faker:"-" gorm:"OnDelete:CASCADE;"`
-	Quantity  int
+	Quantity  uint
 }
 
 func (p Order) GetId() uint {

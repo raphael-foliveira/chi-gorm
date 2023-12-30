@@ -36,9 +36,9 @@ func setUp() {
 }
 
 func clearDatabase() {
-	database.Db.Delete(&entities.Product{}).Where("1=1")
-	database.Db.Delete(&entities.Order{}).Where("1=1")
-	database.Db.Delete(&entities.Client{}).Where("1=1")
+	database.Db.Exec("DELETE FROM orders")
+	database.Db.Exec("DELETE FROM products")
+	database.Db.Exec("DELETE FROM clients")
 }
 
 func tearDown() {
