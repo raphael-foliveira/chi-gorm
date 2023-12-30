@@ -13,33 +13,28 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
-	"github.com/raphael-foliveira/chi-gorm/internal/services"
 )
 
 func TestProducts(t *testing.T) {
-	var store *mocks.ProductsStore
-	var service *services.Products
-	var controller *Products
+	var controller *ProductsImpl
 
 	setUp := func() {
-		store = &mocks.ProductsStore{}
-		service = services.NewProducts(store)
-		controller = NewProducts(service)
+		controller = NewProducts()
 	}
 
 	addProducts := func(q int) {
 		for i := 0; i < q; i++ {
 			var product entities.Product
 			faker.FakeData(&product)
-			product.ID = int64(i + 1)
-			store.Store = append(store.Store, product)
+			product.ID = uint(i + 1)
+			mocks.ProductsStore.Store = append(mocks.ProductsStore.Store, product)
 		}
 	}
 
 	t.Run("List", func(t *testing.T) {
 		setUp()
 		addProducts(10)
-		store.ShouldError = false
+		mocks.ProductsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		err := controller.List(recorder, request)
@@ -50,7 +45,7 @@ func TestProducts(t *testing.T) {
 			t.Errorf("Status code should be 200, got %v", recorder.Code)
 		}
 
-		store.ShouldError = true
+		mocks.ProductsStore.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("GET", "/", nil)
 		err = controller.List(recorder, request)
@@ -62,7 +57,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		setUp()
 		addProducts(10)
-		store.ShouldError = false
+		mocks.ProductsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/1", nil)
 		tx := chi.NewRouteContext()
@@ -88,7 +83,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		setUp()
-		store.ShouldError = false
+		mocks.ProductsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		var newProduct schemas.CreateProduct
 		faker.FakeData(&newProduct)
@@ -114,7 +109,7 @@ func TestProducts(t *testing.T) {
 			t.Errorf("Status code should be 400, got %v", recorder.Code)
 		}
 
-		store.ShouldError = true
+		mocks.ProductsStore.ShouldError = true
 		recorder = httptest.NewRecorder()
 		request = httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		err = controller.Create(recorder, request)
@@ -126,7 +121,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Update", func(t *testing.T) {
 		setUp()
 		addProducts(10)
-		store.ShouldError = false
+		mocks.ProductsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		var newProduct schemas.UpdateProduct
 		faker.FakeData(&newProduct)
@@ -172,7 +167,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Delete", func(t *testing.T) {
 		setUp()
 		addProducts(10)
-		store.ShouldError = false
+		mocks.ProductsStore.ShouldError = false
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("DELETE", "/1", nil)
 		tx := chi.NewRouteContext()

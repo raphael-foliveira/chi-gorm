@@ -3,48 +3,47 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
-var testDb *gorm.DB
-var dialector = sqlite.Open(":memory:")
 var testAppServer *server.Server
 
 func TestMain(m *testing.M) {
+	err := cfg.LoadEnv("../../.env")
+	if err != nil {
+		panic(err)
+	}
+	err = database.InitDb(cfg.TestConfig.DatabaseURL)
+	if err != nil {
+		panic(err)
+	}
 	m.Run()
 }
 
 func setUp() {
-	testAppServer = server.NewServer(dialector)
 	testApp := testAppServer.CreateApp()
-	testDb = testAppServer.Db
 	testServer = httptest.NewServer(testApp)
 	populateTables()
 }
 
-func clearDatabase() error {
-	sqlDb, err := testAppServer.Db.DB()
-	if err != nil {
-		return err
-	}
-	return sqlDb.Close()
+func clearDatabase() {
+	database.Db.Exec("DELETE FROM orders")
+	database.Db.Exec("DELETE FROM clients")
+	database.Db.Exec("DELETE FROM products")
 }
 
 func tearDown() {
-	err := clearDatabase()
-	if err != nil {
-		panic(err)
-	}
-	testServer.Close()
+	clearDatabase()
 }
 
 func makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
@@ -75,22 +74,25 @@ func populateTables() {
 	for i := 0; i < 20; i++ {
 		var c entities.Client
 		faker.FakeData(&c)
+		c.ID = 0
 		clients = append(clients, c)
 	}
+	database.Db.Create(&clients)
 	for i := 0; i < 20; i++ {
 		var p entities.Product
 		faker.FakeData(&p)
+		p.ID = 0
 		products = append(products, p)
 	}
+	database.Db.Create(&products)
 	for i := 0; i < 20; i++ {
 		var o entities.Order
 		faker.FakeData(&o)
-		o.ClientID = int64(i + 1)
-		o.ProductID = int64(i + 1)
+		o.ID = 0
+		o.ClientID = clients[rand.Intn(len(clients))].ID
+		o.ProductID = products[rand.Intn(len(products))].ID
 		orders = append(orders, o)
 	}
+	database.Db.Create(&orders)
 
-	testDb.Create(&clients)
-	testDb.Create(&products)
-	testDb.Create(&orders)
 }

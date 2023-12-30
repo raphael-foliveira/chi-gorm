@@ -9,15 +9,15 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
-func getIdFromPath(r *http.Request) (int64, error) {
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+func getIdFromPath(r *http.Request) (uint, error) {
+	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return 0, &exceptions.ApiError{
 			Message: "invalid id",
 			Status:  http.StatusBadRequest,
 		}
 	}
-	return id, nil
+	return uint(id), nil
 }
 
 func parseBody[T interface{}](r *http.Request, v *T) (*T, error) {

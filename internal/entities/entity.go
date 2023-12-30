@@ -1,5 +1,5 @@
 package entities
 
 type Entity interface {
-	GetId() int64
+	GetId() uint
 }

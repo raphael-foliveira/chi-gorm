@@ -8,58 +8,53 @@ import (
 )
 
 var clientNotFoundErr = &exceptions.NotFoundError{Entity: "client"}
+var Clients = &clients{}
 
-type Clients struct {
-	repository repository.Clients
-}
+type clients struct{}
 
-func NewClients(clientsRepo repository.Clients) *Clients {
-	return &Clients{clientsRepo}
-}
-
-func (c *Clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
+func (c *clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
 	validationErr := schema.Validate()
 	if validationErr != nil {
 		return nil, validationErr
 	}
 	newClient := schema.ToModel()
-	err := c.repository.Create(newClient)
+	err := repository.Clients.Create(newClient)
 	return newClient, err
 }
 
-func (c *Clients) Update(id int64, schema *schemas.UpdateClient) (*entities.Client, error) {
+func (c *clients) Update(id uint, schema *schemas.UpdateClient) (*entities.Client, error) {
 	validationErr := schema.Validate()
 	if validationErr != nil {
 		return nil, validationErr
 	}
-	entity, err := c.repository.Get(id)
+	entity, err := repository.Clients.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	entity.Name = schema.Name
 	entity.Email = schema.Email
-	err = c.repository.Update(entity)
+	err = repository.Clients.Update(entity)
 	return entity, err
 }
 
-func (c *Clients) Delete(id int64) error {
-	client, err := c.repository.Get(id)
+func (c *clients) Delete(id uint) error {
+	client, err := repository.Clients.Get(id)
 	if err != nil {
 		return err
 	}
-	err = c.repository.Delete(client)
+	err = repository.Clients.Delete(client)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Clients) List() ([]entities.Client, error) {
-	return c.repository.List()
+func (c *clients) List() ([]entities.Client, error) {
+	return repository.Clients.List()
 }
 
-func (c *Clients) Get(id int64) (*entities.Client, error) {
-	client, err := c.repository.Get(id)
+func (c *clients) Get(id uint) (*entities.Client, error) {
+	client, err := repository.Clients.Get(id)
 	if err != nil {
 		return nil, clientNotFoundErr
 	}

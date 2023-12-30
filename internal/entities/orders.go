@@ -1,20 +1,16 @@
 package entities
 
-import (
-	"time"
-)
+import "gorm.io/gorm"
 
 type Order struct {
-	ID        int64   `gorm:"primarykey" faker:"-"`
-	ClientID  int64   `gorm:"OnDelete:CASCADE;"`
-	Client    Client  `faker:"-"`
-	ProductID int64   `gorm:"OnDelete:CASCADE;"`
-	Product   Product `faker:"-"`
+	gorm.Model
+	ClientID  uint
+	Client    Client `faker:"-" gorm:"OnDelete:CASCADE;"`
+	ProductID uint
+	Product   Product `faker:"-" gorm:"OnDelete:CASCADE;"`
 	Quantity  int
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }
 
-func (p Order) GetId() int64 {
+func (p Order) GetId() uint {
 	return p.ID
 }

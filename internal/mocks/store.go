@@ -11,10 +11,6 @@ type store[T entities.Entity] struct {
 	ShouldError bool
 }
 
-func newStore[T entities.Entity]() store[T] {
-	return store[T]{Store: []T{}}
-}
-
 func (cr *store[T]) List() ([]T, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
@@ -22,7 +18,7 @@ func (cr *store[T]) List() ([]T, error) {
 	return cr.Store, nil
 }
 
-func (cr *store[T]) Get(id int64) (*T, error) {
+func (cr *store[T]) Get(id uint) (*T, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
 	}
