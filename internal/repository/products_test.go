@@ -20,8 +20,8 @@ func TestProductsRepository(t *testing.T) {
 		}
 		for i := range products {
 			products[i].ID = 0
+			database.Db.Create(&products[i])
 		}
-		err = database.Db.Create(&products).Error
 		if err != nil {
 			t.Error(err)
 		}
