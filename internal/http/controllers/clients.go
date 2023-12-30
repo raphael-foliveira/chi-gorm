@@ -8,13 +8,9 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/services"
 )
 
-var Clients = NewClients()
+var Clients = &clients{}
 
 type clients struct{}
-
-func NewClients() *clients {
-	return &clients{}
-}
 
 func (c *clients) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateClient{})

@@ -31,5 +31,10 @@ func CloseDb() error {
 	if err != nil {
 		return err
 	}
-	return sqlDb.Close()
+	err = sqlDb.Close()
+	if err != nil {
+		return err
+	}
+	Db = nil
+	return nil
 }

@@ -3,7 +3,6 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
-	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -37,9 +36,9 @@ func setUp() {
 }
 
 func clearDatabase() {
-	database.Db.Exec("DELETE FROM orders")
-	database.Db.Exec("DELETE FROM clients")
-	database.Db.Exec("DELETE FROM products")
+	database.Db.Delete(&entities.Product{}).Where("1=1")
+	database.Db.Delete(&entities.Order{}).Where("1=1")
+	database.Db.Delete(&entities.Client{}).Where("1=1")
 }
 
 func tearDown() {
@@ -67,31 +66,25 @@ func makeRequest(method string, endpoint string, body interface{}) (*http.Respon
 }
 
 func populateTables() {
-	clients := []entities.Client{}
-	products := []entities.Product{}
-	orders := []entities.Order{}
+	clients := [10]entities.Client{}
+	products := [10]entities.Product{}
+	orders := [10]entities.Order{}
+	faker.FakeData(&clients)
+	faker.FakeData(&products)
+	faker.FakeData(&orders)
 
-	for i := 0; i < 20; i++ {
-		var c entities.Client
-		faker.FakeData(&c)
-		c.ID = 0
-		clients = append(clients, c)
+	for i := 0; i < 10; i++ {
+		clients[i].ID = 0
+		products[i].ID = 0
+		orders[i].ID = 0
 	}
 	database.Db.Create(&clients)
-	for i := 0; i < 20; i++ {
-		var p entities.Product
-		faker.FakeData(&p)
-		p.ID = 0
-		products = append(products, p)
-	}
 	database.Db.Create(&products)
-	for i := 0; i < 20; i++ {
-		var o entities.Order
-		faker.FakeData(&o)
-		o.ID = 0
-		o.ClientID = clients[rand.Intn(len(clients))].ID
-		o.ProductID = products[rand.Intn(len(products))].ID
-		orders = append(orders, o)
+
+	for i := 0; i < 10; i++ {
+		orders[i].ID = 0
+		orders[i].ClientID = clients[i].ID
+		orders[i].ProductID = products[i].ID
 	}
 	database.Db.Create(&orders)
 

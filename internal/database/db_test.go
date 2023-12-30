@@ -18,4 +18,14 @@ func TestInitDb(t *testing.T) {
 			t.Error("Db not initialized")
 		}
 	})
+
+	t.Run("should close the database", func(t *testing.T) {
+		err := CloseDb()
+		if err != nil {
+			t.Error(err)
+		}
+		if Db != nil {
+			t.Error("Db not closed")
+		}
+	})
 }

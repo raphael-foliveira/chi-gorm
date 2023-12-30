@@ -8,15 +8,11 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/services"
 )
 
-var Products = NewProducts()
+var Products = &products{}
 
-type ProductsImpl struct{}
+type products struct{}
 
-func NewProducts() *ProductsImpl {
-	return &ProductsImpl{}
-}
-
-func (c *ProductsImpl) Create(w http.ResponseWriter, r *http.Request) error {
+func (c *products) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateProduct{})
 	if err != nil {
 		return err
@@ -28,7 +24,7 @@ func (c *ProductsImpl) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, schemas.NewProduct(newOrder))
 }
 
-func (c *ProductsImpl) Update(w http.ResponseWriter, r *http.Request) error {
+func (c *products) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
 		return err
@@ -44,7 +40,7 @@ func (c *ProductsImpl) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewProduct(updatedOrder))
 }
 
-func (c *ProductsImpl) Delete(w http.ResponseWriter, r *http.Request) error {
+func (c *products) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
 		return err
@@ -56,7 +52,7 @@ func (c *ProductsImpl) Delete(w http.ResponseWriter, r *http.Request) error {
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (c *ProductsImpl) List(w http.ResponseWriter, r *http.Request) error {
+func (c *products) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := services.Products.List()
 	if err != nil {
 		return err
@@ -64,7 +60,7 @@ func (c *ProductsImpl) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewProducts(products))
 }
 
-func (c *ProductsImpl) Get(w http.ResponseWriter, r *http.Request) error {
+func (c *products) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getIdFromPath(r)
 	if err != nil {
 		return err

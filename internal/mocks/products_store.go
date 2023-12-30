@@ -6,13 +6,13 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
-var ProductsStore = &ProductsStoreImpl{store[entities.Product]{}}
+var ProductsStore = &productsStore{store[entities.Product]{}}
 
-type ProductsStoreImpl struct {
+type productsStore struct {
 	store[entities.Product]
 }
 
-func (cr *ProductsStoreImpl) FindMany(ids []uint) ([]entities.Product, error) {
+func (cr *productsStore) FindMany(ids []uint) ([]entities.Product, error) {
 	if cr.ShouldError {
 		return nil, errors.New("")
 	}
