@@ -18,7 +18,7 @@ var testServer *httptest.Server
 var testAppServer *server.Server
 
 func TestMain(m *testing.M) {
-	err := cfg.LoadEnv("../../.env")
+	err := cfg.LoadCfg("../../.env")
 	if err != nil {
 		panic(err)
 	}
@@ -35,14 +35,10 @@ func setUp() {
 	populateTables()
 }
 
-func clearDatabase() {
+func tearDown() {
 	database.Db.Exec("DELETE FROM orders")
 	database.Db.Exec("DELETE FROM products")
 	database.Db.Exec("DELETE FROM clients")
-}
-
-func tearDown() {
-	clearDatabase()
 }
 
 func makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {

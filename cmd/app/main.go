@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	if err := cfg.LoadEnv(".env"); err != nil {
+	if err := cfg.LoadCfg(".env"); err != nil {
 		panic(err)
 	}
 	if err := database.InitDb(cfg.MainConfig.DatabaseURL); err != nil {

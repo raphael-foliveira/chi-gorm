@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 import (
 	"bytes"
@@ -9,32 +9,12 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
 )
 
 func TestClient(t *testing.T) {
-
-	addClients := func(q int) {
-		for i := 0; i < q; i++ {
-			var client entities.Client
-			var product entities.Product
-			faker.FakeData(&client)
-			faker.FakeData(&product)
-			mocks.ProductsStore.Store = append(mocks.ProductsStore.Store, product)
-			for j := 0; j < 10; j++ {
-				var order entities.Order
-				faker.FakeData(&order)
-				order.ClientID = client.ID
-				order.ProductID = product.ID
-				mocks.OrdersStore.Store = append(mocks.OrdersStore.Store, order)
-			}
-			client.ID = uint(i + 1)
-			mocks.ClientsStore.Store = append(mocks.ClientsStore.Store, client)
-		}
-	}
 
 	t.Run("List", func(t *testing.T) {
 		addClients(10)

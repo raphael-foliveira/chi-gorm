@@ -7,7 +7,7 @@ import (
 )
 
 func TestInitDb(t *testing.T) {
-	cfg.LoadEnv("../../.env")
+	cfg.LoadCfg("../../.env")
 	t.Run("should initialize the database", func(t *testing.T) {
 		Db = nil
 		err := InitDb(cfg.TestConfig.DatabaseURL)

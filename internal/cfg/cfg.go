@@ -12,7 +12,7 @@ type Config struct {
 var MainConfig Config
 var TestConfig Config
 
-func LoadEnv(envFile string) error {
+func LoadCfg(envFile string) error {
 	bytes, err := os.ReadFile(envFile)
 	if err != nil {
 		return err

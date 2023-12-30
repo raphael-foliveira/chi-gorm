@@ -4,14 +4,11 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
 func TestProductsRepository(t *testing.T) {
-	cfg.LoadEnv("../../.env")
-	database.InitDb(cfg.TestConfig.DatabaseURL)
 	t.Run("Should find many", func(t *testing.T) {
 		products := [2]entities.Product{}
 		err := faker.FakeData(&products)
