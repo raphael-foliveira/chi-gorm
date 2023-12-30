@@ -1,8 +1,6 @@
 package database
 
 import (
-	"fmt"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -11,7 +9,6 @@ import (
 var Db *gorm.DB
 
 func InitDb(dbUrl string) error {
-	fmt.Println("dbUrl:", dbUrl)
 	if Db != nil {
 		return nil
 	}
