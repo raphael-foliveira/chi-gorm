@@ -16,7 +16,6 @@ func TestMain(m *testing.M) {
 
 func TestInitDb(t *testing.T) {
 	t.Run("should initialize the database", func(t *testing.T) {
-		Db = nil
 		err := InitDb(cfg.DatabaseURL)
 		if err != nil {
 			t.Error(err)
