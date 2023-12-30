@@ -18,11 +18,11 @@ var testServer *httptest.Server
 var testAppServer *server.Server
 
 func TestMain(m *testing.M) {
-	err := cfg.LoadCfg("../../.env")
+	err := cfg.LoadCfg("../../.env.test")
 	if err != nil {
 		panic(err)
 	}
-	err = database.InitDb(cfg.TestConfig.DatabaseURL)
+	err = database.InitDb(cfg.DatabaseURL)
 	if err != nil {
 		panic(err)
 	}
