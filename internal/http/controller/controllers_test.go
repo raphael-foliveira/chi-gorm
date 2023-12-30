@@ -3,7 +3,7 @@ package controller
 import (
 	"testing"
 
-	"github.com/bxcodec/faker/v4"
+	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
