@@ -5,9 +5,9 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
-var Products productsRepository = &products{&repository[entities.Product]{}}
+var Products ProductsRepository = &products{&repository[entities.Product]{}}
 
-type productsRepository interface {
+type ProductsRepository interface {
 	Repository[entities.Product]
 	FindMany([]uint) ([]entities.Product, error)
 }

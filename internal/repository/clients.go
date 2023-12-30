@@ -5,7 +5,11 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
-var Clients Repository[entities.Client] = &clients{&repository[entities.Client]{}}
+var Clients ClientsRepository = &clients{&repository[entities.Client]{}}
+
+type ClientsRepository interface {
+	Repository[entities.Client]
+}
 
 type clients struct {
 	*repository[entities.Client]
