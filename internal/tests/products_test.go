@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/bxcodec/faker/v4"
+	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"

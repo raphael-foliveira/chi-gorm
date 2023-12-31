@@ -7,59 +7,43 @@ import (
 )
 
 type store[T entities.Entity] struct {
-	Store       []T
-	ShouldError bool
+	Store []T
+	Error error
 }
 
 func (cr *store[T]) List() ([]T, error) {
-	if cr.ShouldError {
-		return nil, errors.New("")
-	}
-	return cr.Store, nil
+	return cr.Store, cr.Error
 }
 
 func (cr *store[T]) Get(id uint) (*T, error) {
-	if cr.ShouldError {
-		return nil, errors.New("")
-	}
-
 	for _, entity := range cr.Store {
 		if entity.GetId() == id {
-			return &entity, nil
+			return &entity, cr.Error
 		}
 	}
 	return nil, errors.New("not found")
 }
 
 func (cr *store[T]) Create(client *T) error {
-	if cr.ShouldError {
-		return errors.New("")
-	}
 	cr.Store = append(cr.Store, *client)
-	return nil
+	return cr.Error
 }
 
 func (cr *store[T]) Update(client *T) error {
-	if cr.ShouldError {
-		return errors.New("")
-	}
 	for i, c := range cr.Store {
 		if c.GetId() == (*client).GetId() {
 			cr.Store[i] = (*client)
-			return nil
+			return cr.Error
 		}
 	}
 	return errors.New("not found")
 }
 
 func (cr *store[T]) Delete(client *T) error {
-	if cr.ShouldError {
-		return errors.New("")
-	}
 	for i, c := range cr.Store {
 		if c.GetId() == (*client).GetId() {
 			cr.Store = append(cr.Store[:i], cr.Store[i+1:]...)
-			return nil
+			return cr.Error
 		}
 	}
 	return errors.New("not found")

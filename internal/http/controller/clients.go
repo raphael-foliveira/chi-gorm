@@ -1,11 +1,11 @@
-package controllers
+package controller
 
 import (
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/services"
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 var Clients = &clients{}
@@ -17,7 +17,7 @@ func (c *clients) Create(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	newClient, err := services.Clients.Create(body)
+	newClient, err := service.Clients.Create(body)
 	if err != nil {
 		return err
 	}
@@ -33,7 +33,7 @@ func (c *clients) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	updatedClient, err := services.Clients.Update(id, body)
+	updatedClient, err := service.Clients.Update(id, body)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (c *clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	err = services.Clients.Delete(id)
+	err = service.Clients.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (c *clients) Delete(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) List(w http.ResponseWriter, r *http.Request) error {
-	clients, err := services.Clients.List()
+	clients, err := service.Clients.List()
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (c *clients) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	client, err := services.Clients.Get(id)
+	client, err := service.Clients.Get(id)
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/bxcodec/faker/v4"
+	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
@@ -18,11 +18,11 @@ var testServer *httptest.Server
 var testAppServer *server.Server
 
 func TestMain(m *testing.M) {
-	err := cfg.LoadEnv("../../.env")
+	err := cfg.LoadCfg("../../.env.test")
 	if err != nil {
 		panic(err)
 	}
-	err = database.InitDb(cfg.TestConfig.DatabaseURL)
+	err = database.InitDb(cfg.DatabaseURL)
 	if err != nil {
 		panic(err)
 	}
@@ -35,14 +35,10 @@ func setUp() {
 	populateTables()
 }
 
-func clearDatabase() {
-	database.Db.Delete(&entities.Product{}).Where("1=1")
-	database.Db.Delete(&entities.Order{}).Where("1=1")
-	database.Db.Delete(&entities.Client{}).Where("1=1")
-}
-
 func tearDown() {
-	clearDatabase()
+	database.Db.Exec("DELETE FROM orders")
+	database.Db.Exec("DELETE FROM products")
+	database.Db.Exec("DELETE FROM clients")
 }
 
 func makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {

@@ -1,11 +1,11 @@
-package controllers
+package controller
 
 import (
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/services"
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 var Products = &products{}
@@ -17,7 +17,7 @@ func (c *products) Create(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	newOrder, err := services.Products.Create(body)
+	newOrder, err := service.Products.Create(body)
 	if err != nil {
 		return err
 	}
@@ -33,7 +33,7 @@ func (c *products) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	updatedOrder, err := services.Products.Update(id, body)
+	updatedOrder, err := service.Products.Update(id, body)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (c *products) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	err = services.Products.Delete(id)
+	err = service.Products.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (c *products) Delete(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *products) List(w http.ResponseWriter, r *http.Request) error {
-	products, err := services.Products.List()
+	products, err := service.Products.List()
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (c *products) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	product, err := services.Products.Get(id)
+	product, err := service.Products.Get(id)
 	if err != nil {
 		return err
 	}

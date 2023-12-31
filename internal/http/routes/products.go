@@ -2,15 +2,15 @@ package routes
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/controllers"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 )
 
 func Products() *chi.Mux {
 	router := chi.NewRouter()
-	router.Get("/", wrap(controllers.Products.List))
-	router.Post("/", wrap(controllers.Products.Create))
-	router.Get("/{id}", wrap(controllers.Products.Get))
-	router.Delete("/{id}", wrap(controllers.Products.Delete))
-	router.Put("/{id}", wrap(controllers.Products.Update))
+	router.Get("/", wrap(controller.Products.List))
+	router.Post("/", wrap(controller.Products.Create))
+	router.Get("/{id}", wrap(controller.Products.Get))
+	router.Delete("/{id}", wrap(controller.Products.Delete))
+	router.Put("/{id}", wrap(controller.Products.Update))
 	return router
 }

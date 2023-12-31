@@ -8,7 +8,7 @@ import (
 type CreateOrder struct {
 	ClientID  uint `json:"client_id" faker:"-"`
 	ProductID uint `json:"product_id" faker:"-"`
-	Quantity  int  `json:"quantity"`
+	Quantity  uint `json:"quantity"`
 }
 
 func (co *CreateOrder) ToModel() *entities.Order {
@@ -29,7 +29,7 @@ func (co *CreateOrder) Validate() error {
 }
 
 type UpdateOrder struct {
-	Quantity int `json:"quantity"`
+	Quantity uint `json:"quantity"`
 }
 
 func (uo *UpdateOrder) Validate() error {
@@ -43,7 +43,7 @@ func (uo *UpdateOrder) Validate() error {
 
 type Order struct {
 	ID       uint     `json:"id" faker:"-"`
-	Quantity int      `json:"quantity" faker:"-"`
+	Quantity uint     `json:"quantity" faker:"-"`
 	Client   *Client  `json:"client" faker:"-"`
 	Product  *Product `json:"product" faker:"-"`
 }

@@ -1,8 +1,6 @@
 package mocks
 
 import (
-	"errors"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
@@ -13,9 +11,6 @@ type productsStore struct {
 }
 
 func (cr *productsStore) FindMany(ids []uint) ([]entities.Product, error) {
-	if cr.ShouldError {
-		return nil, errors.New("")
-	}
 	products := []entities.Product{}
 	for _, id := range ids {
 		for _, product := range cr.Store {
@@ -24,5 +19,5 @@ func (cr *productsStore) FindMany(ids []uint) ([]entities.Product, error) {
 			}
 		}
 	}
-	return products, nil
+	return products, cr.Error
 }
