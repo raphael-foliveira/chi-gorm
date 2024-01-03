@@ -1,5 +1,7 @@
 package exceptions
 
+import "strings"
+
 type NotFoundError struct {
 	Entity string
 }
@@ -15,6 +17,15 @@ type ApiError struct {
 
 func (ae *ApiError) Error() string {
 	return ae.Message
+}
+
+type MultipleApiError struct {
+	Errors []string `json:"errors"`
+	Status int      `json:"status"`
+}
+
+func (ae *MultipleApiError) Error() string {
+	return strings.Join(ae.Errors, ", ")
 }
 
 type ValidationError struct {

@@ -35,9 +35,9 @@ func handleApiErr(w http.ResponseWriter, err error) {
 		return
 	}
 	if errors.As(err, &validationErr) {
-		res.JSON(w, http.StatusUnprocessableEntity, exceptions.ApiError{
-			Message: strings.ReplaceAll(err.Error(), "\n", ", "),
-			Status:  http.StatusUnprocessableEntity,
+		res.JSON(w, http.StatusUnprocessableEntity, exceptions.MultipleApiError{
+			Errors: strings.Split(err.Error(), "\n"),
+			Status: http.StatusUnprocessableEntity,
 		})
 		return
 	}
