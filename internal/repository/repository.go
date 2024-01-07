@@ -1,6 +1,8 @@
 package repository
 
-import "github.com/raphael-foliveira/chi-gorm/internal/database"
+import (
+	"gorm.io/gorm"
+)
 
 type Repository[T interface{}] interface {
 	List() ([]T, error)
@@ -10,26 +12,46 @@ type Repository[T interface{}] interface {
 	Delete(*T) error
 }
 
-type repository[T interface{}] struct{}
+type repository[T interface{}] struct {
+	db *gorm.DB
+}
+
+func NewRepository[T interface{}](db *gorm.DB) Repository[T] {
+	return &repository[T]{db}
+}
 
 func (r *repository[T]) List() ([]T, error) {
 	entities := []T{}
-	return entities, database.Db.Find(&entities).Error
+	return entities, r.db.Find(&entities).Error
 }
 
 func (r *repository[T]) Get(id uint) (*T, error) {
 	entity := new(T)
-	return entity, database.Db.Model(new(T)).First(entity, id).Error
+	return entity, r.db.Model(new(T)).First(entity, id).Error
 }
 
 func (r *repository[T]) Create(entity *T) error {
-	return database.Db.Create(entity).Error
+	return r.db.Create(entity).Error
 }
 
 func (r *repository[T]) Update(entity *T) error {
-	return database.Db.Save(entity).Error
+	return r.db.Save(entity).Error
 }
 
 func (r *repository[T]) Delete(entity *T) error {
-	return database.Db.Delete(entity).Error
+	return r.db.Delete(entity).Error
+}
+
+type Repositories struct {
+	Clients  Clients
+	Products Products
+	Orders   Orders
+}
+
+func NewRepositories(db *gorm.DB) *Repositories {
+	return &Repositories{
+		Clients:  NewClients(db),
+		Products: NewProducts(db),
+		Orders:   NewOrders(db),
+	}
 }

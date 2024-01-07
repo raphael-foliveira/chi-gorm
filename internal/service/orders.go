@@ -9,9 +9,21 @@ import (
 
 var orderNotFoundErr = &exceptions.NotFoundError{Entity: "order"}
 
-var Orders = &orders{}
+type Orders interface {
+	Create(schema *schemas.CreateOrder) (*entities.Order, error)
+	Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error)
+	Delete(id uint) error
+	List() ([]entities.Order, error)
+	Get(id uint) (*entities.Order, error)
+}
 
-type orders struct{}
+type orders struct {
+	repository repository.Repository[entities.Order]
+}
+
+func NewOrders(repository repository.Repository[entities.Order]) Orders {
+	return &orders{repository}
+}
 
 func (c *orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 	validationErr := schema.Validate()
@@ -19,7 +31,7 @@ func (c *orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 		return nil, validationErr
 	}
 	newOrder := schema.ToModel()
-	err := repository.Orders.Create(newOrder)
+	err := c.repository.Create(newOrder)
 	return newOrder, err
 }
 
@@ -28,21 +40,21 @@ func (c *orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, 
 	if validationErr != nil {
 		return nil, validationErr
 	}
-	entity, err := repository.Orders.Get(id)
+	entity, err := c.repository.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	entity.Quantity = schema.Quantity
-	err = repository.Orders.Update(entity)
+	err = c.repository.Update(entity)
 	return entity, err
 }
 
 func (c *orders) Delete(id uint) error {
-	client, err := repository.Orders.Get(id)
+	client, err := c.repository.Get(id)
 	if err != nil {
 		return err
 	}
-	err = repository.Orders.Delete(client)
+	err = c.repository.Delete(client)
 	if err != nil {
 		return err
 	}
@@ -50,11 +62,11 @@ func (c *orders) Delete(id uint) error {
 }
 
 func (c *orders) List() ([]entities.Order, error) {
-	return repository.Orders.List()
+	return c.repository.List()
 }
 
 func (c *orders) Get(id uint) (*entities.Order, error) {
-	order, err := repository.Orders.Get(id)
+	order, err := c.repository.Get(id)
 	if err != nil || order == nil {
 		return nil, orderNotFoundErr
 	}

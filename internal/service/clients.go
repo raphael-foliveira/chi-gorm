@@ -8,9 +8,22 @@ import (
 )
 
 var clientNotFoundErr = &exceptions.NotFoundError{Entity: "client"}
-var Clients = &clients{}
 
-type clients struct{}
+type Clients interface {
+	Create(schema *schemas.CreateClient) (*entities.Client, error)
+	Update(id uint, schema *schemas.UpdateClient) (*entities.Client, error)
+	Delete(id uint) error
+	List() ([]entities.Client, error)
+	Get(id uint) (*entities.Client, error)
+}
+
+type clients struct {
+	repository repository.Clients
+}
+
+func NewClients(repository repository.Clients) Clients {
+	return &clients{repository}
+}
 
 func (c *clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
 	validationErr := schema.Validate()
@@ -18,7 +31,7 @@ func (c *clients) Create(schema *schemas.CreateClient) (*entities.Client, error)
 		return nil, validationErr
 	}
 	newClient := schema.ToModel()
-	err := repository.Clients.Create(newClient)
+	err := c.repository.Create(newClient)
 	return newClient, err
 }
 
@@ -27,22 +40,22 @@ func (c *clients) Update(id uint, schema *schemas.UpdateClient) (*entities.Clien
 	if validationErr != nil {
 		return nil, validationErr
 	}
-	entity, err := repository.Clients.Get(id)
+	entity, err := c.repository.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	entity.Name = schema.Name
 	entity.Email = schema.Email
-	err = repository.Clients.Update(entity)
+	err = c.repository.Update(entity)
 	return entity, err
 }
 
 func (c *clients) Delete(id uint) error {
-	client, err := repository.Clients.Get(id)
+	client, err := c.repository.Get(id)
 	if err != nil {
 		return err
 	}
-	err = repository.Clients.Delete(client)
+	err = c.repository.Delete(client)
 	if err != nil {
 		return err
 	}
@@ -50,11 +63,11 @@ func (c *clients) Delete(id uint) error {
 }
 
 func (c *clients) List() ([]entities.Client, error) {
-	return repository.Clients.List()
+	return c.repository.List()
 }
 
 func (c *clients) Get(id uint) (*entities.Client, error) {
-	client, err := repository.Clients.Get(id)
+	client, err := c.repository.Get(id)
 	if err != nil {
 		return nil, clientNotFoundErr
 	}

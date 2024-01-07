@@ -12,7 +12,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	err = database.InitDb(cfg.DatabaseURL)
+	_, err = database.GetDb(cfg.Cfg.DatabaseURL)
 	if err != nil {
 		panic(err)
 	}

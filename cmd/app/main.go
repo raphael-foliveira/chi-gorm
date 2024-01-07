@@ -10,10 +10,11 @@ func main() {
 	if err := cfg.LoadCfg(".env"); err != nil {
 		panic(err)
 	}
-	if err := database.InitDb(cfg.DatabaseURL); err != nil {
+	db, err := database.GetDb(cfg.Cfg.DatabaseURL)
+	if err != nil {
 		panic(err)
 	}
-	if err := server.NewServer().Start(); err != nil {
+	if err := server.NewServer(db).Start(); err != nil {
 		panic(err)
 	}
 }

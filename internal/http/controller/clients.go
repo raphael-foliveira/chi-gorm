@@ -8,16 +8,20 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-var Clients = &clients{}
+type clients struct {
+	service service.Clients
+}
 
-type clients struct{}
+func NewClients(service service.Clients) Controller {
+	return &clients{service}
+}
 
 func (c *clients) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateClient{})
 	if err != nil {
 		return err
 	}
-	newClient, err := service.Clients.Create(body)
+	newClient, err := c.service.Create(body)
 	if err != nil {
 		return err
 	}
@@ -33,7 +37,7 @@ func (c *clients) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	updatedClient, err := service.Clients.Update(id, body)
+	updatedClient, err := c.service.Update(id, body)
 	if err != nil {
 		return err
 	}
@@ -45,7 +49,7 @@ func (c *clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	err = service.Clients.Delete(id)
+	err = c.service.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -53,7 +57,7 @@ func (c *clients) Delete(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) List(w http.ResponseWriter, r *http.Request) error {
-	clients, err := service.Clients.List()
+	clients, err := c.service.List()
 	if err != nil {
 		return err
 	}
@@ -65,7 +69,7 @@ func (c *clients) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	client, err := service.Clients.Get(id)
+	client, err := c.service.Get(id)
 	if err != nil {
 		return err
 	}

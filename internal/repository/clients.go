@@ -1,13 +1,11 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"gorm.io/gorm"
 )
 
-var Clients ClientsRepository = &clients{&repository[entities.Client]{}}
-
-type ClientsRepository interface {
+type Clients interface {
 	Repository[entities.Client]
 }
 
@@ -15,6 +13,10 @@ type clients struct {
 	*repository[entities.Client]
 }
 
+func NewClients(db *gorm.DB) Clients {
+	return &clients{&repository[entities.Client]{db}}
+}
+
 func (c *clients) Delete(entity *entities.Client) error {
-	return database.Db.Delete(entity).Error
+	return c.db.Delete(entity).Error
 }

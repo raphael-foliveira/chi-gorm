@@ -13,16 +13,19 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 func TestOrders(t *testing.T) {
+
+	controller := NewOrders(service.NewOrders(mocks.OrdersStore))
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all orders", func(t *testing.T) {
 			addOrders(10)
 			mocks.OrdersStore.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
-			err := Orders.List(recorder, request)
+			err := controller.List(recorder, request)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -34,7 +37,7 @@ func TestOrders(t *testing.T) {
 			mocks.OrdersStore.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
-			err := Orders.List(recorder, request)
+			err := controller.List(recorder, request)
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
@@ -50,7 +53,7 @@ func TestOrders(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "1")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			err := Orders.Get(recorder, request)
+			err := controller.Get(recorder, request)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -65,7 +68,7 @@ func TestOrders(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "9999")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			err := Orders.Get(recorder, request)
+			err := controller.Get(recorder, request)
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
@@ -80,7 +83,7 @@ func TestOrders(t *testing.T) {
 			faker.FakeData(&newOrder)
 			reqBody, _ := json.Marshal(newOrder)
 			request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
-			err := Orders.Create(recorder, request)
+			err := controller.Create(recorder, request)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -93,7 +96,7 @@ func TestOrders(t *testing.T) {
 			invalidReqBody := `{"foo: 95}`
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
-			err := Orders.Create(recorder, request)
+			err := controller.Create(recorder, request)
 			apiErr, ok := err.(*exceptions.ApiError)
 			if !ok {
 				t.Fatal("err should be an ApiError")
@@ -110,7 +113,7 @@ func TestOrders(t *testing.T) {
 			faker.FakeData(&newOrder)
 			reqBody, _ := json.Marshal(newOrder)
 			request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
-			err := Orders.Create(recorder, request)
+			err := controller.Create(recorder, request)
 			if err == nil {
 				t.Error("Should return an error")
 			}
@@ -129,7 +132,7 @@ func TestOrders(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "1")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			err := Orders.Update(recorder, request)
+			err := controller.Update(recorder, request)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -144,7 +147,7 @@ func TestOrders(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "1")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			err := Orders.Update(recorder, request)
+			err := controller.Update(recorder, request)
 			apiErr, ok := err.(*exceptions.ApiError)
 			if !ok {
 				t.Fatal("err should be an ApiError")
@@ -163,7 +166,7 @@ func TestOrders(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "9999")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			err := Orders.Update(recorder, request)
+			err := controller.Update(recorder, request)
 			if err == nil {
 				t.Error("Should return an error")
 			}
@@ -179,7 +182,7 @@ func TestOrders(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "1")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			err := Orders.Delete(recorder, request)
+			err := controller.Delete(recorder, request)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -194,7 +197,7 @@ func TestOrders(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "9999")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			err := Orders.Delete(recorder, request)
+			err := controller.Delete(recorder, request)
 			if err == nil {
 				t.Error("Should return an error")
 			}
