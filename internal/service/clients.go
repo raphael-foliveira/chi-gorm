@@ -7,8 +7,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-var clientNotFoundErr = &exceptions.NotFoundError{Entity: "client"}
-
 type Clients interface {
 	Create(*schemas.CreateClient) (*entities.Client, error)
 	Update(uint, *schemas.UpdateClient) (*entities.Client, error)
@@ -19,12 +17,12 @@ type Clients interface {
 }
 
 type clients struct {
-	repository       repository.Clients
-	ordersRepository repository.Orders
+	repository    repository.Clients
+	ordersService Orders
 }
 
-func NewClients(repository repository.Clients, ordersRepository repository.Orders) Clients {
-	return &clients{repository, ordersRepository}
+func NewClients(repository repository.Clients, ordersService Orders) Clients {
+	return &clients{repository, ordersService}
 }
 
 func (c *clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
@@ -71,7 +69,7 @@ func (c *clients) List() ([]entities.Client, error) {
 func (c *clients) Get(id uint) (*entities.Client, error) {
 	client, err := c.repository.Get(id)
 	if err != nil {
-		return nil, clientNotFoundErr
+		return nil, exceptions.NewNotFoundError("client not found")
 	}
 	return client, nil
 }
@@ -81,5 +79,5 @@ func (c *clients) GetProducts(clientId uint) ([]entities.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	return c.ordersRepository.FindManyByClientId(client.ID)
+	return c.ordersService.FindManyByClientId(client.ID)
 }

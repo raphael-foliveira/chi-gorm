@@ -2,14 +2,6 @@ package exceptions
 
 import "strings"
 
-type NotFoundError struct {
-	Entity string
-}
-
-func (e *NotFoundError) Error() string {
-	return e.Entity + " not found"
-}
-
 type ApiError struct {
 	Message string `json:"message"`
 	Status  int    `json:"status"`
@@ -17,6 +9,13 @@ type ApiError struct {
 
 func (ae *ApiError) Error() string {
 	return ae.Message
+}
+
+func NewApiError(message string, status int) *ApiError {
+	return &ApiError{
+		Message: message,
+		Status:  status,
+	}
 }
 
 type MultipleApiError struct {
@@ -29,9 +28,27 @@ func (ae *MultipleApiError) Error() string {
 }
 
 type ValidationError struct {
-	Message string `json:"message"`
+	ApiError
 }
 
-func (ve *ValidationError) Error() string {
-	return ve.Message
+func NewValidationError(message string) *ValidationError {
+	return &ValidationError{
+		ApiError: ApiError{
+			Message: message,
+			Status:  422,
+		},
+	}
+}
+
+type NotFoundError struct {
+	ApiError
+}
+
+func NewNotFoundError(message string) *NotFoundError {
+	return &NotFoundError{
+		ApiError: ApiError{
+			Message: message,
+			Status:  404,
+		},
+	}
 }

@@ -9,9 +9,12 @@ type Services struct {
 }
 
 func NewServices(repositories *repository.Repositories) *Services {
+	orders := NewOrders(repositories.Orders)
+	clients := NewClients(repositories.Clients, orders)
+	products := NewProducts(repositories.Products)
 	return &Services{
-		Clients:  NewClients(repositories.Clients, repositories.Orders),
-		Products: NewProducts(repositories.Products),
-		Orders:   NewOrders(repositories.Orders),
+		Clients:  clients,
+		Products: products,
+		Orders:   orders,
 	}
 }

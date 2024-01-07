@@ -7,8 +7,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-var productNotFoundErr = &exceptions.NotFoundError{Entity: "product"}
-
 type Products interface {
 	Create(schema *schemas.CreateProduct) (*entities.Product, error)
 	Update(id uint, schema *schemas.UpdateProduct) (*entities.Product, error)
@@ -69,7 +67,7 @@ func (c *products) List() ([]entities.Product, error) {
 func (c *products) Get(id uint) (*entities.Product, error) {
 	product, err := c.repository.Get(id)
 	if err != nil || product == nil {
-		return nil, productNotFoundErr
+		return nil, exceptions.NewNotFoundError("product not found")
 	}
 	return product, nil
 }

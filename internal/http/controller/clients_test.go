@@ -19,7 +19,7 @@ import (
 
 func TestClient(t *testing.T) {
 
-	controller := NewClients(service.NewClients(mocks.ClientsStore, mocks.OrdersStore))
+	controller := NewClients(service.NewClients(mocks.ClientsStore, service.NewOrders(mocks.OrdersStore)))
 
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all clients", func(t *testing.T) {
