@@ -8,18 +8,18 @@ import (
 )
 
 type Payload struct {
-	ID         uint   `json:"id"`
+	ClientID   uint   `json:"id"`
 	ClientName string `json:"client_name"`
 	Email      string `json:"email"`
 }
 
 type Claims struct {
-	Payload
-	jwt.RegisteredClaims
+	*Payload
+	*jwt.RegisteredClaims
 }
 
 type Jwt interface {
-	Sign(Payload) (string, error)
+	Sign(*Payload) (string, error)
 	Verify(string) (*Payload, error)
 }
 
@@ -31,10 +31,10 @@ func NewJwt() Jwt {
 	return &jwtService{cfg.Cfg.JwtSecret}
 }
 
-func (j *jwtService) Sign(payload Payload) (string, error) {
+func (j *jwtService) Sign(payload *Payload) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, Claims{
 		Payload: payload,
-		RegisteredClaims: jwt.RegisteredClaims{
+		RegisteredClaims: &jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
@@ -51,8 +51,8 @@ func (j *jwtService) Verify(token string) (*Payload, error) {
 		return []byte(j.secret), nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodES256.Name}))
 	return &Payload{
-		ID:         data.Claims.(jwt.MapClaims)["id"].(uint),
-		ClientName: data.Claims.(jwt.MapClaims)["client_name"].(string),
-		Email:      data.Claims.(jwt.MapClaims)["email"].(string),
+		ClientID:   data.Claims.(Claims).ClientID,
+		ClientName: data.Claims.(Claims).ClientName,
+		Email:      data.Claims.(Claims).Email,
 	}, err
 }
