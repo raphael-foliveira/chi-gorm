@@ -1,6 +1,9 @@
 package exceptions
 
-import "strings"
+import (
+	"net/http"
+	"strings"
+)
 
 type ApiError struct {
 	Message string `json:"message"`
@@ -27,28 +30,16 @@ func (ae *MultipleApiError) Error() string {
 	return strings.Join(ae.Errors, ", ")
 }
 
-type ValidationError struct {
-	ApiError
-}
-
-func NewValidationError(message string) *ValidationError {
-	return &ValidationError{
-		ApiError: ApiError{
-			Message: message,
-			Status:  422,
-		},
+func NewValidationError(message string) *ApiError {
+	return &ApiError{
+		Message: message,
+		Status:  http.StatusBadRequest,
 	}
 }
 
-type NotFoundError struct {
-	ApiError
-}
-
-func NewNotFoundError(message string) *NotFoundError {
-	return &NotFoundError{
-		ApiError: ApiError{
-			Message: message,
-			Status:  404,
-		},
+func NewNotFoundError(message string) *ApiError {
+	return &ApiError{
+		Message: message,
+		Status:  http.StatusNotFound,
 	}
 }
