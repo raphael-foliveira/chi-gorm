@@ -9,8 +9,8 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
-func getIdFromPath(r *http.Request) (uint, error) {
-	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
+func getPathParam(r *http.Request, paramName string) (uint, error) {
+	id, err := strconv.ParseUint(chi.URLParam(r, paramName), 10, 64)
 	if err != nil {
 		return 0, &exceptions.ApiError{
 			Message: "invalid id",

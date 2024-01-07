@@ -10,7 +10,7 @@ type Services struct {
 
 func NewServices(repositories *repository.Repositories) *Services {
 	return &Services{
-		Clients:  NewClients(repositories.Clients),
+		Clients:  NewClients(repositories.Clients, repositories.Orders),
 		Products: NewProducts(repositories.Products),
 		Orders:   NewOrders(repositories.Orders),
 	}

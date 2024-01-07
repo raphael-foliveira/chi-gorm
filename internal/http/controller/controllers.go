@@ -15,7 +15,7 @@ type Controller interface {
 }
 
 type Controllers struct {
-	Clients  Controller
+	Clients  Clients
 	Orders   Controller
 	Products Controller
 }

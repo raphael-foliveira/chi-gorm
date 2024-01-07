@@ -1,8 +1,6 @@
 package database
 
 import (
-	"fmt"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -41,8 +39,6 @@ func CloseDb() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("instance:", instance)
 	instance = nil
-	fmt.Println("instance:", instance)
 	return nil
 }

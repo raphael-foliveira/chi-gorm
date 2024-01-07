@@ -7,6 +7,7 @@ import (
 
 type Orders interface {
 	Repository[entities.Order]
+	FindManyByClientId(uint) ([]entities.Order, error)
 }
 
 type orders struct {
@@ -15,4 +16,9 @@ type orders struct {
 
 func NewOrders(db *gorm.DB) Orders {
 	return &orders{&repository[entities.Order]{db}}
+}
+
+func (o *orders) FindManyByClientId(clientId uint) ([]entities.Order, error) {
+	orders := []entities.Order{}
+	return orders, o.db.Where("client_id = ?", clientId).Find(&orders).Error
 }

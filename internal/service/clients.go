@@ -10,19 +10,21 @@ import (
 var clientNotFoundErr = &exceptions.NotFoundError{Entity: "client"}
 
 type Clients interface {
-	Create(schema *schemas.CreateClient) (*entities.Client, error)
-	Update(id uint, schema *schemas.UpdateClient) (*entities.Client, error)
-	Delete(id uint) error
+	Create(*schemas.CreateClient) (*entities.Client, error)
+	Update(uint, *schemas.UpdateClient) (*entities.Client, error)
+	Delete(uint) error
 	List() ([]entities.Client, error)
-	Get(id uint) (*entities.Client, error)
+	Get(uint) (*entities.Client, error)
+	GetProducts(uint) ([]entities.Order, error)
 }
 
 type clients struct {
-	repository repository.Clients
+	repository       repository.Clients
+	ordersRepository repository.Orders
 }
 
-func NewClients(repository repository.Clients) Clients {
-	return &clients{repository}
+func NewClients(repository repository.Clients, ordersRepository repository.Orders) Clients {
+	return &clients{repository, ordersRepository}
 }
 
 func (c *clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
@@ -72,4 +74,12 @@ func (c *clients) Get(id uint) (*entities.Client, error) {
 		return nil, clientNotFoundErr
 	}
 	return client, nil
+}
+
+func (c *clients) GetProducts(clientId uint) ([]entities.Order, error) {
+	client, err := c.Get(clientId)
+	if err != nil {
+		return nil, err
+	}
+	return c.ordersRepository.FindManyByClientId(client.ID)
 }

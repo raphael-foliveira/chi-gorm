@@ -8,11 +8,16 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
+type Clients interface {
+	Controller
+	GetProducts(w http.ResponseWriter, r *http.Request) error
+}
+
 type clients struct {
 	service service.Clients
 }
 
-func NewClients(service service.Clients) Controller {
+func NewClients(service service.Clients) Clients {
 	return &clients{service}
 }
 
@@ -29,7 +34,7 @@ func (c *clients) Create(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) Update(w http.ResponseWriter, r *http.Request) error {
-	id, err := getIdFromPath(r)
+	id, err := getPathParam(r, "id")
 	if err != nil {
 		return err
 	}
@@ -45,7 +50,7 @@ func (c *clients) Update(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) Delete(w http.ResponseWriter, r *http.Request) error {
-	id, err := getIdFromPath(r)
+	id, err := getPathParam(r, "id")
 	if err != nil {
 		return err
 	}
@@ -65,7 +70,7 @@ func (c *clients) List(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) Get(w http.ResponseWriter, r *http.Request) error {
-	id, err := getIdFromPath(r)
+	id, err := getPathParam(r, "id")
 	if err != nil {
 		return err
 	}
@@ -74,4 +79,16 @@ func (c *clients) Get(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	return res.JSON(w, http.StatusOK, schemas.NewClientDetail(client))
+}
+
+func (c *clients) GetProducts(w http.ResponseWriter, r *http.Request) error {
+	id, err := getPathParam(r, "id")
+	if err != nil {
+		return err
+	}
+	orders, err := c.service.GetProducts(id)
+	if err != nil {
+		return err
+	}
+	return res.JSON(w, http.StatusOK, schemas.NewOrders(orders))
 }

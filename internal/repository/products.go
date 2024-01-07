@@ -21,3 +21,5 @@ func (r *products) FindMany(ids []uint) ([]entities.Product, error) {
 	products := []entities.Product{}
 	return products, r.db.Find(&products, ids).Error
 }
+
+
