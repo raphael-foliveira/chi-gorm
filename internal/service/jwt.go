@@ -1,19 +1,26 @@
 package service
 
 import (
+	"time"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
 )
 
-type Claims struct {
+type Payload struct {
 	ID         uint   `json:"id"`
 	ClientName string `json:"client_name"`
 	Email      string `json:"email"`
 }
 
+type Claims struct {
+	Payload
+	jwt.RegisteredClaims
+}
+
 type Jwt interface {
-	Sign(Claims) (string, error)
-	Verify(string) (*Claims, error)
+	Sign(Payload) (string, error)
+	Verify(string) (*Payload, error)
 }
 
 type jwtService struct {
@@ -24,24 +31,26 @@ func NewJwt() Jwt {
 	return &jwtService{cfg.Cfg.JwtSecret}
 }
 
-func (j *jwtService) Sign(claims Claims) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
-		"id":          claims.ID,
-		"client_name": claims.ClientName,
-		"email":       claims.Email,
+func (j *jwtService) Sign(payload Payload) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, Claims{
+		Payload: payload,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+		},
 	})
 	return token.SignedString([]byte(j.secret))
-
 }
 
-func (j *jwtService) Verify(token string) (*Claims, error) {
+func (j *jwtService) Verify(token string) (*Payload, error) {
 	data, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		if !t.Valid {
 			return nil, jwt.ErrSignatureInvalid
 		}
 		return []byte(j.secret), nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodES256.Name}))
-	return &Claims{
+	return &Payload{
 		ID:         data.Claims.(jwt.MapClaims)["id"].(uint),
 		ClientName: data.Claims.(jwt.MapClaims)["client_name"].(string),
 		Email:      data.Claims.(jwt.MapClaims)["email"].(string),
