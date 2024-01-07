@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -24,7 +24,7 @@ func NewServer(db *gorm.DB) *Server {
 
 func (s *Server) Start() error {
 	app := s.CreateApp()
-	fmt.Println("listening on port 3000")
+	slog.Info("listening on port 3000")
 	return http.ListenAndServe(":3000", app)
 }
 

@@ -2,7 +2,7 @@ package routes
 
 import (
 	"errors"
-	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
@@ -18,7 +18,7 @@ func wrap(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFun
 }
 
 func handleApiErr(w http.ResponseWriter, err error) {
-	fmt.Println(err.Error())
+	slog.Error(err.Error())
 	apiErr := &exceptions.ApiError{}
 	if errors.As(err, &apiErr) {
 		res.JSON(w, apiErr.Status, apiErr)
