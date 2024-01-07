@@ -34,7 +34,7 @@ func (c *clients) Create(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) Update(w http.ResponseWriter, r *http.Request) error {
-	id, err := getPathParam(r, "id")
+	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (c *clients) Update(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) Delete(w http.ResponseWriter, r *http.Request) error {
-	id, err := getPathParam(r, "id")
+	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (c *clients) List(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) Get(w http.ResponseWriter, r *http.Request) error {
-	id, err := getPathParam(r, "id")
+	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (c *clients) Get(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (c *clients) GetProducts(w http.ResponseWriter, r *http.Request) error {
-	id, err := getPathParam(r, "id")
+	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
 	}
