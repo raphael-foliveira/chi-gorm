@@ -50,9 +50,10 @@ func (j *jwtService) Verify(token string) (*Payload, error) {
 		}
 		return []byte(j.secret), nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodES256.Name}))
+	claims := data.Claims.(Claims)
 	return &Payload{
-		ClientID:   data.Claims.(Claims).ClientID,
-		ClientName: data.Claims.(Claims).ClientName,
-		Email:      data.Claims.(Claims).Email,
+		ClientID:   claims.ClientID,
+		ClientName: claims.ClientName,
+		Email:      claims.Email,
 	}, err
 }
