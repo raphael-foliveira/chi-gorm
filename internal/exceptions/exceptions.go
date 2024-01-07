@@ -21,8 +21,16 @@ func NewApiError(message string, status int) *ApiError {
 	}
 }
 
-func NewValidationError(message string) *ApiError {
+func NewBadRequestError(message string) *ApiError {
 	return NewApiError(message, http.StatusBadRequest)
+}
+
+func NewUnprocessableEntityError(message string) *ApiError {
+	return NewApiError(message, http.StatusUnprocessableEntity)
+}
+
+func NewInternalServerError(message string) *ApiError {
+	return NewApiError(message, http.StatusInternalServerError)
 }
 
 func NewNotFoundError(message string) *ApiError {

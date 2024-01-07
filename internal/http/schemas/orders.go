@@ -21,7 +21,7 @@ func (co *CreateOrder) ToModel() *entities.Order {
 
 func (co *CreateOrder) Validate() error {
 	if co.Quantity <= 0 {
-		return exceptions.NewValidationError("Quantity must be greater than zero")
+		return exceptions.NewBadRequestError("Quantity must be greater than zero")
 	}
 	return nil
 }
@@ -32,7 +32,7 @@ type UpdateOrder struct {
 
 func (uo *UpdateOrder) Validate() error {
 	if uo.Quantity <= 0 {
-		return exceptions.NewValidationError("Quantity must be greater than zero")
+		return exceptions.NewBadRequestError("Quantity must be greater than zero")
 	}
 	return nil
 }
