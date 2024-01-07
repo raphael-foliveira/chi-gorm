@@ -24,15 +24,16 @@ type Jwt interface {
 }
 
 type jwtService struct {
-	secret string
+	secret        string
+	signingMethod *jwt.SigningMethodECDSA
 }
 
 func NewJwt() Jwt {
-	return &jwtService{cfg.Cfg.JwtSecret}
+	return &jwtService{cfg.Cfg.JwtSecret, jwt.SigningMethodES256}
 }
 
 func (j *jwtService) Sign(payload *Payload) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, Claims{
+	token := jwt.NewWithClaims(j.signingMethod, Claims{
 		Payload: payload,
 		RegisteredClaims: &jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
