@@ -40,7 +40,7 @@ func (j *jwtService) Verify(token string) (*Claims, error) {
 			return nil, jwt.ErrSignatureInvalid
 		}
 		return []byte(j.secret), nil
-	})
+	}, jwt.WithValidMethods([]string{jwt.SigningMethodES256.Name}))
 	return &Claims{
 		ID:         data.Claims.(jwt.MapClaims)["id"].(uint),
 		ClientName: data.Claims.(jwt.MapClaims)["client_name"].(string),
