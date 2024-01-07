@@ -13,7 +13,6 @@ type Orders interface {
 	Delete(id uint) error
 	List() ([]entities.Order, error)
 	Get(id uint) (*entities.Order, error)
-	FindManyByClientId(clientId uint) ([]entities.Order, error)
 }
 
 type orders struct {
@@ -70,8 +69,4 @@ func (c *orders) Get(id uint) (*entities.Order, error) {
 		return nil, exceptions.NotFound("order not found")
 	}
 	return order, nil
-}
-
-func (c *orders) FindManyByClientId(clientId uint) ([]entities.Order, error) {
-	return c.repository.FindManyByClientId(clientId)
 }

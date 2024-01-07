@@ -6,15 +6,14 @@ type Services struct {
 	Clients  Clients
 	Products Products
 	Orders   Orders
+	Jwt      Jwt
 }
 
 func NewServices(repositories *repository.Repositories) *Services {
-	orders := NewOrders(repositories.Orders)
-	clients := NewClients(repositories.Clients, orders)
-	products := NewProducts(repositories.Products)
 	return &Services{
-		Clients:  clients,
-		Products: products,
-		Orders:   orders,
+		Products: NewProducts(repositories.Products),
+		Orders:   NewOrders(repositories.Orders),
+		Clients:  NewClients(repositories.Clients, repositories.Orders),
+		Jwt:      NewJwt(),
 	}
 }

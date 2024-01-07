@@ -17,12 +17,12 @@ type Clients interface {
 }
 
 type clients struct {
-	repository    repository.Clients
-	ordersService Orders
+	repository       repository.Clients
+	ordersRepository repository.Orders
 }
 
-func NewClients(repository repository.Clients, ordersService Orders) Clients {
-	return &clients{repository, ordersService}
+func NewClients(repository repository.Clients, ordersRepository repository.Orders) Clients {
+	return &clients{repository, ordersRepository}
 }
 
 func (c *clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
@@ -79,5 +79,5 @@ func (c *clients) GetProducts(clientId uint) ([]entities.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	return c.ordersService.FindManyByClientId(client.ID)
+	return c.ordersRepository.FindManyByClientId(client.ID)
 }
