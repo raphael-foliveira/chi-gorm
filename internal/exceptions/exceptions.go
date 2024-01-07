@@ -31,15 +31,9 @@ func (ae *MultipleApiError) Error() string {
 }
 
 func NewValidationError(message string) *ApiError {
-	return &ApiError{
-		Message: message,
-		Status:  http.StatusBadRequest,
-	}
+	return NewApiError(message, http.StatusBadRequest)
 }
 
 func NewNotFoundError(message string) *ApiError {
-	return &ApiError{
-		Message: message,
-		Status:  http.StatusNotFound,
-	}
+	return NewApiError(message, http.StatusNotFound)
 }
