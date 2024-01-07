@@ -11,7 +11,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
@@ -21,16 +20,6 @@ import (
 func TestClient(t *testing.T) {
 
 	controller := NewClients(service.NewClients(mocks.ClientsStore, mocks.OrdersStore))
-
-	setUp := func() {
-		addClients(10)
-	}
-
-	tearDown := func() {
-		mocks.ClientsStore.Store = []entities.Client{}
-		mocks.OrdersStore.Store = []entities.Order{}
-		mocks.ProductsStore.Store = []entities.Product{}
-	}
 
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all clients", func(t *testing.T) {
@@ -243,10 +232,6 @@ func TestClient(t *testing.T) {
 			setUp()
 			mocks.ClientsStore.Error = nil
 			client := mocks.ClientsStore.Store[0]
-			clientOrder := entities.Order{}
-			faker.FakeData(&clientOrder)
-			clientOrder.ClientID = client.ID
-			mocks.OrdersStore.Store = append(mocks.OrdersStore.Store, clientOrder)
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", fmt.Sprintf("/%v/products", client.ID), nil)
 			tx := chi.NewRouteContext()

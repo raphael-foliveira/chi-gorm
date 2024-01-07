@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all products", func(t *testing.T) {
-			addProducts(10)
+			setUp()
 			mocks.ProductsStore.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
@@ -33,6 +34,7 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
+			tearDown()
 		})
 
 		t.Run("should return an error when store fails", func(t *testing.T) {
@@ -48,12 +50,13 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Get", func(t *testing.T) {
 		t.Run("should get a product", func(t *testing.T) {
-			addProducts(10)
+			setUp()
 			mocks.ProductsStore.Error = nil
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", "/1", nil)
+			productId := fmt.Sprintf("%v", mocks.ProductsStore.Store[0].ID)
+			request := httptest.NewRequest("GET", "/"+productId, nil)
 			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", "1")
+			tx.URLParams.Add("id", productId)
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 			err := controller.Get(recorder, request)
 			if err != nil {
@@ -62,6 +65,7 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
+			tearDown()
 		})
 
 		t.Run("should return an error when store fails", func(t *testing.T) {
@@ -124,15 +128,15 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Update", func(t *testing.T) {
 		t.Run("should update a product", func(t *testing.T) {
-			addProducts(10)
+			setUp()
 			mocks.ProductsStore.Error = nil
 			recorder := httptest.NewRecorder()
-			var newProduct schemas.UpdateProduct
-			faker.FakeData(&newProduct)
-			reqBody, _ := json.Marshal(newProduct)
-			request := httptest.NewRequest("PUT", "/1", bytes.NewReader(reqBody))
+			product := mocks.ProductsStore.Store[0]
+			productId := fmt.Sprintf("%v", product.ID)
+			reqBody, _ := json.Marshal(product)
+			request := httptest.NewRequest("PUT", "/"+productId, bytes.NewReader(reqBody))
 			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", "1")
+			tx.URLParams.Add("id", productId)
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 			err := controller.Update(recorder, request)
 			if err != nil {
@@ -141,6 +145,7 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
+			tearDown()
 		})
 
 		t.Run("should return an error when sent invalid data", func(t *testing.T) {
@@ -178,12 +183,14 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Delete", func(t *testing.T) {
 		t.Run("should delete a product", func(t *testing.T) {
-			addProducts(10)
+			setUp()
 			mocks.ProductsStore.Error = nil
+			product := mocks.ProductsStore.Store[0]
+			productId := fmt.Sprintf("%v", product.ID)
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("DELETE", "/1", nil)
+			request := httptest.NewRequest("DELETE", "/"+productId, nil)
 			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", "1")
+			tx.URLParams.Add("id", productId)
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 			err := controller.Delete(recorder, request)
 			if err != nil {
@@ -192,6 +199,7 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 204 {
 				t.Errorf("Status code should be 204, got %v", recorder.Code)
 			}
+			tearDown()
 		})
 
 		t.Run("should return an error when store fails", func(t *testing.T) {
