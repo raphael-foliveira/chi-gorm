@@ -69,7 +69,7 @@ func (c *clients) List() ([]entities.Client, error) {
 func (c *clients) Get(id uint) (*entities.Client, error) {
 	client, err := c.repository.Get(id)
 	if err != nil {
-		return nil, exceptions.NewNotFoundError("client not found")
+		return nil, exceptions.NotFound("client not found")
 	}
 	return client, nil
 }

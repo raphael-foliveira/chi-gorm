@@ -23,13 +23,13 @@ func (cc *CreateClient) ToModel() *entities.Client {
 func (cc *CreateClient) Validate() error {
 	var err error
 	if cc.Name == "" {
-		err = errors.Join(err, exceptions.NewBadRequestError("Name is required"))
+		err = errors.Join(err, exceptions.BadRequest("Name is required"))
 	}
 	if cc.Email == "" {
-		err = errors.Join(err, exceptions.NewBadRequestError("Email is required"))
+		err = errors.Join(err, exceptions.BadRequest("Email is required"))
 	}
 	if !strings.Contains(cc.Email, "@") {
-		err = errors.Join(err, exceptions.NewBadRequestError("Email is invalid"))
+		err = errors.Join(err, exceptions.BadRequest("Email is invalid"))
 	}
 	return err
 }

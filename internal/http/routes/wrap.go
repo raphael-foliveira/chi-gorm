@@ -24,5 +24,5 @@ func handleApiErr(w http.ResponseWriter, err error) {
 		res.JSON(w, apiErr.Status, apiErr)
 		return
 	}
-	res.JSON(w, http.StatusInternalServerError, exceptions.NewInternalServerError("internal server error"))
+	res.JSON(w, http.StatusInternalServerError, exceptions.InternalServerError("internal server error"))
 }

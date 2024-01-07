@@ -67,7 +67,7 @@ func (c *products) List() ([]entities.Product, error) {
 func (c *products) Get(id uint) (*entities.Product, error) {
 	product, err := c.repository.Get(id)
 	if err != nil || product == nil {
-		return nil, exceptions.NewNotFoundError("product not found")
+		return nil, exceptions.NotFound("product not found")
 	}
 	return product, nil
 }

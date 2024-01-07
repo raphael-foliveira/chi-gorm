@@ -27,7 +27,7 @@ func TestHandleApiErr(t *testing.T) {
 
 	t.Run("should handle notFoundErr when err is NotFoundError", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
-		handleApiErr(recorder, exceptions.NewNotFoundError("test not found"))
+		handleApiErr(recorder, exceptions.NotFound("test not found"))
 		if recorder.Code != 404 {
 			t.Errorf("Status code should be 404, got %v", recorder.Code)
 		}

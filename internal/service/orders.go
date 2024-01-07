@@ -67,7 +67,7 @@ func (c *orders) List() ([]entities.Order, error) {
 func (c *orders) Get(id uint) (*entities.Order, error) {
 	order, err := c.repository.Get(id)
 	if err != nil || order == nil {
-		return nil, exceptions.NewNotFoundError("order not found")
+		return nil, exceptions.NotFound("order not found")
 	}
 	return order, nil
 }
