@@ -21,6 +21,14 @@ func NewApiError(message string, status int) *ApiError {
 	}
 }
 
+func NewValidationError(message string) *ApiError {
+	return NewApiError(message, http.StatusBadRequest)
+}
+
+func NewNotFoundError(message string) *ApiError {
+	return NewApiError(message, http.StatusNotFound)
+}
+
 type MultipleApiError struct {
 	Errors []string `json:"errors"`
 	Status int      `json:"status"`
@@ -28,12 +36,4 @@ type MultipleApiError struct {
 
 func (ae *MultipleApiError) Error() string {
 	return strings.Join(ae.Errors, ", ")
-}
-
-func NewValidationError(message string) *ApiError {
-	return NewApiError(message, http.StatusBadRequest)
-}
-
-func NewNotFoundError(message string) *ApiError {
-	return NewApiError(message, http.StatusNotFound)
 }
