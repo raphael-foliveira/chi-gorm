@@ -36,21 +36,19 @@ func (s *Server) CreateApp() *chi.Mux {
 	return mainRouter
 }
 
-func (s *Server) injectDependencies() *controller.Controllers {
+func (s *Server) injectDependencies() *routes.Routers {
 	repositories := repository.NewRepositories(s.db)
 	services := service.NewServices(repositories)
 	controllers := controller.NewControllers(services)
-	return controllers
+	routes := routes.NewRouters(controllers)
+	return routes
 }
 
-func (s *Server) mountRoutes(r *chi.Mux, c *controller.Controllers) {
-	clientsRoutes := routes.Clients(c.Clients)
-	productsRoutes := routes.Products(c.Products)
-	ordersRoutes := routes.Orders(c.Orders)
-
-	r.Mount("/clients", clientsRoutes)
-	r.Mount("/products", productsRoutes)
-	r.Mount("/orders", ordersRoutes)
+func (s *Server) mountRoutes(r *chi.Mux, rts *routes.Routers) {
+	r.Mount("/clients", rts.Clients)
+	r.Mount("/products", rts.Products)
+	r.Mount("/orders", rts.Orders)
+	r.Get("/health-check", rts.HealthCheck)
 }
 
 func (s *Server) attachMiddleware(r *chi.Mux) {
