@@ -7,56 +7,50 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-var orderNotFoundErr = &exceptions.NotFoundError{Entity: "order"}
+type Orders struct {
+	repository repository.Orders
+}
 
-var Orders = &orders{}
+func NewOrders(repository repository.Orders) *Orders {
+	return &Orders{repository}
+}
 
-type orders struct{}
-
-func (c *orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
-	validationErr := schema.Validate()
-	if validationErr != nil {
-		return nil, validationErr
-	}
+func (c *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 	newOrder := schema.ToModel()
-	err := repository.Orders.Create(newOrder)
+	err := c.repository.Create(newOrder)
 	return newOrder, err
 }
 
-func (c *orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
-	validationErr := schema.Validate()
-	if validationErr != nil {
-		return nil, validationErr
-	}
-	entity, err := repository.Orders.Get(id)
+func (c *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
+	entity, err := c.repository.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	entity.Quantity = schema.Quantity
-	err = repository.Orders.Update(entity)
+	err = c.repository.Update(entity)
 	return entity, err
 }
 
-func (c *orders) Delete(id uint) error {
-	client, err := repository.Orders.Get(id)
+func (c *Orders) Delete(id uint) error {
+	client, err := c.repository.Get(id)
 	if err != nil {
 		return err
 	}
-	err = repository.Orders.Delete(client)
+	err = c.repository.Delete(client)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *orders) List() ([]entities.Order, error) {
-	return repository.Orders.List()
+func (c *Orders) List() ([]entities.Order, error) {
+	return c.repository.List()
 }
 
-func (c *orders) Get(id uint) (*entities.Order, error) {
-	order, err := repository.Orders.Get(id)
+func (c *Orders) Get(id uint) (*entities.Order, error) {
+	order, err := c.repository.Get(id)
 	if err != nil || order == nil {
-		return nil, orderNotFoundErr
+		return nil, exceptions.NotFound("order not found")
 	}
 	return order, nil
 }

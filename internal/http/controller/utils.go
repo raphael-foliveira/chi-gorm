@@ -2,31 +2,30 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 )
 
-func getIdFromPath(r *http.Request) (uint, error) {
-	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
+func getUintPathParam(r *http.Request, paramName string) (uint, error) {
+	id, err := strconv.ParseUint(chi.URLParam(r, paramName), 10, 64)
 	if err != nil {
-		return 0, &exceptions.ApiError{
-			Message: "invalid id",
-			Status:  http.StatusBadRequest,
-		}
+		return 0, exceptions.BadRequest(fmt.Sprintf("invalid %s", paramName))
 	}
 	return uint(id), nil
 }
 
-func parseBody[T interface{}](r *http.Request, v *T) (*T, error) {
+func parseBody[T schemas.ValidateableSchema](r *http.Request, v T) (T, error) {
 	err := json.NewDecoder(r.Body).Decode(v)
 	if err != nil {
-		return nil, &exceptions.ApiError{
-			Message: "invalid body",
-			Status:  http.StatusBadRequest,
-		}
+		return v, exceptions.BadRequest("invalid body")
+	}
+	if err := v.Validate(); err != nil {
+		return v, err
 	}
 	return v, nil
 }

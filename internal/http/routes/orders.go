@@ -5,12 +5,12 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 )
 
-func Orders() *chi.Mux {
+func Orders(c *controller.Orders) *chi.Mux {
 	router := chi.NewRouter()
-	router.Get("/", wrap(controller.Orders.List))
-	router.Post("/", wrap(controller.Orders.Create))
-	router.Get("/{id}", wrap(controller.Orders.Get))
-	router.Delete("/{id}", wrap(controller.Orders.Delete))
-	router.Put("/{id}", wrap(controller.Orders.Update))
+	router.Get("/", wrap(c.List))
+	router.Post("/", wrap(c.Create))
+	router.Get("/{id}", wrap(c.Get))
+	router.Delete("/{id}", wrap(c.Delete))
+	router.Put("/{id}", wrap(c.Update))
 	return router
 }

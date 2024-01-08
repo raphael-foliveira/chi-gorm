@@ -12,17 +12,18 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
+	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
-var testAppServer *server.Server
+var testDatabase *gorm.DB
 
 func TestMain(m *testing.M) {
 	err := cfg.LoadCfg("../../.env.test")
 	if err != nil {
 		panic(err)
 	}
-	err = database.InitDb(cfg.DatabaseURL)
+	testDatabase, err = database.GetDb(cfg.Cfg.DatabaseURL)
 	if err != nil {
 		panic(err)
 	}
@@ -30,15 +31,15 @@ func TestMain(m *testing.M) {
 }
 
 func setUp() {
-	testApp := testAppServer.CreateApp()
+	testApp := server.NewServer(testDatabase).CreateApp()
 	testServer = httptest.NewServer(testApp)
 	populateTables()
 }
 
 func tearDown() {
-	database.Db.Exec("DELETE FROM orders")
-	database.Db.Exec("DELETE FROM products")
-	database.Db.Exec("DELETE FROM clients")
+	testDatabase.Exec("DELETE FROM orders")
+	testDatabase.Exec("DELETE FROM products")
+	testDatabase.Exec("DELETE FROM clients")
 }
 
 func makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
@@ -74,14 +75,14 @@ func populateTables() {
 		products[i].ID = 0
 		orders[i].ID = 0
 	}
-	database.Db.Create(&clients)
-	database.Db.Create(&products)
+	testDatabase.Create(&clients)
+	testDatabase.Create(&products)
 
 	for i := 0; i < 10; i++ {
 		orders[i].ID = 0
 		orders[i].ClientID = clients[i].ID
 		orders[i].ProductID = products[i].ID
 	}
-	database.Db.Create(&orders)
+	testDatabase.Create(&orders)
 
 }

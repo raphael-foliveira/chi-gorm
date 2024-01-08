@@ -22,14 +22,10 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 func (cp *CreateProduct) Validate() error {
 	var err error
 	if cp.Name == "" {
-		err = errors.Join(err, &exceptions.ValidationError{
-			Message: "Name is required",
-		})
+		err = errors.Join(err, exceptions.BadRequest("Name is required"))
 	}
 	if cp.Price <= 0 {
-		err = errors.Join(err, &exceptions.ValidationError{
-			Message: "Price must be greater than zero",
-		})
+		err = errors.Join(err, exceptions.BadRequest("Price must be greater than zero"))
 	}
 	return err
 }
