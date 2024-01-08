@@ -81,7 +81,7 @@ func (c *Clients) GetProducts(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	orders, err := c.service.GetProducts(id)
+	orders, err := c.service.GetOrders(id)
 	if err != nil {
 		return err
 	}
