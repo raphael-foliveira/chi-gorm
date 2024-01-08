@@ -57,7 +57,7 @@ func (c *Clients) Get(id uint) (*entities.Client, error) {
 	return client, nil
 }
 
-func (c *Clients) GetProducts(clientId uint) ([]entities.Order, error) {
+func (c *Clients) GetOrders(clientId uint) ([]entities.Order, error) {
 	client, err := c.Get(clientId)
 	if err != nil {
 		return nil, err
