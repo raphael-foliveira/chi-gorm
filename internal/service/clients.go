@@ -7,39 +7,22 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-type Clients interface {
-	Create(*schemas.CreateClient) (*entities.Client, error)
-	Update(uint, *schemas.UpdateClient) (*entities.Client, error)
-	Delete(uint) error
-	List() ([]entities.Client, error)
-	Get(uint) (*entities.Client, error)
-	GetProducts(uint) ([]entities.Order, error)
-}
-
-type clients struct {
+type Clients struct {
 	repository       repository.Clients
 	ordersRepository repository.Orders
 }
 
-func NewClients(repository repository.Clients, ordersRepository repository.Orders) Clients {
-	return &clients{repository, ordersRepository}
+func NewClients(repository repository.Clients, ordersRepository repository.Orders) *Clients {
+	return &Clients{repository, ordersRepository}
 }
 
-func (c *clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
-	validationErr := schema.Validate()
-	if validationErr != nil {
-		return nil, validationErr
-	}
+func (c *Clients) Create(schema *schemas.CreateClient) (*entities.Client, error) {
 	newClient := schema.ToModel()
 	err := c.repository.Create(newClient)
 	return newClient, err
 }
 
-func (c *clients) Update(id uint, schema *schemas.UpdateClient) (*entities.Client, error) {
-	validationErr := schema.Validate()
-	if validationErr != nil {
-		return nil, validationErr
-	}
+func (c *Clients) Update(id uint, schema *schemas.UpdateClient) (*entities.Client, error) {
 	entity, err := c.repository.Get(id)
 	if err != nil {
 		return nil, err
@@ -50,7 +33,7 @@ func (c *clients) Update(id uint, schema *schemas.UpdateClient) (*entities.Clien
 	return entity, err
 }
 
-func (c *clients) Delete(id uint) error {
+func (c *Clients) Delete(id uint) error {
 	client, err := c.repository.Get(id)
 	if err != nil {
 		return err
@@ -62,11 +45,11 @@ func (c *clients) Delete(id uint) error {
 	return nil
 }
 
-func (c *clients) List() ([]entities.Client, error) {
+func (c *Clients) List() ([]entities.Client, error) {
 	return c.repository.List()
 }
 
-func (c *clients) Get(id uint) (*entities.Client, error) {
+func (c *Clients) Get(id uint) (*entities.Client, error) {
 	client, err := c.repository.Get(id)
 	if err != nil {
 		return nil, exceptions.NotFound("client not found")
@@ -74,7 +57,7 @@ func (c *clients) Get(id uint) (*entities.Client, error) {
 	return client, nil
 }
 
-func (c *clients) GetProducts(clientId uint) ([]entities.Order, error) {
+func (c *Clients) GetProducts(clientId uint) ([]entities.Order, error) {
 	client, err := c.Get(clientId)
 	if err != nil {
 		return nil, err

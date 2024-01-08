@@ -8,15 +8,15 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type orders struct {
-	service service.Orders
+type Orders struct {
+	service *service.Orders
 }
 
-func NewOrders(service service.Orders) Controller {
-	return &orders{service}
+func NewOrders(service *service.Orders) *Orders {
+	return &Orders{service}
 }
 
-func (c *orders) Create(w http.ResponseWriter, r *http.Request) error {
+func (c *Orders) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateOrder{})
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (c *orders) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, schemas.NewOrder(newOrder))
 }
 
-func (c *orders) Update(w http.ResponseWriter, r *http.Request) error {
+func (c *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (c *orders) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewOrder(updatedOrder))
 }
 
-func (c *orders) Delete(w http.ResponseWriter, r *http.Request) error {
+func (c *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (c *orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (c *orders) List(w http.ResponseWriter, r *http.Request) error {
+func (c *Orders) List(w http.ResponseWriter, r *http.Request) error {
 	orders, err := c.service.List()
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (c *orders) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewOrders(orders))
 }
 
-func (c *orders) Get(w http.ResponseWriter, r *http.Request) error {
+func (c *Orders) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err

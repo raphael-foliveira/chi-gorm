@@ -15,9 +15,9 @@ type Controller interface {
 }
 
 type Controllers struct {
-	Clients  Clients
-	Orders   Controller
-	Products Controller
+	Clients  *Clients
+	Orders   *Orders
+	Products *Products
 }
 
 func NewControllers(services *service.Services) *Controllers {

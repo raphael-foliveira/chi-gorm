@@ -8,15 +8,15 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type products struct {
-	service service.Products
+type Products struct {
+	service *service.Products
 }
 
-func NewProducts(service service.Products) Controller {
-	return &products{service}
+func NewProducts(service *service.Products) *Products {
+	return &Products{service}
 }
 
-func (p *products) Create(w http.ResponseWriter, r *http.Request) error {
+func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateProduct{})
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (p *products) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, schemas.NewProduct(newOrder))
 }
 
-func (p *products) Update(w http.ResponseWriter, r *http.Request) error {
+func (p *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (p *products) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewProduct(updatedOrder))
 }
 
-func (p *products) Delete(w http.ResponseWriter, r *http.Request) error {
+func (p *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (p *products) Delete(w http.ResponseWriter, r *http.Request) error {
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (p *products) List(w http.ResponseWriter, r *http.Request) error {
+func (p *Products) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := p.service.List()
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (p *products) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewProducts(products))
 }
 
-func (p *products) Get(w http.ResponseWriter, r *http.Request) error {
+func (p *Products) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err

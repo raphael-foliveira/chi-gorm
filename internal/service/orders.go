@@ -7,37 +7,21 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-type Orders interface {
-	Create(schema *schemas.CreateOrder) (*entities.Order, error)
-	Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error)
-	Delete(id uint) error
-	List() ([]entities.Order, error)
-	Get(id uint) (*entities.Order, error)
-}
-
-type orders struct {
+type Orders struct {
 	repository repository.Orders
 }
 
-func NewOrders(repository repository.Orders) Orders {
-	return &orders{repository}
+func NewOrders(repository repository.Orders) *Orders {
+	return &Orders{repository}
 }
 
-func (c *orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
-	validationErr := schema.Validate()
-	if validationErr != nil {
-		return nil, validationErr
-	}
+func (c *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 	newOrder := schema.ToModel()
 	err := c.repository.Create(newOrder)
 	return newOrder, err
 }
 
-func (c *orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
-	validationErr := schema.Validate()
-	if validationErr != nil {
-		return nil, validationErr
-	}
+func (c *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
 	entity, err := c.repository.Get(id)
 	if err != nil {
 		return nil, err
@@ -47,7 +31,7 @@ func (c *orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, 
 	return entity, err
 }
 
-func (c *orders) Delete(id uint) error {
+func (c *Orders) Delete(id uint) error {
 	client, err := c.repository.Get(id)
 	if err != nil {
 		return err
@@ -59,11 +43,11 @@ func (c *orders) Delete(id uint) error {
 	return nil
 }
 
-func (c *orders) List() ([]entities.Order, error) {
+func (c *Orders) List() ([]entities.Order, error) {
 	return c.repository.List()
 }
 
-func (c *orders) Get(id uint) (*entities.Order, error) {
+func (c *Orders) Get(id uint) (*entities.Order, error) {
 	order, err := c.repository.Get(id)
 	if err != nil || order == nil {
 		return nil, exceptions.NotFound("order not found")

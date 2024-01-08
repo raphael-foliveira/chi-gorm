@@ -18,21 +18,16 @@ type Claims struct {
 	*jwt.RegisteredClaims
 }
 
-type Jwt interface {
-	Sign(*Payload) (string, error)
-	Verify(string) (*Payload, error)
-}
-
-type jwtService struct {
+type Jwt struct {
 	secret        string
 	signingMethod *jwt.SigningMethodECDSA
 }
 
-func NewJwt() Jwt {
-	return &jwtService{cfg.Cfg.JwtSecret, jwt.SigningMethodES256}
+func NewJwt() *Jwt {
+	return &Jwt{cfg.Cfg.JwtSecret, jwt.SigningMethodES256}
 }
 
-func (j *jwtService) Sign(payload *Payload) (string, error) {
+func (j *Jwt) Sign(payload *Payload) (string, error) {
 	token := jwt.NewWithClaims(j.signingMethod, Claims{
 		Payload: payload,
 		RegisteredClaims: &jwt.RegisteredClaims{
@@ -44,7 +39,7 @@ func (j *jwtService) Sign(payload *Payload) (string, error) {
 	return token.SignedString([]byte(j.secret))
 }
 
-func (j *jwtService) Verify(token string) (*Payload, error) {
+func (j *Jwt) Verify(token string) (*Payload, error) {
 	data, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		if !t.Valid {
 			return nil, jwt.ErrSignatureInvalid
