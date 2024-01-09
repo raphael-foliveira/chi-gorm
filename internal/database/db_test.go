@@ -16,7 +16,7 @@ func TestMain(m *testing.M) {
 
 func TestInitDb(t *testing.T) {
 	t.Run("should retrieve a database instance", func(t *testing.T) {
-		db, err := GetDb(cfg.Cfg.DatabaseURL)
+		db, err := GetDb(cfg.DatabaseURL)
 		if err != nil {
 			t.Error(err)
 		}
@@ -26,7 +26,7 @@ func TestInitDb(t *testing.T) {
 	})
 
 	t.Run("should close the database", func(t *testing.T) {
-		_, err := GetDb(cfg.Cfg.DatabaseURL)
+		_, err := GetDb(cfg.DatabaseURL)
 		if err != nil {
 			t.Error("could not initialize the database")
 		}

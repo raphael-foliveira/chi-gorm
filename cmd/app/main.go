@@ -10,7 +10,7 @@ func main() {
 	if err := cfg.LoadCfg(".env"); err != nil {
 		panic(err)
 	}
-	db, err := database.GetDb(cfg.Cfg.DatabaseURL)
+	db, err := database.GetDb(cfg.DatabaseURL)
 	if err != nil {
 		panic(err)
 	}

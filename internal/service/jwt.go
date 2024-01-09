@@ -24,7 +24,7 @@ type Jwt struct {
 }
 
 func NewJwt() *Jwt {
-	return &Jwt{cfg.Cfg.JwtSecret, jwt.SigningMethodES256}
+	return &Jwt{cfg.JwtSecret, jwt.SigningMethodES256}
 }
 
 func (j *Jwt) Sign(payload *Payload) (string, error) {
