@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	testDatabase, err = database.GetDb(cfg.Cfg.DatabaseURL)
+	testDatabase, err = database.GetDb(cfg.DatabaseURL)
 	if err != nil {
 		panic(err)
 	}
