@@ -16,10 +16,6 @@ type repository[T interface{}] struct {
 	db *gorm.DB
 }
 
-func NewRepository[T interface{}](db *gorm.DB) Repository[T] {
-	return &repository[T]{db}
-}
-
 func (r *repository[T]) List() ([]T, error) {
 	entities := []T{}
 	return entities, r.db.Find(&entities).Error

@@ -14,7 +14,7 @@ type orders struct {
 	*repository[entities.Order]
 }
 
-func NewOrders(db *gorm.DB) Orders {
+func NewOrders(db *gorm.DB) *orders {
 	return &orders{&repository[entities.Order]{db}}
 }
 

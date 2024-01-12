@@ -13,7 +13,7 @@ type clients struct {
 	*repository[entities.Client]
 }
 
-func NewClients(db *gorm.DB) Clients {
+func NewClients(db *gorm.DB) *clients {
 	return &clients{&repository[entities.Client]{db}}
 }
 
