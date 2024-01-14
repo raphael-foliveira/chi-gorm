@@ -1,8 +1,9 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
@@ -22,7 +23,7 @@ func (c *Products) Create(schema *schemas.CreateProduct) (*entities.Product, err
 }
 
 func (c *Products) Update(id uint, schema *schemas.UpdateProduct) (*entities.Product, error) {
-	entity, err := c.repository.Get(id)
+	entity, err := c.Get(id)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,7 @@ func (c *Products) Update(id uint, schema *schemas.UpdateProduct) (*entities.Pro
 }
 
 func (c *Products) Delete(id uint) error {
-	client, err := c.repository.Get(id)
+	client, err := c.Get(id)
 	if err != nil {
 		return err
 	}
@@ -51,7 +52,9 @@ func (c *Products) List() ([]entities.Product, error) {
 func (c *Products) Get(id uint) (*entities.Product, error) {
 	product, err := c.repository.Get(id)
 	if err != nil || product == nil {
-		return nil, exceptions.NotFound("product not found")
+		return nil, errProductNotFound
 	}
 	return product, nil
 }
+
+var errProductNotFound = fmt.Errorf("product %w", ErrNotFound)
