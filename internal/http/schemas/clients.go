@@ -1,11 +1,10 @@
 package schemas
 
 import (
-	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type CreateClient struct {
@@ -21,17 +20,17 @@ func (cc *CreateClient) ToModel() *entities.Client {
 }
 
 func (cc *CreateClient) Validate() error {
-	var err error
+	err := NewValidationError()
 	if cc.Name == "" {
-		err = errors.Join(err, exceptions.BadRequest("Name is required"))
+		err.Add(errClientNameRequired)
 	}
 	if cc.Email == "" {
-		err = errors.Join(err, exceptions.BadRequest("Email is required"))
+		err.Add(errEmailRequired)
 	}
 	if !strings.Contains(cc.Email, "@") {
-		err = errors.Join(err, exceptions.BadRequest("Email is invalid"))
+		err.Add(errEmailInvalid)
 	}
-	return err
+	return err.ReturnIfError()
 }
 
 type UpdateClient struct {
@@ -97,3 +96,7 @@ func NewClientDetail(clientModel *entities.Client) *ClientDetail {
 	c.Orders = NewClientOrders(clientModel.Orders)
 	return c
 }
+
+var errClientNameRequired = fmt.Errorf("%w: client name is required", ErrValidation)
+var errEmailRequired = fmt.Errorf("%w: email is required", ErrValidation)
+var errEmailInvalid = fmt.Errorf("%w: email is invalid", ErrValidation)

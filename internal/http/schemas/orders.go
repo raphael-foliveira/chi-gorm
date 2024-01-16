@@ -1,8 +1,9 @@
 package schemas
 
 import (
+	"fmt"
+
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type CreateOrder struct {
@@ -20,10 +21,11 @@ func (co *CreateOrder) ToModel() *entities.Order {
 }
 
 func (co *CreateOrder) Validate() error {
+	err := NewValidationError()
 	if co.Quantity <= 0 {
-		return exceptions.BadRequest("Quantity must be greater than zero")
+		err.Add(errQuantityInvalid)
 	}
-	return nil
+	return err.ReturnIfError()
 }
 
 type UpdateOrder struct {
@@ -31,10 +33,11 @@ type UpdateOrder struct {
 }
 
 func (uo *UpdateOrder) Validate() error {
+	err := NewValidationError()
 	if uo.Quantity <= 0 {
-		return exceptions.BadRequest("Quantity must be greater than zero")
+		err.Add(errQuantityInvalid)
 	}
-	return nil
+	return err.ReturnIfError()
 }
 
 type Order struct {
@@ -60,3 +63,5 @@ func NewOrders(orders []entities.Order) []Order {
 	}
 	return o
 }
+
+var errQuantityInvalid = fmt.Errorf("%w: quantity must be greater than zero", ErrValidation)

@@ -1,10 +1,9 @@
 package schemas
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type CreateProduct struct {
@@ -20,14 +19,14 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 }
 
 func (cp *CreateProduct) Validate() error {
-	var err error
+	err := NewValidationError()
 	if cp.Name == "" {
-		err = errors.Join(err, exceptions.BadRequest("Name is required"))
+		err.Add(errProductNameInvalid)
 	}
 	if cp.Price <= 0 {
-		err = errors.Join(err, exceptions.BadRequest("Price must be greater than zero"))
+		err.Add(errPriceInvalid)
 	}
-	return err
+	return err.ReturnIfError()
 }
 
 type UpdateProduct struct {
@@ -55,3 +54,6 @@ func NewProducts(products []entities.Product) []Product {
 	}
 	return p
 }
+
+var errProductNameInvalid = fmt.Errorf("%w: name is required", ErrValidation)
+var errPriceInvalid = fmt.Errorf("%w: price must be greater than zero", ErrValidation)
