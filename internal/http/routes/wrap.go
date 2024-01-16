@@ -28,7 +28,6 @@ func handleApiErr(w http.ResponseWriter, err error) {
 		return
 	}
 	if errors.As(err, &errValidation) {
-		slog.Debug("%v", err)
 		res.JSON(w, errValidation.Status, errValidation)
 		return
 	}
