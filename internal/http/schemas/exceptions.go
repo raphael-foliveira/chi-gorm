@@ -4,13 +4,11 @@ import "strings"
 
 type ValidationError struct {
 	Errors []string `json:"errors"`
-	Status int      `json:"status"`
 }
 
-func NewValidationError() *ValidationError {
+func NewValidationError(status ...int) *ValidationError {
 	return &ValidationError{
 		Errors: []string{},
-		Status: 400,
 	}
 }
 

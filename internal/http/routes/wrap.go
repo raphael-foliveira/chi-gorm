@@ -28,7 +28,7 @@ func handleApiErr(w http.ResponseWriter, err error) {
 		return
 	}
 	if errors.As(err, &errValidation) {
-		res.JSON(w, errValidation.Status, errValidation)
+		res.JSON(w, http.StatusUnprocessableEntity, errValidation)
 		return
 	}
 	if errors.Is(err, service.ErrNotFound) {
