@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"strings"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
@@ -23,16 +22,14 @@ func wrap(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFun
 func handleApiErr(w http.ResponseWriter, err error) {
 	slog.Error(err.Error())
 	apiErr := &controller.ApiError{}
+	errValidation := &schemas.ValidationError{}
 	if errors.As(err, &apiErr) {
 		res.JSON(w, apiErr.Status, apiErr)
 		return
 	}
-	if errors.Is(err, schemas.ErrValidation) {
-		errValidation := schemas.ValidationError{
-			Errors: strings.Split(err.Error(), "\n"+schemas.ErrValidation.Error()),
-			Status: http.StatusBadRequest,
-		}
-		res.JSON(w, errValidation.Status, errValidation.Errors)
+	if errors.As(err, &errValidation) {
+		slog.Debug("%v", err)
+		res.JSON(w, errValidation.Status, errValidation)
 		return
 	}
 	if errors.Is(err, service.ErrNotFound) {

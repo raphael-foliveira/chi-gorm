@@ -1,7 +1,7 @@
 package schemas
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
@@ -55,5 +55,5 @@ func NewProducts(products []entities.Product) []Product {
 	return p
 }
 
-var errProductNameInvalid = fmt.Errorf("%w: name is required", ErrValidation)
-var errPriceInvalid = fmt.Errorf("%w: price must be greater than zero", ErrValidation)
+var errProductNameInvalid = errors.New("name is required")
+var errPriceInvalid = errors.New("price must be greater than zero")

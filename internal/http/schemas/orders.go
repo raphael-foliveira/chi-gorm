@@ -1,7 +1,7 @@
 package schemas
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
@@ -64,4 +64,4 @@ func NewOrders(orders []entities.Order) []Order {
 	return o
 }
 
-var errQuantityInvalid = fmt.Errorf("%w: quantity must be greater than zero", ErrValidation)
+var errQuantityInvalid = errors.New("quantity must be greater than zero")

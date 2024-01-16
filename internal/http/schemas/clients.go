@@ -1,7 +1,7 @@
 package schemas
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
@@ -97,6 +97,6 @@ func NewClientDetail(clientModel *entities.Client) *ClientDetail {
 	return c
 }
 
-var errClientNameRequired = fmt.Errorf("%w: client name is required", ErrValidation)
-var errEmailRequired = fmt.Errorf("%w: email is required", ErrValidation)
-var errEmailInvalid = fmt.Errorf("%w: email is invalid", ErrValidation)
+var errClientNameRequired = errors.New("client name is required")
+var errEmailRequired = errors.New("email is required")
+var errEmailInvalid = errors.New("email is invalid")
