@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type CreateClient struct {
@@ -20,16 +19,15 @@ func (cc *CreateClient) ToModel() *entities.Client {
 	}
 }
 
-func (cc *CreateClient) Validate() error {
-	var err error
+func (cc *CreateClient) Validate() (err error) {
 	if cc.Name == "" {
-		err = errors.Join(err, exceptions.BadRequest("Name is required"))
+		err = errors.Join(err, errClientNameRequired)
 	}
 	if cc.Email == "" {
-		err = errors.Join(err, exceptions.BadRequest("Email is required"))
+		err = errors.Join(err, errEmailRequired)
 	}
 	if !strings.Contains(cc.Email, "@") {
-		err = errors.Join(err, exceptions.BadRequest("Email is invalid"))
+		err = errors.Join(err, errEmailInvalid)
 	}
 	return err
 }
@@ -97,3 +95,7 @@ func NewClientDetail(clientModel *entities.Client) *ClientDetail {
 	c.Orders = NewClientOrders(clientModel.Orders)
 	return c
 }
+
+var errClientNameRequired = errors.New("client name is required")
+var errEmailRequired = errors.New("email is required")
+var errEmailInvalid = errors.New("invalid email")

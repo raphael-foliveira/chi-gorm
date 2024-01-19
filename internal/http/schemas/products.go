@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type CreateProduct struct {
@@ -19,13 +18,12 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 	}
 }
 
-func (cp *CreateProduct) Validate() error {
-	var err error
+func (cp *CreateProduct) Validate() (err error) {
 	if cp.Name == "" {
-		err = errors.Join(err, exceptions.BadRequest("Name is required"))
+		err = errors.Join(err, errProductNameInvalid)
 	}
 	if cp.Price <= 0 {
-		err = errors.Join(err, exceptions.BadRequest("Price must be greater than zero"))
+		err = errors.Join(err, errPriceInvalid)
 	}
 	return err
 }
@@ -55,3 +53,6 @@ func NewProducts(products []entities.Product) []Product {
 	}
 	return p
 }
+
+var errProductNameInvalid = errors.New("product name is required")
+var errPriceInvalid = errors.New("product price must be greater than zero")

@@ -1,8 +1,9 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
@@ -22,7 +23,7 @@ func (c *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 }
 
 func (c *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
-	entity, err := c.repository.Get(id)
+	entity, err := c.Get(id)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +33,7 @@ func (c *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, 
 }
 
 func (c *Orders) Delete(id uint) error {
-	client, err := c.repository.Get(id)
+	client, err := c.Get(id)
 	if err != nil {
 		return err
 	}
@@ -50,7 +51,9 @@ func (c *Orders) List() ([]entities.Order, error) {
 func (c *Orders) Get(id uint) (*entities.Order, error) {
 	order, err := c.repository.Get(id)
 	if err != nil || order == nil {
-		return nil, exceptions.NotFound("order not found")
+		return nil, errOrderNotFound
 	}
 	return order, nil
 }
+
+var errOrderNotFound = fmt.Errorf("order %w", ErrNotFound)

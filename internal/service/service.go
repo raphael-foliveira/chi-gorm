@@ -1,6 +1,10 @@
 package service
 
-import "github.com/raphael-foliveira/chi-gorm/internal/repository"
+import (
+	"errors"
+
+	"github.com/raphael-foliveira/chi-gorm/internal/repository"
+)
 
 type Services struct {
 	Clients  *Clients
@@ -17,3 +21,5 @@ func NewServices(repositories *repository.Repositories) *Services {
 		Jwt:      NewJwt(),
 	}
 }
+
+var ErrNotFound = errors.New("not found")
