@@ -25,7 +25,7 @@ func (cp *CreateProduct) Validate() (err error) {
 	if cp.Price <= 0 {
 		err = errors.Join(err, errPriceInvalid)
 	}
-	return NewValidationErrors(err)
+	return err
 }
 
 type UpdateProduct struct {
@@ -54,5 +54,5 @@ func NewProducts(products []entities.Product) []Product {
 	return p
 }
 
-var errProductNameInvalid = errors.New("name: product name is required")
-var errPriceInvalid = errors.New("price: product price must be greater than zero")
+var errProductNameInvalid = errors.New("product name is required")
+var errPriceInvalid = errors.New("product price must be greater than zero")

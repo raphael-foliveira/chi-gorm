@@ -24,7 +24,7 @@ func (co *CreateOrder) Validate() (err error) {
 	if co.Quantity <= 0 {
 		err = errors.Join(err, errQuantityInvalid)
 	}
-	return NewValidationErrors(err)
+	return err
 }
 
 type UpdateOrder struct {
@@ -35,7 +35,7 @@ func (uo *UpdateOrder) Validate() (err error) {
 	if uo.Quantity <= 0 {
 		err = errors.Join(err, errQuantityInvalid)
 	}
-	return NewValidationErrors(err)
+	return err
 }
 
 type Order struct {
@@ -62,4 +62,4 @@ func NewOrders(orders []entities.Order) []Order {
 	return o
 }
 
-var errQuantityInvalid = errors.New("quantity: quantity must be greater than zero")
+var errQuantityInvalid = errors.New("quantity must be greater than zero")

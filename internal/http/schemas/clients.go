@@ -29,7 +29,7 @@ func (cc *CreateClient) Validate() (err error) {
 	if !strings.Contains(cc.Email, "@") {
 		err = errors.Join(err, errEmailInvalid)
 	}
-	return NewValidationErrors(err)
+	return err
 }
 
 type UpdateClient struct {
@@ -96,6 +96,6 @@ func NewClientDetail(clientModel *entities.Client) *ClientDetail {
 	return c
 }
 
-var errClientNameRequired = errors.New("client: client name is required")
-var errEmailRequired = errors.New("email: email is required")
-var errEmailInvalid = errors.New("email: invalid email")
+var errClientNameRequired = errors.New("client name is required")
+var errEmailRequired = errors.New("email is required")
+var errEmailInvalid = errors.New("invalid email")

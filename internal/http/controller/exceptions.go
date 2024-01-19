@@ -26,10 +26,10 @@ func ErrUnprocessableEntity(message string) *ApiError {
 	return NewApiError(message, http.StatusUnprocessableEntity)
 }
 
-func ErrInternalServerError(message string) *ApiError {
+func InternalServerError(message string) *ApiError {
 	return NewApiError(message, http.StatusInternalServerError)
 }
 
-func ErrNotFound(message string) *ApiError {
+func NotFound(message string) *ApiError {
 	return NewApiError(message, http.StatusNotFound)
 }

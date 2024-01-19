@@ -4,10 +4,10 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
@@ -26,17 +26,16 @@ func handleApiErr(w http.ResponseWriter, err error) {
 		Message: "internal server error",
 	}
 	errors.As(err, &apiErr)
+	if apiErr.Status == http.StatusUnprocessableEntity {
+		res.JSON(w, apiErr.Status, map[string]any{
+			"errors": strings.Split(apiErr.Message, "\n"),
+			"status": apiErr.Status,
+		})
+		return
+	}
 	if errors.Is(err, service.ErrNotFound) {
 		apiErr.Status = http.StatusNotFound
 		apiErr.Message = err.Error()
 	}
-	errValidation := schemas.ValidationErrors{}
-	if errors.As(err, &errValidation) {
-		res.JSON(w, http.StatusUnprocessableEntity, map[string]interface{}{
-			"errors": errValidation,
-			"status": http.StatusUnprocessableEntity,
-		})
-		return
-	}
-	res.JSON(w, apiErr.Status, apiErr)
+	res.JSON(w, apiErr.Status, apiErr.Message)
 }
