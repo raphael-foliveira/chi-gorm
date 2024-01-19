@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 
@@ -20,8 +21,10 @@ func TestHandleApiErr(t *testing.T) {
 		}
 		var body map[string]interface{}
 		json.NewDecoder(recorder.Body).Decode(&body)
-		if body["message"] != "test" {
-			t.Errorf("Body should be %v, got %v", "message", body["message"])
+		fmt.Println(body)
+		message := body["message"]
+		if message != "test" {
+			t.Errorf("Body should be %v, got %v", "message", message)
 		}
 	})
 

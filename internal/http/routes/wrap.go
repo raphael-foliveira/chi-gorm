@@ -37,5 +37,5 @@ func handleApiErr(w http.ResponseWriter, err error) {
 		apiErr.Status = http.StatusNotFound
 		apiErr.Message = err.Error()
 	}
-	res.JSON(w, apiErr.Status, apiErr.Message)
+	res.JSON(w, apiErr.Status, apiErr)
 }
