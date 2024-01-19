@@ -1,31 +1,26 @@
 package schemas
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
-type ValidationError struct {
-	Errors []string `json:"errors"`
-}
+type ValidationErrors map[string]string
 
-func NewValidationError(status ...int) *ValidationError {
-	return &ValidationError{
-		Errors: []string{},
+func (vem ValidationErrors) Error() string {
+	message := ""
+	for key, value := range vem {
+		message += fmt.Sprintf("%s %s\n", key, value)
 	}
+	return message
 }
 
-func (ae *ValidationError) Error() string {
-	if ae.Errors == nil {
-		return ""
+func NewValidationErrors(err error) ValidationErrors {
+	ve := ValidationErrors{}
+	errors := strings.Split(err.Error(), "\n")
+	for _, e := range errors {
+		split := strings.Split(e, ": ")
+		ve[split[0]] = split[1]
 	}
-	return strings.Join(ae.Errors, ", ")
-}
-
-func (ae *ValidationError) Add(err error) {
-	ae.Errors = append(ae.Errors, err.Error())
-}
-
-func (ae *ValidationError) ReturnIfError() error {
-	if len(ae.Errors) > 0 {
-		return ae
-	}
-	return nil
+	return ve
 }

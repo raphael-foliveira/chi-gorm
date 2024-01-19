@@ -20,24 +20,22 @@ func (co *CreateOrder) ToModel() *entities.Order {
 	}
 }
 
-func (co *CreateOrder) Validate() error {
-	err := NewValidationError()
+func (co *CreateOrder) Validate() (err error) {
 	if co.Quantity <= 0 {
-		err.Add(errQuantityInvalid)
+		err = errors.Join(err, errQuantityInvalid)
 	}
-	return err.ReturnIfError()
+	return NewValidationErrors(err)
 }
 
 type UpdateOrder struct {
 	Quantity uint `json:"quantity"`
 }
 
-func (uo *UpdateOrder) Validate() error {
-	err := NewValidationError()
+func (uo *UpdateOrder) Validate() (err error) {
 	if uo.Quantity <= 0 {
-		err.Add(errQuantityInvalid)
+		err = errors.Join(err, errQuantityInvalid)
 	}
-	return err.ReturnIfError()
+	return NewValidationErrors(err)
 }
 
 type Order struct {
@@ -64,4 +62,4 @@ func NewOrders(orders []entities.Order) []Order {
 	return o
 }
 
-var errQuantityInvalid = errors.New("quantity must be greater than zero")
+var errQuantityInvalid = errors.New("quantity: quantity must be greater than zero")

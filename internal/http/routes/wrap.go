@@ -21,20 +21,22 @@ func wrap(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFun
 
 func handleApiErr(w http.ResponseWriter, err error) {
 	slog.Error(err.Error())
-	apiErr := &controller.ApiError{}
-	errValidation := &schemas.ValidationError{}
-	if errors.As(err, &apiErr) {
-		res.JSON(w, apiErr.Status, apiErr)
-		return
+	apiErr := &controller.ApiError{
+		Status:  http.StatusInternalServerError,
+		Message: "internal server error",
 	}
-	if errors.As(err, &errValidation) {
-		res.JSON(w, http.StatusUnprocessableEntity, errValidation)
-		return
-	}
+	errors.As(err, &apiErr)
 	if errors.Is(err, service.ErrNotFound) {
-		err := controller.NotFound(err.Error())
-		res.JSON(w, err.Status, err)
+		apiErr.Status = http.StatusNotFound
+		apiErr.Message = err.Error()
+	}
+	errValidation := schemas.ValidationErrors{}
+	if errors.As(err, &errValidation) {
+		res.JSON(w, http.StatusUnprocessableEntity, map[string]interface{}{
+			"errors": errValidation,
+			"status": http.StatusUnprocessableEntity,
+		})
 		return
 	}
-	res.JSON(w, http.StatusInternalServerError, controller.InternalServerError("internal server error"))
+	res.JSON(w, apiErr.Status, apiErr)
 }

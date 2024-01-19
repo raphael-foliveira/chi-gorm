@@ -19,18 +19,17 @@ func (cc *CreateClient) ToModel() *entities.Client {
 	}
 }
 
-func (cc *CreateClient) Validate() error {
-	err := NewValidationError()
+func (cc *CreateClient) Validate() (err error) {
 	if cc.Name == "" {
-		err.Add(errClientNameRequired)
+		err = errors.Join(err, errClientNameRequired)
 	}
 	if cc.Email == "" {
-		err.Add(errEmailRequired)
+		err = errors.Join(err, errEmailRequired)
 	}
 	if !strings.Contains(cc.Email, "@") {
-		err.Add(errEmailInvalid)
+		err = errors.Join(err, errEmailInvalid)
 	}
-	return err.ReturnIfError()
+	return NewValidationErrors(err)
 }
 
 type UpdateClient struct {
@@ -97,6 +96,6 @@ func NewClientDetail(clientModel *entities.Client) *ClientDetail {
 	return c
 }
 
-var errClientNameRequired = errors.New("client name is required")
-var errEmailRequired = errors.New("email is required")
-var errEmailInvalid = errors.New("email is invalid")
+var errClientNameRequired = errors.New("client: client name is required")
+var errEmailRequired = errors.New("email: email is required")
+var errEmailInvalid = errors.New("email: invalid email")

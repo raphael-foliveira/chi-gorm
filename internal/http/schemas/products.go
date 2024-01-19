@@ -18,15 +18,14 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 	}
 }
 
-func (cp *CreateProduct) Validate() error {
-	err := NewValidationError()
+func (cp *CreateProduct) Validate() (err error) {
 	if cp.Name == "" {
-		err.Add(errProductNameInvalid)
+		err = errors.Join(err, errProductNameInvalid)
 	}
 	if cp.Price <= 0 {
-		err.Add(errPriceInvalid)
+		err = errors.Join(err, errPriceInvalid)
 	}
-	return err.ReturnIfError()
+	return NewValidationErrors(err)
 }
 
 type UpdateProduct struct {
@@ -55,5 +54,5 @@ func NewProducts(products []entities.Product) []Product {
 	return p
 }
 
-var errProductNameInvalid = errors.New("name is required")
-var errPriceInvalid = errors.New("price must be greater than zero")
+var errProductNameInvalid = errors.New("name: product name is required")
+var errPriceInvalid = errors.New("price: product price must be greater than zero")
