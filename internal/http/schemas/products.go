@@ -2,6 +2,7 @@ package schemas
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type CreateProduct struct {
@@ -23,7 +24,7 @@ func (cp *CreateProduct) Validate() (err error) {
 	if cp.Price <= 0 {
 		err = addFieldError(err, "price", "price must be greater than zero")
 	}
-	return NewValidationError(err)
+	return exceptions.NewValidationError(err)
 }
 
 type UpdateProduct struct {

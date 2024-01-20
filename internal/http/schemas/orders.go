@@ -2,6 +2,7 @@ package schemas
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type CreateOrder struct {
@@ -22,7 +23,7 @@ func (co *CreateOrder) Validate() (err error) {
 	if co.Quantity <= 0 {
 		err = addFieldError(err, "quantity", "quantity must be greater than zero")
 	}
-	return NewValidationError(err)
+	return exceptions.NewValidationError(err)
 }
 
 type UpdateOrder struct {
@@ -33,7 +34,7 @@ func (uo *UpdateOrder) Validate() (err error) {
 	if uo.Quantity <= 0 {
 		err = addFieldError(err, "quantity", "quantity must be greater than zero")
 	}
-	return NewValidationError(err)
+	return exceptions.NewValidationError(err)
 }
 
 type Order struct {
