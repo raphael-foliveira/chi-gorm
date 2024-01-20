@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
@@ -27,14 +26,4 @@ func NewControllers(services *service.Services) *Controllers {
 		Orders:   NewOrders(services.Orders),
 		Products: NewProducts(services.Products),
 	}
-}
-
-func handleServiceErr(err error) error {
-	if errors.Is(err, service.ErrNotFound) {
-		return &ApiError{
-			Status:  http.StatusNotFound,
-			Message: err.Error(),
-		}
-	}
-	return err
 }
