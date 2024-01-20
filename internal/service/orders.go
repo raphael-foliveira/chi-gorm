@@ -14,40 +14,40 @@ func NewOrders(repository repository.Orders) *Orders {
 	return &Orders{repository}
 }
 
-func (c *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
+func (o *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 	newOrder := schema.ToModel()
-	err := c.repository.Create(newOrder)
+	err := o.repository.Create(newOrder)
 	return newOrder, err
 }
 
-func (c *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
-	entity, err := c.Get(id)
+func (o *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
+	entity, err := o.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	entity.Quantity = schema.Quantity
-	err = c.repository.Update(entity)
+	err = o.repository.Update(entity)
 	return entity, err
 }
 
-func (c *Orders) Delete(id uint) error {
-	client, err := c.Get(id)
+func (o *Orders) Delete(id uint) error {
+	client, err := o.Get(id)
 	if err != nil {
 		return err
 	}
-	err = c.repository.Delete(client)
+	err = o.repository.Delete(client)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Orders) List() ([]entities.Order, error) {
-	return c.repository.List()
+func (o *Orders) List() ([]entities.Order, error) {
+	return o.repository.List()
 }
 
-func (c *Orders) Get(id uint) (*entities.Order, error) {
-	order, err := c.repository.Get(id)
+func (o *Orders) Get(id uint) (*entities.Order, error) {
+	order, err := o.repository.Get(id)
 	if err != nil || order == nil {
 		return nil, errOrderNotFound
 	}
