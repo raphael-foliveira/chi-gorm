@@ -11,5 +11,5 @@ func healthCheck(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HealthCheckRoute() http.HandlerFunc {
-	return wrap(healthCheck)
+	return useHandler(healthCheck)
 }

@@ -1,8 +1,6 @@
 package schemas
 
 import (
-	"errors"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
@@ -20,12 +18,12 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 
 func (cp *CreateProduct) Validate() (err error) {
 	if cp.Name == "" {
-		err = errors.Join(err, errProductNameInvalid)
+		err = addFieldError(err, "name", "name is required")
 	}
 	if cp.Price <= 0 {
-		err = errors.Join(err, errPriceInvalid)
+		err = addFieldError(err, "price", "price must be greater than zero")
 	}
-	return err
+	return NewValidationError(err)
 }
 
 type UpdateProduct struct {
@@ -53,6 +51,3 @@ func NewProducts(products []entities.Product) []Product {
 	}
 	return p
 }
-
-var errProductNameInvalid = errors.New("product name is required")
-var errPriceInvalid = errors.New("product price must be greater than zero")

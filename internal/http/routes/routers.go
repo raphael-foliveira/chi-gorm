@@ -19,6 +19,6 @@ func NewRouters(controllers *controller.Controllers) *Routers {
 		Products:    Products(controllers.Products),
 		Orders:      Orders(controllers.Orders),
 		Clients:     Clients(controllers.Clients),
-		HealthCheck: wrap(healthCheck),
+		HealthCheck: useHandler(healthCheck),
 	}
 }
