@@ -1,7 +1,6 @@
 package schemas
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
@@ -21,15 +20,15 @@ func (cc *CreateClient) ToModel() *entities.Client {
 
 func (cc *CreateClient) Validate() (err error) {
 	if cc.Name == "" {
-		err = errors.Join(err, errClientNameRequired)
+		err = addFieldError(err, "name", "name is required")
 	}
 	if cc.Email == "" {
-		err = errors.Join(err, errEmailRequired)
+		err = addFieldError(err, "email", "email is required")
 	}
 	if !strings.Contains(cc.Email, "@") {
-		err = errors.Join(err, errEmailInvalid)
+		err = addFieldError(err, "email", "email is invalid")
 	}
-	return err
+	return NewValidationError(err)
 }
 
 type UpdateClient struct {
@@ -95,7 +94,3 @@ func NewClientDetail(clientModel *entities.Client) *ClientDetail {
 	c.Orders = NewClientOrders(clientModel.Orders)
 	return c
 }
-
-var errClientNameRequired = errors.New("client name is required")
-var errEmailRequired = errors.New("email is required")
-var errEmailInvalid = errors.New("invalid email")

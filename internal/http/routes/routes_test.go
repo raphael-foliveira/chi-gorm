@@ -15,7 +15,7 @@ func TestWrap(t *testing.T) {
 			return errors.New("uncaught error")
 		}
 		router := chi.NewRouter()
-		router.Get("/", wrap(cf))
+		router.Get("/", useHandler(cf))
 		recorder := httptest.NewRecorder()
 		request, err := http.NewRequest(http.MethodGet, "/", nil)
 		if err != nil {

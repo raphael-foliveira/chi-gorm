@@ -24,7 +24,7 @@ func parseBody[T schemas.ValidateableSchema](r *http.Request, v T) (T, error) {
 		return v, ErrBadRequest("invalid body")
 	}
 	if err := v.Validate(); err != nil {
-		return v, ErrUnprocessableEntity(err.Error())
+		return v, err
 	}
 	return v, nil
 }

@@ -7,10 +7,10 @@ import (
 
 func Orders(c *controller.Orders) *chi.Mux {
 	router := chi.NewRouter()
-	router.Get("/", wrap(c.List))
-	router.Post("/", wrap(c.Create))
-	router.Get("/{id}", wrap(c.Get))
-	router.Delete("/{id}", wrap(c.Delete))
-	router.Put("/{id}", wrap(c.Update))
+	router.Get("/", useHandler(c.List))
+	router.Post("/", useHandler(c.Create))
+	router.Get("/{id}", useHandler(c.Get))
+	router.Delete("/{id}", useHandler(c.Delete))
+	router.Put("/{id}", useHandler(c.Update))
 	return router
 }
