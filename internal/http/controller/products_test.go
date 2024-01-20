@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
@@ -102,7 +103,7 @@ func TestProducts(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
 			err := controller.Create(recorder, request)
-			apiErr, ok := err.(*ApiError)
+			apiErr, ok := err.(*exceptions.ApiError)
 			if !ok {
 				t.Fatal("err should be an ApiError")
 			}
@@ -155,7 +156,7 @@ func TestProducts(t *testing.T) {
 			tx.URLParams.Add("id", "1")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 			err := controller.Update(recorder, request)
-			apiErr, ok := err.(*ApiError)
+			apiErr, ok := err.(*exceptions.ApiError)
 			if !ok {
 				t.Fatal("err should be an ApiError")
 			}

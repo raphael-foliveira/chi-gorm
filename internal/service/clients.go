@@ -1,8 +1,6 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
@@ -65,5 +63,3 @@ func (c *Clients) GetOrders(clientId uint) ([]entities.Order, error) {
 	}
 	return c.ordersRepository.FindManyByClientId(client.ID)
 }
-
-var errClientNotFound = fmt.Errorf("client %w", ErrNotFound)

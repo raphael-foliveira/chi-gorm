@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type CreateClient struct {
@@ -28,7 +29,7 @@ func (cc *CreateClient) Validate() (err error) {
 	if !strings.Contains(cc.Email, "@") {
 		err = addFieldError(err, "email", "email is invalid")
 	}
-	return NewValidationError(err)
+	return exceptions.NewValidationError(err)
 }
 
 type UpdateClient struct {
