@@ -30,7 +30,7 @@ func handleApiErr(w http.ResponseWriter, err error) error {
 	}
 	validationErr := &schemas.ValidationError{}
 	if errors.As(err, &validationErr) {
-		return res.JSON(w, http.StatusUnprocessableEntity, validationErrorResponse{
+		return res.JSON(w, http.StatusUnprocessableEntity, &validationErrorResponse{
 			Errors: validationErr.Errors,
 			Status: http.StatusUnprocessableEntity,
 		})
