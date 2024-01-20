@@ -1,8 +1,6 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
@@ -56,5 +54,3 @@ func (c *Products) Get(id uint) (*entities.Product, error) {
 	}
 	return product, nil
 }
-
-var errProductNotFound = fmt.Errorf("product %w", ErrNotFound)

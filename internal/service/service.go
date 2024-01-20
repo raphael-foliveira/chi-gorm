@@ -1,8 +1,6 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
@@ -21,5 +19,3 @@ func NewServices(repositories *repository.Repositories) *Services {
 		Jwt:      NewJwt(),
 	}
 }
-
-var ErrNotFound = errors.New("not found")
