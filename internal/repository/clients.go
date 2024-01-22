@@ -5,16 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type Clients interface {
-	Repository[entities.Client]
-}
-
 type clients struct {
-	*repository[entities.Client]
+	*Repository[entities.Client]
 }
 
-func NewClients(db *gorm.DB) Clients {
-	return &clients{&repository[entities.Client]{db}}
+func NewClients(db *gorm.DB) *clients {
+	return &clients{&Repository[entities.Client]{db}}
 }
 
 func (c *clients) Delete(entity *entities.Client) error {

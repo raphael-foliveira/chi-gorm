@@ -5,17 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type Orders interface {
-	Repository[entities.Order]
-	FindManyByClientId(uint) ([]entities.Order, error)
-}
-
 type orders struct {
-	*repository[entities.Order]
+	*Repository[entities.Order]
 }
 
-func NewOrders(db *gorm.DB) Orders {
-	return &orders{&repository[entities.Order]{db}}
+func NewOrders(db *gorm.DB) *orders {
+	return &orders{&Repository[entities.Order]{db}}
 }
 
 func (o *orders) FindManyByClientId(clientId uint) ([]entities.Order, error) {

@@ -5,10 +5,12 @@ import (
 	"strings"
 )
 
-var (
+type cfg struct {
 	DatabaseURL string
 	JwtSecret   string
-)
+}
+
+var config = &cfg{}
 
 func LoadCfg(path string) error {
 	content, err := getFileContent(path)
@@ -20,9 +22,13 @@ func LoadCfg(path string) error {
 	return nil
 }
 
+func GetCfg() *cfg {
+	return config
+}
+
 func setEnvs() {
-	DatabaseURL = os.Getenv("DATABASE_URL")
-	JwtSecret = os.Getenv("JWT_SECRET")
+	config.DatabaseURL = os.Getenv("DATABASE_URL")
+	config.JwtSecret = os.Getenv("JWT_SECRET")
 }
 
 func parseEnv(s string) {

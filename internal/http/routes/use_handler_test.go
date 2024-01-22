@@ -22,9 +22,9 @@ func TestHandleApiErr(t *testing.T) {
 		var body map[string]interface{}
 		json.NewDecoder(recorder.Body).Decode(&body)
 		fmt.Println(body)
-		message := body["message"]
+		message := body["error"]
 		if message != "test" {
-			t.Errorf("Body should be %v, got %v", "message", message)
+			t.Errorf("Body should be %v, got %v", "test", message)
 		}
 	})
 
@@ -36,8 +36,9 @@ func TestHandleApiErr(t *testing.T) {
 		}
 		var body map[string]interface{}
 		json.NewDecoder(recorder.Body).Decode(&body)
-		if body["message"] != "test not found" {
-			t.Errorf("Body should be %v, got %v", "test not found", body["message"])
+		message := body["error"]
+		if message != "test not found" {
+			t.Errorf("Body should be %v, got %v", "test not found", message)
 		}
 	})
 }

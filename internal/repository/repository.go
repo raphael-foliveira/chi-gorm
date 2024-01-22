@@ -1,57 +1,62 @@
 package repository
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 	"gorm.io/gorm"
 )
 
-type Repository[T interface{}] interface {
-	List() ([]T, error)
-	Get(uint) (*T, error)
-	Create(*T) error
-	Update(*T) error
-	Delete(*T) error
-}
-
-type repository[T interface{}] struct {
+type Repository[T interface{}] struct {
 	db *gorm.DB
 }
 
-func NewRepository[T interface{}](db *gorm.DB) Repository[T] {
-	return &repository[T]{db}
+func NewRepository[T interface{}](db *gorm.DB) *Repository[T] {
+	return &Repository[T]{db}
 }
 
-func (r *repository[T]) List() ([]T, error) {
+func (r *Repository[T]) List() ([]T, error) {
 	entities := []T{}
 	return entities, r.db.Find(&entities).Error
 }
 
-func (r *repository[T]) Get(id uint) (*T, error) {
+func (r *Repository[T]) Get(id uint) (*T, error) {
 	entity := new(T)
 	return entity, r.db.Model(new(T)).First(entity, id).Error
 }
 
-func (r *repository[T]) Create(entity *T) error {
+func (r *Repository[T]) Create(entity *T) error {
 	return r.db.Create(entity).Error
 }
 
-func (r *repository[T]) Update(entity *T) error {
+func (r *Repository[T]) Update(entity *T) error {
 	return r.db.Save(entity).Error
 }
 
-func (r *repository[T]) Delete(entity *T) error {
+func (r *Repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
 
 type Repositories struct {
-	Clients  Clients
-	Products Products
-	Orders   Orders
+	clients  *clients
+	products *products
+	orders   *orders
+}
+
+func (r *Repositories) Clients() service.ClientsRepository {
+	return r.clients
+}
+
+func (r *Repositories) Products() service.ProductsRepository {
+	return r.products
+}
+
+func (r *Repositories) Orders() service.OrdersRepository {
+	return r.orders
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
 	return &Repositories{
-		Clients:  NewClients(db),
-		Products: NewProducts(db),
-		Orders:   NewOrders(db),
+		clients:  NewClients(db),
+		products: NewProducts(db),
+		orders:   NewOrders(db),
 	}
 }
