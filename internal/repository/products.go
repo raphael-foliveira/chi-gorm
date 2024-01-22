@@ -6,11 +6,11 @@ import (
 )
 
 type products struct {
-	*Repository[entities.Product]
+	*repository[entities.Product]
 }
 
 func NewProducts(db *gorm.DB) *products {
-	return &products{&Repository[entities.Product]{db}}
+	return &products{&repository[entities.Product]{db}}
 }
 
 func (r *products) FindMany(ids []uint) ([]entities.Product, error) {

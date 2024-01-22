@@ -6,11 +6,11 @@ import (
 )
 
 type clients struct {
-	*Repository[entities.Client]
+	*repository[entities.Client]
 }
 
 func NewClients(db *gorm.DB) *clients {
-	return &clients{&Repository[entities.Client]{db}}
+	return &clients{&repository[entities.Client]{db}}
 }
 
 func (c *clients) Delete(entity *entities.Client) error {

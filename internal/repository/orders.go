@@ -6,11 +6,11 @@ import (
 )
 
 type orders struct {
-	*Repository[entities.Order]
+	*repository[entities.Order]
 }
 
 func NewOrders(db *gorm.DB) *orders {
-	return &orders{&Repository[entities.Order]{db}}
+	return &orders{&repository[entities.Order]{db}}
 }
 
 func (o *orders) FindManyByClientId(clientId uint) ([]entities.Order, error) {
