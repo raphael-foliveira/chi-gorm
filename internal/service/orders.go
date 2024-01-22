@@ -3,14 +3,18 @@ package service
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
 type Orders struct {
-	repository repository.Orders
+	repository OrdersRepository
 }
 
-func NewOrders(repository repository.Orders) *Orders {
+type OrdersRepository interface {
+	Repository[entities.Order]
+	FindManyByClientId(uint) ([]entities.Order, error)
+}
+
+func NewOrders(repository OrdersRepository) *Orders {
 	return &Orders{repository}
 }
 

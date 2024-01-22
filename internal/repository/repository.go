@@ -1,22 +1,15 @@
 package repository
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 	"gorm.io/gorm"
 )
-
-type Repository[T interface{}] interface {
-	List() ([]T, error)
-	Get(uint) (*T, error)
-	Create(*T) error
-	Update(*T) error
-	Delete(*T) error
-}
 
 type repository[T interface{}] struct {
 	db *gorm.DB
 }
 
-func NewRepository[T interface{}](db *gorm.DB) Repository[T] {
+func NewRepository[T interface{}](db *gorm.DB) *repository[T] {
 	return &repository[T]{db}
 }
 
@@ -42,14 +35,8 @@ func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
 
-type Repositories struct {
-	Clients  Clients
-	Products Products
-	Orders   Orders
-}
-
-func NewRepositories(db *gorm.DB) *Repositories {
-	return &Repositories{
+func NewRepositories(db *gorm.DB) *service.Repositories {
+	return &service.Repositories{
 		Clients:  NewClients(db),
 		Products: NewProducts(db),
 		Orders:   NewOrders(db),

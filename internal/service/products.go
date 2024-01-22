@@ -3,14 +3,18 @@ package service
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
 type Products struct {
-	repository repository.Repository[entities.Product]
+	repository ProductsRepository
 }
 
-func NewProducts(repository repository.Repository[entities.Product]) *Products {
+type ProductsRepository interface {
+	Repository[entities.Product]
+	FindMany([]uint) ([]entities.Product, error)
+}
+
+func NewProducts(repository ProductsRepository) *Products {
 	return &Products{repository}
 }
 
