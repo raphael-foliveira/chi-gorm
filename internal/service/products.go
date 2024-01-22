@@ -9,11 +9,6 @@ type Products struct {
 	repository ProductsRepository
 }
 
-type ProductsRepository interface {
-	Repository[entities.Product]
-	FindMany([]uint) ([]entities.Product, error)
-}
-
 func NewProducts(repository ProductsRepository) *Products {
 	return &Products{repository}
 }

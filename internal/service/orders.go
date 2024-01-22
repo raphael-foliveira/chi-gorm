@@ -9,11 +9,6 @@ type Orders struct {
 	repository OrdersRepository
 }
 
-type OrdersRepository interface {
-	Repository[entities.Order]
-	FindManyByClientId(uint) ([]entities.Order, error)
-}
-
 func NewOrders(repository OrdersRepository) *Orders {
 	return &Orders{repository}
 }

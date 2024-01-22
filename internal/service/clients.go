@@ -10,10 +10,6 @@ type Clients struct {
 	ordersRepository OrdersRepository
 }
 
-type ClientsRepository interface {
-	Repository[entities.Client]
-}
-
 func NewClients(repository ClientsRepository, ordersRepository OrdersRepository) *Clients {
 	return &Clients{repository, ordersRepository}
 }
