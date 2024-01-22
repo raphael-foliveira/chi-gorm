@@ -35,28 +35,10 @@ func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
 
-type Repositories struct {
-	clients  *clients
-	products *products
-	orders   *orders
-}
-
-func (r *Repositories) Clients() service.ClientsRepository {
-	return r.clients
-}
-
-func (r *Repositories) Products() service.ProductsRepository {
-	return r.products
-}
-
-func (r *Repositories) Orders() service.OrdersRepository {
-	return r.orders
-}
-
-func NewRepositories(db *gorm.DB) *Repositories {
-	return &Repositories{
-		clients:  NewClients(db),
-		products: NewProducts(db),
-		orders:   NewOrders(db),
+func NewRepositories(db *gorm.DB) *service.Repositories {
+	return &service.Repositories{
+		Clients:  NewClients(db),
+		Products: NewProducts(db),
+		Orders:   NewOrders(db),
 	}
 }

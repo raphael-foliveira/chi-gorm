@@ -8,10 +8,10 @@ type Repository[T interface{}] interface {
 	Delete(*T) error
 }
 
-type Repositories interface {
-	Clients() ClientsRepository
-	Products() ProductsRepository
-	Orders() OrdersRepository
+type Repositories struct {
+	Clients  ClientsRepository
+	Products ProductsRepository
+	Orders   OrdersRepository
 }
 
 type Services struct {
@@ -21,11 +21,11 @@ type Services struct {
 	Jwt      *Jwt
 }
 
-func NewServices(repositories Repositories) *Services {
+func NewServices(repositories *Repositories) *Services {
 	return &Services{
-		Products: NewProducts(repositories.Products()),
-		Orders:   NewOrders(repositories.Orders()),
-		Clients:  NewClients(repositories.Clients(), repositories.Orders()),
+		Products: NewProducts(repositories.Products),
+		Orders:   NewOrders(repositories.Orders),
+		Clients:  NewClients(repositories.Clients, repositories.Orders),
 		Jwt:      NewJwt(),
 	}
 }
