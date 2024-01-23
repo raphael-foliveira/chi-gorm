@@ -1,4 +1,4 @@
-package service
+package interfaces
 
 import "github.com/raphael-foliveira/chi-gorm/internal/entities"
 

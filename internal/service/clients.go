@@ -3,14 +3,15 @@ package service
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
+	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
 )
 
 type Clients struct {
-	repository       ClientsRepository
-	ordersRepository OrdersRepository
+	repository       interfaces.ClientsRepository
+	ordersRepository interfaces.OrdersRepository
 }
 
-func NewClients(repository ClientsRepository, ordersRepository OrdersRepository) *Clients {
+func NewClients(repository interfaces.ClientsRepository, ordersRepository interfaces.OrdersRepository) *Clients {
 	return &Clients{repository, ordersRepository}
 }
 

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
+	"github.com/raphael-foliveira/chi-gorm/internal/interfaces"
 	"gorm.io/gorm"
 )
 
@@ -35,8 +35,8 @@ func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
 
-func NewRepositories(db *gorm.DB) *service.Repositories {
-	return &service.Repositories{
+func NewRepositories(db *gorm.DB) *interfaces.Repositories {
+	return &interfaces.Repositories{
 		Clients:  NewClients(db),
 		Products: NewProducts(db),
 		Orders:   NewOrders(db),
