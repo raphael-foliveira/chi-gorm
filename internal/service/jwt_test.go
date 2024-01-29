@@ -37,5 +37,11 @@ func TestJwt(t *testing.T) {
 		if tokenPayload.ClientID != payload.ClientID {
 			t.Errorf("Expected client id %d, got %d", payload.ClientID, tokenPayload.ClientID)
 		}
+		if tokenPayload.ClientName != payload.ClientName {
+			t.Errorf("Expected client name %s, got %s", payload.ClientName, tokenPayload.ClientName)
+		}
+		if tokenPayload.Email != payload.Email {
+			t.Errorf("Expected email %s, got %s", payload.Email, tokenPayload.Email)
+		}
 	})
 }

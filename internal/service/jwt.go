@@ -44,9 +44,8 @@ func (j *Jwt) Verify(token string) (*Payload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.secret), nil
 	}
-
-	data, err := jwt.ParseWithClaims(token, &Claims{}, keyFunc)
-	claims := data.Claims.(*Claims)
+	claims := &Claims{}
+	_, err := jwt.ParseWithClaims(token, claims, keyFunc)
 	return &Payload{
 		ClientID:   claims.ClientID,
 		ClientName: claims.ClientName,
