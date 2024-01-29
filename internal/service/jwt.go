@@ -42,16 +42,11 @@ func (j *Jwt) Sign(payload *Payload) (string, error) {
 
 func (j *Jwt) Verify(token string) (*Payload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		if !token.Valid {
-			return nil, jwt.ErrSignatureInvalid
-		}
 		return []byte(j.secret), nil
 	}
 
-	parserOption := jwt.WithValidMethods([]string{jwt.SigningMethodES256.Name})
-
-	data, err := jwt.Parse(token, keyFunc, parserOption)
-	claims := data.Claims.(Claims)
+	data, err := jwt.ParseWithClaims(token, &Claims{}, keyFunc)
+	claims := data.Claims.(*Claims)
 	return &Payload{
 		ClientID:   claims.ClientID,
 		ClientName: claims.ClientName,
