@@ -2,7 +2,7 @@ package schemas
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
+	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
 type CreateProduct struct {
@@ -18,13 +18,7 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 }
 
 func (cp *CreateProduct) Validate() (err error) {
-	if cp.Name == "" {
-		err = addFieldError(err, "name", "name is required")
-	}
-	if cp.Price <= 0 {
-		err = addFieldError(err, "price", "price must be greater than zero")
-	}
-	return exceptions.NewValidationError(err)
+	return validate.Rules(validate.Required("name", cp.Name), validate.Min("price", int(cp.Price), 0))
 }
 
 type UpdateProduct struct {

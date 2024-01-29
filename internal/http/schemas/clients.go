@@ -1,10 +1,8 @@
 package schemas
 
 import (
-	"strings"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
+	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
 type CreateClient struct {
@@ -20,16 +18,11 @@ func (cc *CreateClient) ToModel() *entities.Client {
 }
 
 func (cc *CreateClient) Validate() (err error) {
-	if cc.Name == "" {
-		err = addFieldError(err, "name", "name is required")
-	}
-	if cc.Email == "" {
-		err = addFieldError(err, "email", "email is required")
-	}
-	if !strings.Contains(cc.Email, "@") {
-		err = addFieldError(err, "email", "email is invalid")
-	}
-	return exceptions.NewValidationError(err)
+	return validate.Rules(
+		validate.Required("name", cc.Name),
+		validate.Required("email", cc.Email),
+		validate.Email("email", cc.Email),
+	)
 }
 
 type UpdateClient struct {

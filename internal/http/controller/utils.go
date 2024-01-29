@@ -19,7 +19,7 @@ func getUintPathParam(r *http.Request, paramName string) (uint, error) {
 	return uint(id), nil
 }
 
-func parseBody[T schemas.ValidateableSchema](r *http.Request, v T) (T, error) {
+func parseBody[T schemas.Validatable](r *http.Request, v T) (T, error) {
 	err := json.NewDecoder(r.Body).Decode(v)
 	if err != nil {
 		return v, exceptions.BadRequest("invalid body")
