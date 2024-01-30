@@ -7,6 +7,7 @@ import (
 
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
+	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
 func useHandler(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
@@ -23,7 +24,7 @@ func handleApiErr(w http.ResponseWriter, err error) error {
 		Status:  http.StatusInternalServerError,
 		Message: "internal server error",
 	}
-	validationErr := &exceptions.ValidationError{}
+	validationErr := &validate.ValidationError{}
 	if errors.As(err, &validationErr) {
 		return res.JSON(w, http.StatusUnprocessableEntity, validationErr)
 	}
