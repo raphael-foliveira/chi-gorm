@@ -5,6 +5,10 @@ import (
 	"gorm.io/gorm"
 )
 
+type ClientsRepository interface {
+	Repository[entities.Client]
+}
+
 type clients struct {
 	*repository[entities.Client]
 }
