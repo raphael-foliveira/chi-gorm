@@ -3,13 +3,14 @@ package service
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
+	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
 type Products struct {
-	repository ProductsRepository
+	repository repository.ProductsRepository
 }
 
-func NewProducts(repository ProductsRepository) *Products {
+func NewProducts(repository repository.ProductsRepository) *Products {
 	return &Products{repository}
 }
 
