@@ -31,18 +31,18 @@ type Product struct {
 	Price float64 `json:"price" faker:"amount"`
 }
 
-func NewProduct(productModel *entities.Product) *Product {
+func NewProduct(e *entities.Product) *Product {
 	return &Product{
-		ID:    productModel.ID,
-		Name:  productModel.Name,
-		Price: productModel.Price,
+		ID:    e.ID,
+		Name:  e.Name,
+		Price: e.Price,
 	}
 }
 
-func NewProducts(products []entities.Product) []Product {
-	p := []Product{}
-	for _, product := range products {
-		p = append(p, *NewProduct(&product))
+func NewProducts(e []entities.Product) []Product {
+	ps := []Product{}
+	for _, product := range e {
+		ps = append(ps, *NewProduct(&product))
 	}
-	return p
+	return ps
 }
