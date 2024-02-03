@@ -40,9 +40,9 @@ func NewProduct(e *entities.Product) *Product {
 }
 
 func NewProducts(e []entities.Product) []Product {
-	ps := []Product{}
+	p := []Product{}
 	for _, product := range e {
-		ps = append(ps, *NewProduct(&product))
+		p = append(p, *NewProduct(&product))
 	}
-	return ps
+	return p
 }
