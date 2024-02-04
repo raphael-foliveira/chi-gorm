@@ -35,17 +35,17 @@ type Client struct {
 	Email string `json:"email" faker:"email"`
 }
 
-func NewClient(clientModel *entities.Client) *Client {
+func NewClient(e *entities.Client) *Client {
 	return &Client{
-		ID:    clientModel.ID,
-		Name:  clientModel.Name,
-		Email: clientModel.Email,
+		ID:    e.ID,
+		Name:  e.Name,
+		Email: e.Email,
 	}
 }
 
-func NewClients(clients []entities.Client) []Client {
+func NewClients(e []entities.Client) []Client {
 	c := []Client{}
-	for _, client := range clients {
+	for _, client := range e {
 		c = append(c, *NewClient(&client))
 	}
 	return c
@@ -57,17 +57,17 @@ type ClientOrder struct {
 	Product  *Product `json:"product" faker:"-"`
 }
 
-func NewClientOrder(orderModel *entities.Order) *ClientOrder {
+func NewClientOrder(e *entities.Order) *ClientOrder {
 	return &ClientOrder{
-		ID:       orderModel.ID,
-		Quantity: orderModel.Quantity,
-		Product:  NewProduct(&orderModel.Product),
+		ID:       e.ID,
+		Quantity: e.Quantity,
+		Product:  NewProduct(&e.Product),
 	}
 }
 
-func NewClientOrders(orders []entities.Order) []ClientOrder {
+func NewClientOrders(e []entities.Order) []ClientOrder {
 	o := []ClientOrder{}
-	for _, order := range orders {
+	for _, order := range e {
 		o = append(o, *NewClientOrder(&order))
 	}
 	return o
@@ -80,11 +80,11 @@ type ClientDetail struct {
 	Orders []ClientOrder `json:"orders" faker:"-"`
 }
 
-func NewClientDetail(clientModel *entities.Client) *ClientDetail {
-	c := &ClientDetail{}
-	c.ID = clientModel.ID
-	c.Name = clientModel.Name
-	c.Email = clientModel.Email
-	c.Orders = NewClientOrders(clientModel.Orders)
-	return c
+func NewClientDetail(e *entities.Client) *ClientDetail {
+	return &ClientDetail{
+		ID:     e.ID,
+		Name:   e.Name,
+		Email:  e.Email,
+		Orders: NewClientOrders(e.Orders),
+	}
 }

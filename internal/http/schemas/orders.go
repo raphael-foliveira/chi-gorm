@@ -38,19 +38,19 @@ type Order struct {
 	Product  *Product `json:"product" faker:"-"`
 }
 
-func NewOrder(orderModel *entities.Order) *Order {
+func NewOrder(e *entities.Order) *Order {
 	return &Order{
-		ID:       orderModel.ID,
-		Quantity: orderModel.Quantity,
-		Client:   NewClient(&orderModel.Client),
-		Product:  NewProduct(&orderModel.Product),
+		ID:       e.ID,
+		Quantity: e.Quantity,
+		Client:   NewClient(&e.Client),
+		Product:  NewProduct(&e.Product),
 	}
 }
 
-func NewOrders(orders []entities.Order) []Order {
-	o := []Order{}
-	for _, order := range orders {
-		o = append(o, *NewOrder(&order))
+func NewOrders(e []entities.Order) []Order {
+	os := []Order{}
+	for _, order := range e {
+		os = append(os, *NewOrder(&order))
 	}
-	return o
+	return os
 }
