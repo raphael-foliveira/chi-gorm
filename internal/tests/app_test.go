@@ -1,9 +1,6 @@
 package tests
 
 import (
-	"bytes"
-	"encoding/json"
-	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -17,6 +14,7 @@ import (
 
 var testServer *httptest.Server
 var testDatabase *gorm.DB
+var tClient *testClient
 
 func TestMain(m *testing.M) {
 	err := cfg.LoadCfg("../../.env.test")
@@ -32,8 +30,9 @@ func TestMain(m *testing.M) {
 }
 
 func setUp() {
-	testApp := server.NewServer(testDatabase).CreateApp()
+	testApp := server.NewApp(testDatabase).CreateRouter()
 	testServer = httptest.NewServer(testApp)
+	tClient = &testClient{testServer}
 	populateTables()
 }
 
@@ -41,26 +40,6 @@ func tearDown() {
 	testDatabase.Exec("DELETE FROM orders")
 	testDatabase.Exec("DELETE FROM products")
 	testDatabase.Exec("DELETE FROM clients")
-}
-
-func makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
-	hc := &http.Client{}
-	if body != nil {
-		bodyBytes, err := json.Marshal(body)
-		if err != nil {
-			return nil, err
-		}
-		req, err := http.NewRequest(method, testServer.URL+endpoint, bytes.NewReader(bodyBytes))
-		if err != nil {
-			return nil, err
-		}
-		return hc.Do(req)
-	}
-	req, err := http.NewRequest(method, testServer.URL+endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	return hc.Do(req)
 }
 
 func populateTables() {

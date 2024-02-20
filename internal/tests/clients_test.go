@@ -18,7 +18,7 @@ func TestClients(t *testing.T) {
 		testDatabase.Find(&clients)
 		expectedBody := schemas.NewClients(clients)
 
-		response, err := makeRequest("GET", "/clients", nil)
+		response, err := tClient.makeRequest("GET", "/clients", nil)
 		if err != nil {
 			t.Error(err)
 		}
@@ -43,7 +43,7 @@ func TestClients(t *testing.T) {
 		testDatabase.First(&client)
 		expectedBody := schemas.NewClient(&client)
 
-		response, err := makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
+		response, err := tClient.makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
 		if err != nil {
 			t.Error(err)
 		}
@@ -70,7 +70,7 @@ func TestClients(t *testing.T) {
 		expectedBody.Name = client.Name
 		expectedBody.Email = client.Email
 
-		response, err := makeRequest("POST", "/clients", client)
+		response, err := tClient.makeRequest("POST", "/clients", client)
 		if err != nil {
 			t.Error(err)
 		}
@@ -99,7 +99,7 @@ func TestClients(t *testing.T) {
 		expectedBody.Name = update.Name
 		expectedBody.Email = update.Email
 
-		response, err := makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
+		response, err := tClient.makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
 		if err != nil {
 			t.Error(err)
 		}
@@ -123,7 +123,7 @@ func TestClients(t *testing.T) {
 		client := entities.Client{}
 		testDatabase.First(&client)
 
-		response, err := makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
+		response, err := tClient.makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
 		if err != nil {
 			t.Error(err)
 		}
