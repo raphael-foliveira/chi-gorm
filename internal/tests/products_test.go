@@ -19,7 +19,7 @@ func TestProducts(t *testing.T) {
 		testDatabase.Find(&products)
 		expectedBody := schemas.NewProducts(products)
 
-		response, err := makeRequest("GET", "/products", nil)
+		response, err := tClient.makeRequest("GET", "/products", nil)
 		if err != nil {
 			t.Error(err)
 		}
@@ -44,7 +44,7 @@ func TestProducts(t *testing.T) {
 		testDatabase.First(&product)
 		expectedBody := schemas.NewProduct(&product)
 
-		response, err := makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
+		response, err := tClient.makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
 		if err != nil {
 			t.Error(err)
 		}
@@ -71,7 +71,7 @@ func TestProducts(t *testing.T) {
 		expectedBody.Name = product.Name
 		expectedBody.Price = product.Price
 
-		response, err := makeRequest("POST", "/products", product)
+		response, err := tClient.makeRequest("POST", "/products", product)
 		if err != nil {
 			t.Error(err)
 		}
@@ -100,7 +100,7 @@ func TestProducts(t *testing.T) {
 		expectedBody.Name = update.Name
 		expectedBody.Price = update.Price
 
-		response, err := makeRequest("PUT", "/products/"+fmt.Sprint(product.ID), update)
+		response, err := tClient.makeRequest("PUT", "/products/"+fmt.Sprint(product.ID), update)
 		if err != nil {
 			t.Error(err)
 		}
@@ -124,7 +124,7 @@ func TestProducts(t *testing.T) {
 		product := entities.Product{}
 		testDatabase.First(&product)
 
-		response, err := makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
+		response, err := tClient.makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
 		if err != nil {
 			t.Error(err)
 		}

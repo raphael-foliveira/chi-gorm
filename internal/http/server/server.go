@@ -14,44 +14,44 @@ import (
 	"gorm.io/gorm"
 )
 
-type Server struct {
+type App struct {
 	db *gorm.DB
 }
 
-func NewServer(db *gorm.DB) *Server {
-	return &Server{db}
+func NewApp(db *gorm.DB) *App {
+	return &App{db}
 }
 
-func (s *Server) Start() error {
-	app := s.CreateApp()
+func (a *App) Start() error {
+	app := a.CreateRouter()
 	slog.Info("listening on port 3000")
 	return http.ListenAndServe(":3000", app)
 }
 
-func (s *Server) CreateApp() *chi.Mux {
+func (a *App) CreateRouter() *chi.Mux {
 	mainRouter := chi.NewRouter()
-	s.attachMiddleware(mainRouter)
-	controllers := s.injectDependencies()
-	s.mountRoutes(mainRouter, controllers)
+	a.attachMiddleware(mainRouter)
+	controllers := a.injectDependencies()
+	a.mountRoutes(mainRouter, controllers)
 	return mainRouter
 }
 
-func (s *Server) injectDependencies() *routes.Routers {
-	repositories := repository.NewRepositories(s.db)
+func (a *App) injectDependencies() *routes.Routers {
+	repositories := repository.NewRepositories(a.db)
 	services := service.NewServices(repositories)
 	controllers := controller.NewControllers(services)
 	routes := routes.NewRouters(controllers)
 	return routes
 }
 
-func (s *Server) mountRoutes(r *chi.Mux, rts *routes.Routers) {
+func (a *App) mountRoutes(r *chi.Mux, rts *routes.Routers) {
 	r.Mount("/clients", rts.Clients)
 	r.Mount("/products", rts.Products)
 	r.Mount("/orders", rts.Orders)
 	r.Get("/health-check", rts.HealthCheck)
 }
 
-func (s *Server) attachMiddleware(r *chi.Mux) {
+func (a *App) attachMiddleware(r *chi.Mux) {
 	r.Use(middleware.Logger)
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"*"},

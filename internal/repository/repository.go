@@ -5,7 +5,7 @@ import (
 )
 
 type Repository[T interface{}] interface {
-	List() ([]T, error)
+	List(...interface{}) ([]T, error)
 	Get(uint) (*T, error)
 	Create(*T) error
 	Update(*T) error
@@ -20,9 +20,9 @@ func NewRepository[T interface{}](db *gorm.DB) *repository[T] {
 	return &repository[T]{db}
 }
 
-func (r *repository[T]) List() ([]T, error) {
+func (r *repository[T]) List(conds ...interface{}) ([]T, error) {
 	entities := []T{}
-	return entities, r.db.Find(&entities).Error
+	return entities, r.db.Find(&entities, conds...).Error
 }
 
 func (r *repository[T]) Get(id uint) (*T, error) {

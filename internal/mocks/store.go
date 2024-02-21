@@ -11,40 +11,80 @@ type store[T entities.Entity] struct {
 	Error error
 }
 
-func (cr *store[T]) List() ([]T, error) {
-	return cr.Store, cr.Error
+func (s *store[T]) List(conds ...interface{}) ([]T, error) {
+	return s.Store, s.Error
 }
 
-func (cr *store[T]) Get(id uint) (*T, error) {
-	for _, entity := range cr.Store {
+func (s *store[T]) Get(id uint) (*T, error) {
+	for _, entity := range s.Store {
 		if entity.GetId() == id {
-			return &entity, cr.Error
+			return &entity, s.Error
 		}
 	}
 	return nil, errors.New("not found")
 }
 
-func (cr *store[T]) Create(client *T) error {
-	cr.Store = append(cr.Store, *client)
-	return cr.Error
+func (s *store[T]) Create(client *T) error {
+	s.Store = append(s.Store, *client)
+	return s.Error
 }
 
-func (cr *store[T]) Update(client *T) error {
-	for i, c := range cr.Store {
+func (s *store[T]) Update(client *T) error {
+	for i, c := range s.Store {
 		if c.GetId() == (*client).GetId() {
-			cr.Store[i] = (*client)
-			return cr.Error
+			s.Store[i] = (*client)
+			return s.Error
 		}
 	}
 	return errors.New("not found")
 }
 
-func (cr *store[T]) Delete(client *T) error {
-	for i, c := range cr.Store {
+func (s *store[T]) Delete(client *T) error {
+	for i, c := range s.Store {
 		if c.GetId() == (*client).GetId() {
-			cr.Store = append(cr.Store[:i], cr.Store[i+1:]...)
-			return cr.Error
+			s.Store = append(s.Store[:i], s.Store[i+1:]...)
+			return s.Error
 		}
 	}
 	return errors.New("not found")
+}
+
+var ClientsStore = &clientsStore{store[entities.Client]{}}
+
+type clientsStore struct {
+	store[entities.Client]
+}
+
+var ProductsStore = &productsStore{store[entities.Product]{}}
+
+type productsStore struct {
+	store[entities.Product]
+}
+
+func (cr *productsStore) FindMany(ids []uint) ([]entities.Product, error) {
+	products := []entities.Product{}
+	for _, id := range ids {
+		for _, product := range cr.Store {
+			if product.ID == id {
+				products = append(products, product)
+			}
+		}
+	}
+	return products, cr.Error
+}
+
+var OrdersStore = &ordersStore{store[entities.Order]{}}
+
+type ordersStore struct {
+	store[entities.Order]
+}
+
+func (os *ordersStore) FindManyByClientId(clientId uint) ([]entities.Order, error) {
+	orders := []entities.Order{}
+	for _, order := range os.Store {
+		if order.ClientID == clientId {
+			orders = append(orders, order)
+		}
+	}
+	return orders, os.Error
 }

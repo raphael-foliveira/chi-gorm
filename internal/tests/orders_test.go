@@ -19,7 +19,7 @@ func TestOrders(t *testing.T) {
 		testDatabase.Find(&orders)
 		expectedBody := schemas.NewOrders(orders)
 
-		response, err := makeRequest("GET", "/orders", nil)
+		response, err := tClient.makeRequest("GET", "/orders", nil)
 		if err != nil {
 			t.Error(err)
 		}
@@ -44,7 +44,7 @@ func TestOrders(t *testing.T) {
 		testDatabase.First(&order)
 		expectedBody := schemas.NewOrder(&order)
 
-		response, err := makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
+		response, err := tClient.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
 		if err != nil {
 			t.Error(err)
 		}
@@ -77,7 +77,7 @@ func TestOrders(t *testing.T) {
 		expectedBody := schemas.Order{}
 		expectedBody.Quantity = order.Quantity
 
-		response, err := makeRequest("POST", "/orders", order)
+		response, err := tClient.makeRequest("POST", "/orders", order)
 		if err != nil {
 			t.Error(err)
 		}
@@ -105,7 +105,7 @@ func TestOrders(t *testing.T) {
 		expectedBody := schemas.Order{}
 		expectedBody.Quantity = update.Quantity
 
-		response, err := makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
+		response, err := tClient.makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
 		if err != nil {
 			t.Error(err)
 		}
@@ -129,7 +129,7 @@ func TestOrders(t *testing.T) {
 		order := entities.Order{}
 		testDatabase.First(&order)
 
-		response, err := makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
+		response, err := tClient.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 		if err != nil {
 			t.Error(err)
 		}

@@ -15,7 +15,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err := server.NewServer(db).Start(); err != nil {
+	if err := server.NewApp(db).Start(); err != nil {
 		panic(err)
 	}
 }

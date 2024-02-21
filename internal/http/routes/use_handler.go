@@ -10,9 +10,12 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
-func useHandler(fn func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
+type ControllerFunc func(w http.ResponseWriter, r *http.Request) error
+
+func useHandler(fn ControllerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := fn(w, r); err != nil {
+		err := fn(w, r)
+		if err != nil {
 			handleApiErr(w, err)
 		}
 	}
