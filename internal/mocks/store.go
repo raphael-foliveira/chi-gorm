@@ -11,7 +11,7 @@ type store[T entities.Entity] struct {
 	Error error
 }
 
-func (cr *store[T]) List() ([]T, error) {
+func (cr *store[T]) List(conds ...interface{}) ([]T, error) {
 	return cr.Store, cr.Error
 }
 

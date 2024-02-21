@@ -16,7 +16,3 @@ type clients struct {
 func NewClients(db *gorm.DB) *clients {
 	return &clients{&repository[entities.Client]{db}}
 }
-
-func (c *clients) Delete(entity *entities.Client) error {
-	return c.db.Delete(entity).Error
-}
