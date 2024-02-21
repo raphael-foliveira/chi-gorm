@@ -31,8 +31,8 @@ func (a *App) Start() error {
 func (a *App) CreateRouter() *chi.Mux {
 	mainRouter := chi.NewRouter()
 	a.attachMiddleware(mainRouter)
-	controllers := a.injectDependencies()
-	a.mountRoutes(mainRouter, controllers)
+	routers := a.injectDependencies()
+	a.mountRoutes(mainRouter, routers)
 	return mainRouter
 }
 

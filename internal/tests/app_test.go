@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 }
 
 func setUp() {
-	testApp := server.NewApp(testDatabase).CreateRouter()
+	testApp := server.NewApp(testDatabase).CreateMainRouter()
 	testServer = httptest.NewServer(testApp)
 	tClient = &testClient{testServer}
 	populateTables()
