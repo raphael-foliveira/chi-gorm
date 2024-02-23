@@ -27,12 +27,12 @@ func NewApp(db *gorm.DB) *App {
 }
 
 func (a *App) Start() error {
-	app := a.CreateRouter()
+	app := a.CreateMainRouter()
 	slog.Info("listening on port 3000")
 	return http.ListenAndServe(":3000", app)
 }
 
-func (a *App) CreateRouter() *chi.Mux {
+func (a *App) CreateMainRouter() *chi.Mux {
 	mainRouter := chi.NewRouter()
 	a.attachMiddleware(mainRouter)
 	a.injectDependencies()
