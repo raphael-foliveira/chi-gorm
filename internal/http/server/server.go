@@ -15,11 +15,15 @@ import (
 )
 
 type App struct {
-	db *gorm.DB
+	Db           *gorm.DB
+	Repositories *repository.Repositories
+	Services     *service.Services
+	Controllers  *controller.Controllers
+	Routers      *routes.Routers
 }
 
 func NewApp(db *gorm.DB) *App {
-	return &App{db}
+	return &App{Db: db}
 }
 
 func (a *App) Start() error {
@@ -31,17 +35,16 @@ func (a *App) Start() error {
 func (a *App) CreateMainRouter() *chi.Mux {
 	mainRouter := chi.NewRouter()
 	a.attachMiddleware(mainRouter)
-	routers := a.injectDependencies()
-	a.mountRoutes(mainRouter, routers)
+	a.injectDependencies()
+	a.mountRoutes(mainRouter, a.Routers)
 	return mainRouter
 }
 
-func (a *App) injectDependencies() *routes.Routers {
-	repositories := repository.NewRepositories(a.db)
-	services := service.NewServices(repositories)
-	controllers := controller.NewControllers(services)
-	routes := routes.NewRouters(controllers)
-	return routes
+func (a *App) injectDependencies() {
+	a.Repositories = repository.NewRepositories(a.Db)
+	a.Services = service.NewServices(a.Repositories)
+	a.Controllers = controller.NewControllers(a.Services)
+	a.Routers = routes.NewRouters(a.Controllers)
 }
 
 func (a *App) mountRoutes(r *chi.Mux, rts *routes.Routers) {
