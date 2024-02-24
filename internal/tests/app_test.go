@@ -9,13 +9,16 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
+	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
 var tClient *testClient
+var db *gorm.DB
 
 func TestMain(m *testing.M) {
 	err := cfg.LoadCfg("../../.env.test")
+	db = database.Db()
 	if err != nil {
 		panic(err)
 	}
@@ -30,9 +33,9 @@ func setUp() {
 }
 
 func tearDown() {
-	database.Db().Exec("DELETE FROM orders")
-	database.Db().Exec("DELETE FROM products")
-	database.Db().Exec("DELETE FROM clients")
+	db.Exec("DELETE FROM orders")
+	db.Exec("DELETE FROM products")
+	db.Exec("DELETE FROM clients")
 }
 
 func populateTables() {
@@ -43,8 +46,8 @@ func populateTables() {
 	faker.FakeData(&products)
 	faker.FakeData(&orders)
 
-	database.Db().Create(&clients)
-	database.Db().Create(&products)
+	db.Create(&clients)
+	db.Create(&products)
 
 	for i := range orders {
 		orders[i].ID = 0
@@ -53,5 +56,5 @@ func populateTables() {
 		orders[i].ProductID = products[i].ID
 		orders[i].ProductID = products[i].ID
 	}
-	database.Db().Create(&orders)
+	db.Create(&orders)
 }

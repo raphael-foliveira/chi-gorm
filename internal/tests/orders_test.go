@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 )
@@ -17,7 +16,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		orders := []entities.Order{}
-		database.Db().Find(&orders)
+		db.Find(&orders)
 		expectedBody := schemas.NewOrders(orders)
 
 		response, err := tClient.makeRequest("GET", "/orders", nil)
@@ -42,7 +41,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
 		order := entities.Order{}
-		database.Db().First(&order)
+		db.First(&order)
 		expectedBody := schemas.NewOrder(&order)
 
 		response, err := tClient.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
@@ -67,9 +66,9 @@ func TestOrders(t *testing.T) {
 	t.Run("Test create", func(t *testing.T) {
 		setUp()
 		product := entities.Product{}
-		database.Db().First(&product)
+		db.First(&product)
 		client := entities.Client{}
-		database.Db().First(&client)
+		db.First(&client)
 		order := schemas.CreateOrder{
 			ProductID: product.ID,
 			ClientID:  client.ID,
@@ -100,7 +99,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
 		order := entities.Order{}
-		database.Db().First(&order)
+		db.First(&order)
 		update := schemas.UpdateOrder{}
 		faker.FakeData(&update)
 		expectedBody := schemas.Order{}
@@ -128,7 +127,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
 		order := entities.Order{}
-		database.Db().First(&order)
+		db.First(&order)
 
 		response, err := tClient.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 		if err != nil {
