@@ -20,6 +20,7 @@ func TestMain(m *testing.M) {
 	cfg.LoadCfg("../../.env.test")
 	db = database.Db()
 	m.Run()
+	database.CloseDb()
 }
 
 func setUp() {
