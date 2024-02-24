@@ -17,11 +17,8 @@ var tClient *testClient
 var db *gorm.DB
 
 func TestMain(m *testing.M) {
-	err := cfg.LoadCfg("../../.env.test")
+	cfg.LoadCfg("../../.env.test")
 	db = database.Db()
-	if err != nil {
-		panic(err)
-	}
 	m.Run()
 }
 

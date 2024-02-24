@@ -8,16 +8,10 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	err := cfg.LoadCfg("../../.env.test")
-	if err != nil {
-		panic(err)
-	}
+	cfg.LoadCfg("../../.env.test")
 	database.Db()
-	if err != nil {
-		panic(err)
-	}
 	m.Run()
-	err = database.CloseDb()
+	err := database.CloseDb()
 	if err != nil {
 		panic(err)
 	}

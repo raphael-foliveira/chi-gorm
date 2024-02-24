@@ -12,17 +12,13 @@ type cfg struct {
 
 var config *cfg
 
-func LoadCfg(path string) error {
-	if config == nil {
-		config = &cfg{}
-	}
+func LoadCfg(path string) {
 	content, err := getFileContent(path)
 	if err != nil {
-		return err
+		panic(err)
 	}
 	parseEnv(content)
 	setEnvs()
-	return nil
 }
 
 func Cfg() *cfg {
@@ -33,8 +29,10 @@ func Cfg() *cfg {
 }
 
 func setEnvs() {
-	config.DatabaseURL = os.Getenv("DATABASE_URL")
-	config.JwtSecret = os.Getenv("JWT_SECRET")
+	config = &cfg{
+		DatabaseURL: os.Getenv("DATABASE_URL"),
+		JwtSecret:   os.Getenv("JWT_SECRET"),
+	}
 }
 
 func parseEnv(s string) {

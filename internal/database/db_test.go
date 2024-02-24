@@ -7,10 +7,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	err := cfg.LoadCfg("../../.env.test")
-	if err != nil {
-		panic(err)
-	}
+	cfg.LoadCfg("../../.env.test")
 	m.Run()
 }
 
