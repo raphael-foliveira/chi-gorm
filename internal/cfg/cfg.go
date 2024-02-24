@@ -40,7 +40,9 @@ func parseEnv(s string) {
 	for _, line := range contentLines {
 		pair := strings.Split(line, "=")
 		if len(pair) > 1 {
-			os.Setenv(pair[0], pair[1])
+			key := pair[0]
+			val := strings.Join(pair[1:], "=")
+			os.Setenv(key, val)
 		}
 	}
 }
