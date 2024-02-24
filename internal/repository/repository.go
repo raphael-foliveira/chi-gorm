@@ -41,18 +41,3 @@ func (r *repository[T]) Update(entity *T) error {
 func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
-
-type Repositories struct {
-	Clients  ClientsRepository
-	Products ProductsRepository
-	Orders   OrdersRepository
-}
-
-func NewRepositories(db *gorm.DB) *Repositories {
-	return &Repositories{
-		Clients:  NewClients(db),
-		Products: NewProducts(db),
-		Orders:   NewOrders(db),
-	}
-}
-
