@@ -8,10 +8,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-func Clients() *clients {
-	return NewClients(service.Clients())
-}
-
 type clients struct {
 	service *service.ClientsService
 }

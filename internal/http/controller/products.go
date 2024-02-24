@@ -8,10 +8,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-func Products() *products {
-	return NewProducts(service.Products())
-}
-
 type products struct {
 	service *service.ProductsService
 }

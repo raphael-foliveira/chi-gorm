@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/gorm"
 )
@@ -9,10 +8,6 @@ import (
 type ProductsRepository interface {
 	Repository[entities.Product]
 	FindMany([]uint) ([]entities.Product, error)
-}
-
-func Products() *products {
-	return NewProducts(database.Db())
 }
 
 type products struct {

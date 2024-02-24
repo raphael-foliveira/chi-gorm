@@ -6,10 +6,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-func Clients() *ClientsService {
-	return NewClients(repository.Clients(), repository.Orders())
-}
-
 type ClientsService struct {
 	repository       repository.ClientsRepository
 	ordersRepository repository.OrdersRepository

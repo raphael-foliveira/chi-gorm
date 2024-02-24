@@ -8,10 +8,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-func Orders() *orders {
-	return NewOrders(service.Orders())
-}
-
 type orders struct {
 	service *service.OrdersService
 }

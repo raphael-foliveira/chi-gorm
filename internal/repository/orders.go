@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/gorm"
 )
@@ -9,10 +8,6 @@ import (
 type OrdersRepository interface {
 	Repository[entities.Order]
 	FindManyByClientId(uint) ([]entities.Order, error)
-}
-
-func Orders() *orders {
-	return NewOrders(database.Db())
 }
 
 type orders struct {

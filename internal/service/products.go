@@ -6,10 +6,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-func Products() *ProductsService {
-	return NewProducts(repository.Products())
-}
-
 type ProductsService struct {
 	repository repository.ProductsRepository
 }
