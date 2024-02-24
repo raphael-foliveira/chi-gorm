@@ -43,14 +43,18 @@ func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
 
-func Clients() *clients {
+func Clients() ClientsRepository {
 	return NewClients(database.Db())
 }
 
-func Orders() *orders {
+func Orders() OrdersRepository {
 	return NewOrders(database.Db())
 }
 
-func Products() *products {
+func Products() ProductsRepository {
 	return NewProducts(database.Db())
+}
+
+func Users() UsersRepository {
+	return NewUsers(database.Db())
 }

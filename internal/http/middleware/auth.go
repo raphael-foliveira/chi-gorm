@@ -1,3 +1,2 @@
 package middleware
 
-func Auth() {}
