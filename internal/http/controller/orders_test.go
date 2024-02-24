@@ -63,6 +63,11 @@ func TestOrders(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
+			var requestBody *schemas.Order
+			json.NewDecoder(recorder.Body).Decode(&requestBody)
+			if requestBody.ID != mocks.OrdersStore.Store[0].ID {
+				t.Errorf("Expected id to be %v, got %v", mocks.OrdersStore.Store[0].ID, requestBody.ID)
+			}
 			tearDown()
 		})
 
