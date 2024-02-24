@@ -11,6 +11,10 @@ type testClient struct {
 	ts *httptest.Server
 }
 
+func newTestClient(app *httptest.Server) *testClient {
+	return &testClient{app}
+}
+
 func (t *testClient) makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
 	hc := &http.Client{}
 	url := t.ts.URL + endpoint

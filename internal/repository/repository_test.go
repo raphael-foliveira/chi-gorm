@@ -12,8 +12,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	config := cfg.GetCfg()
-	_, err = database.GetDb(config.DatabaseURL)
+	database.Db()
 	if err != nil {
 		panic(err)
 	}

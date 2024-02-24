@@ -8,7 +8,7 @@ import (
 )
 
 func TestProductsRepository(t *testing.T) {
-	repository := NewProducts(database.GetInstance())
+	repository := NewProducts(database.Db())
 	t.Run("Should find many", func(t *testing.T) {
 		products := []entities.Product{
 			{
@@ -20,7 +20,7 @@ func TestProductsRepository(t *testing.T) {
 				Price: 2.0,
 			},
 		}
-		database.GetInstance().Create(&products)
+		database.Db().Create(&products)
 		foundProducts, err := repository.FindMany([]uint{products[0].ID, products[1].ID})
 		if err != nil {
 			t.Error(err)

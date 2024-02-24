@@ -16,9 +16,9 @@ type Routers struct {
 
 func NewRouters(controllers *controller.Controllers) *Routers {
 	return &Routers{
-		Products:    Products(controllers.Products),
-		Orders:      Orders(controllers.Orders),
-		Clients:     Clients(controllers.Clients),
+		Products:    Products(),
+		Orders:      Orders(),
+		Clients:     Clients(),
 		HealthCheck: useHandler(healthCheck),
 	}
 }

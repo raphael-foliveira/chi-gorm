@@ -10,9 +10,12 @@ type cfg struct {
 	JwtSecret   string
 }
 
-var config = &cfg{}
+var config *cfg
 
 func LoadCfg(path string) error {
+	if config == nil {
+		config = &cfg{}
+	}
 	content, err := getFileContent(path)
 	if err != nil {
 		return err
@@ -22,7 +25,10 @@ func LoadCfg(path string) error {
 	return nil
 }
 
-func GetCfg() *cfg {
+func Cfg() *cfg {
+	if config == nil {
+		LoadCfg(".env")
+	}
 	return config
 }
 

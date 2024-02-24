@@ -3,9 +3,9 @@ package service
 import "github.com/raphael-foliveira/chi-gorm/internal/repository"
 
 type Services struct {
-	Clients  *Clients
-	Products *Products
-	Orders   *Orders
+	Clients  *ClientsService
+	Products *ProductsService
+	Orders   *OrdersService
 	Jwt      *Jwt
 }
 

@@ -10,6 +10,6 @@ func healthCheck(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
-func HealthCheckRoute() http.HandlerFunc {
+func HealthCheck() http.HandlerFunc {
 	return useHandler(healthCheck)
 }

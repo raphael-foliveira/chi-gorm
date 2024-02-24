@@ -16,7 +16,7 @@ type repository[T interface{}] struct {
 	db *gorm.DB
 }
 
-func NewRepository[T interface{}](db *gorm.DB) *repository[T] {
+func newRepository[T interface{}](db *gorm.DB) *repository[T] {
 	return &repository[T]{db}
 }
 
@@ -55,3 +55,4 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Orders:   NewOrders(db),
 	}
 }
+

@@ -5,9 +5,9 @@ import (
 )
 
 type Controllers struct {
-	Clients  *Clients
-	Orders   *Orders
-	Products *Products
+	Clients  *ClientsController
+	Orders   *OrdersController
+	Products *ProductsController
 }
 
 func NewControllers(services *service.Services) *Controllers {

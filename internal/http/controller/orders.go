@@ -8,15 +8,19 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type Orders struct {
-	service *service.Orders
+func Orders() *OrdersController {
+	return NewOrders(service.Orders())
 }
 
-func NewOrders(service *service.Orders) *Orders {
-	return &Orders{service}
+type OrdersController struct {
+	service *service.OrdersService
 }
 
-func (o *Orders) Create(w http.ResponseWriter, r *http.Request) error {
+func NewOrders(service *service.OrdersService) *OrdersController {
+	return &OrdersController{service}
+}
+
+func (o *OrdersController) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateOrder{})
 	if err != nil {
 		return err
@@ -28,7 +32,7 @@ func (o *Orders) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, schemas.NewOrder(newOrder))
 }
 
-func (o *Orders) Update(w http.ResponseWriter, r *http.Request) error {
+func (o *OrdersController) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -44,7 +48,7 @@ func (o *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewOrder(updatedOrder))
 }
 
-func (o *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
+func (o *OrdersController) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -56,7 +60,7 @@ func (o *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (o *Orders) List(w http.ResponseWriter, r *http.Request) error {
+func (o *OrdersController) List(w http.ResponseWriter, r *http.Request) error {
 	orders, err := o.service.List()
 	if err != nil {
 		return err
@@ -64,7 +68,7 @@ func (o *Orders) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewOrders(orders))
 }
 
-func (o *Orders) Get(w http.ResponseWriter, r *http.Request) error {
+func (o *OrdersController) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err

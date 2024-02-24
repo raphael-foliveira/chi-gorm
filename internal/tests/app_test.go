@@ -9,11 +9,9 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
-var testDatabase *gorm.DB
 var tClient *testClient
 
 func TestMain(m *testing.M) {
@@ -21,48 +19,39 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	config := cfg.GetCfg()
-	testDatabase, err = database.GetDb(config.DatabaseURL)
-	if err != nil {
-		panic(err)
-	}
 	m.Run()
 }
 
 func setUp() {
-	testApp := server.NewApp(testDatabase).CreateMainRouter()
+	testApp := server.App().CreateMainRouter()
 	testServer = httptest.NewServer(testApp)
-	tClient = &testClient{testServer}
+	tClient = newTestClient(testServer)
 	populateTables()
 }
 
 func tearDown() {
-	testDatabase.Exec("DELETE FROM orders")
-	testDatabase.Exec("DELETE FROM products")
-	testDatabase.Exec("DELETE FROM clients")
+	database.Db().Exec("DELETE FROM orders")
+	database.Db().Exec("DELETE FROM products")
+	database.Db().Exec("DELETE FROM clients")
 }
 
 func populateTables() {
-	clients := [10]entities.Client{}
-	products := [10]entities.Product{}
-	orders := [10]entities.Order{}
+	clients := [20]entities.Client{}
+	products := [20]entities.Product{}
+	orders := [20]entities.Order{}
 	faker.FakeData(&clients)
 	faker.FakeData(&products)
 	faker.FakeData(&orders)
 
-	for i := 0; i < 10; i++ {
-		clients[i].ID = 0
-		products[i].ID = 0
-		orders[i].ID = 0
-	}
-	testDatabase.Create(&clients)
-	testDatabase.Create(&products)
+	database.Db().Create(&clients)
+	database.Db().Create(&products)
 
-	for i := 0; i < 10; i++ {
+	for i := range orders {
 		orders[i].ID = 0
 		orders[i].ClientID = clients[i].ID
+		orders[i].Client = clients[i]
+		orders[i].ProductID = products[i].ID
 		orders[i].ProductID = products[i].ID
 	}
-	testDatabase.Create(&orders)
-
+	database.Db().Create(&orders)
 }

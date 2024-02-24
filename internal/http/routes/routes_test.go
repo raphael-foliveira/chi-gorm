@@ -30,7 +30,7 @@ func TestWrap(t *testing.T) {
 
 func TestHealthCheck(t *testing.T) {
 	router := chi.NewRouter()
-	router.Get("/", HealthCheckRoute())
+	router.Get("/", HealthCheck())
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/", nil)
 	if err != nil {
