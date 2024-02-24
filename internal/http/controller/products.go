@@ -8,19 +8,19 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-func Products() *ProductsController {
+func Products() *products {
 	return NewProducts(service.Products())
 }
 
-type ProductsController struct {
+type products struct {
 	service *service.ProductsService
 }
 
-func NewProducts(service *service.ProductsService) *ProductsController {
-	return &ProductsController{service}
+func NewProducts(service *service.ProductsService) *products {
+	return &products{service}
 }
 
-func (p *ProductsController) Create(w http.ResponseWriter, r *http.Request) error {
+func (p *products) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateProduct{})
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func (p *ProductsController) Create(w http.ResponseWriter, r *http.Request) erro
 	return res.JSON(w, http.StatusCreated, schemas.NewProduct(newOrder))
 }
 
-func (p *ProductsController) Update(w http.ResponseWriter, r *http.Request) error {
+func (p *products) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (p *ProductsController) Update(w http.ResponseWriter, r *http.Request) erro
 	return res.JSON(w, http.StatusOK, schemas.NewProduct(updatedOrder))
 }
 
-func (p *ProductsController) Delete(w http.ResponseWriter, r *http.Request) error {
+func (p *products) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (p *ProductsController) Delete(w http.ResponseWriter, r *http.Request) erro
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (p *ProductsController) List(w http.ResponseWriter, r *http.Request) error {
+func (p *products) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := p.service.List()
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func (p *ProductsController) List(w http.ResponseWriter, r *http.Request) error 
 	return res.JSON(w, http.StatusOK, schemas.NewProducts(products))
 }
 
-func (p *ProductsController) Get(w http.ResponseWriter, r *http.Request) error {
+func (p *products) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
