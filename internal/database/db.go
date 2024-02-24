@@ -31,7 +31,11 @@ func start(dbUrl string) (*gorm.DB, error) {
 }
 
 func migrateDb() error {
-	return instance.AutoMigrate(&entities.Client{}, &entities.Product{}, &entities.Order{})
+	return instance.AutoMigrate(
+		&entities.Client{},
+		&entities.Product{},
+		&entities.Order{},
+	)
 }
 
 func CloseDb() error {
