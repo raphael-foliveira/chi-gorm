@@ -7,35 +7,25 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	err := cfg.LoadCfg("../../.env.test")
-	if err != nil {
-		panic(err)
-	}
+	cfg.LoadCfg("../../.env.test")
 	m.Run()
 }
 
 func TestInitDb(t *testing.T) {
-	config := cfg.GetCfg()
 	t.Run("should retrieve a database instance", func(t *testing.T) {
-		db, err := GetDb(config.DatabaseURL)
-		if err != nil {
-			t.Error(err)
-		}
+		db := Db()
 		if db == nil {
 			t.Error("Db not initialized")
 		}
 	})
 
 	t.Run("should close the database", func(t *testing.T) {
-		_, err := GetDb(config.DatabaseURL)
-		if err != nil {
-			t.Error("could not initialize the database")
-		}
-		err = CloseDb()
+		Db()
+		err := CloseDb()
 		if err != nil {
 			t.Error(err)
 		}
-		if GetInstance() != nil {
+		if instance != nil {
 			t.Error("Db not closed")
 		}
 	})

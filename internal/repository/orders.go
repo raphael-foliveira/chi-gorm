@@ -15,7 +15,7 @@ type orders struct {
 }
 
 func NewOrders(db *gorm.DB) *orders {
-	return &orders{&repository[entities.Order]{db}}
+	return &orders{newRepository[entities.Order](db)}
 }
 
 func (o *orders) FindManyByClientId(clientId uint) ([]entities.Order, error) {

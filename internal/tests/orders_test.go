@@ -16,7 +16,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		orders := []entities.Order{}
-		testDatabase.Find(&orders)
+		db.Find(&orders)
 		expectedBody := schemas.NewOrders(orders)
 
 		response, err := tClient.makeRequest("GET", "/orders", nil)
@@ -41,7 +41,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
 		order := entities.Order{}
-		testDatabase.First(&order)
+		db.First(&order)
 		expectedBody := schemas.NewOrder(&order)
 
 		response, err := tClient.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
@@ -66,9 +66,9 @@ func TestOrders(t *testing.T) {
 	t.Run("Test create", func(t *testing.T) {
 		setUp()
 		product := entities.Product{}
-		testDatabase.First(&product)
+		db.First(&product)
 		client := entities.Client{}
-		testDatabase.First(&client)
+		db.First(&client)
 		order := schemas.CreateOrder{
 			ProductID: product.ID,
 			ClientID:  client.ID,
@@ -99,7 +99,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
 		order := entities.Order{}
-		testDatabase.First(&order)
+		db.First(&order)
 		update := schemas.UpdateOrder{}
 		faker.FakeData(&update)
 		expectedBody := schemas.Order{}
@@ -127,7 +127,7 @@ func TestOrders(t *testing.T) {
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
 		order := entities.Order{}
-		testDatabase.First(&order)
+		db.First(&order)
 
 		response, err := tClient.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 		if err != nil {

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"gorm.io/gorm"
 )
 
@@ -16,7 +17,7 @@ type repository[T interface{}] struct {
 	db *gorm.DB
 }
 
-func NewRepository[T interface{}](db *gorm.DB) *repository[T] {
+func newRepository[T interface{}](db *gorm.DB) *repository[T] {
 	return &repository[T]{db}
 }
 
@@ -42,16 +43,14 @@ func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
 
-type Repositories struct {
-	Clients  ClientsRepository
-	Products ProductsRepository
-	Orders   OrdersRepository
+func Clients() *clients {
+	return NewClients(database.Db())
 }
 
-func NewRepositories(db *gorm.DB) *Repositories {
-	return &Repositories{
-		Clients:  NewClients(db),
-		Products: NewProducts(db),
-		Orders:   NewOrders(db),
-	}
+func Orders() *orders {
+	return NewOrders(database.Db())
+}
+
+func Products() *products {
+	return NewProducts(database.Db())
 }

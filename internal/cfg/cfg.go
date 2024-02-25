@@ -10,25 +10,29 @@ type cfg struct {
 	JwtSecret   string
 }
 
-var config = &cfg{}
+var config *cfg
 
-func LoadCfg(path string) error {
+func LoadCfg(path string) {
 	content, err := getFileContent(path)
 	if err != nil {
-		return err
+		panic(err)
 	}
 	parseEnv(content)
 	setEnvs()
-	return nil
 }
 
-func GetCfg() *cfg {
+func Cfg() *cfg {
+	if config == nil {
+		LoadCfg(".env")
+	}
 	return config
 }
 
 func setEnvs() {
-	config.DatabaseURL = os.Getenv("DATABASE_URL")
-	config.JwtSecret = os.Getenv("JWT_SECRET")
+	config = &cfg{
+		DatabaseURL: os.Getenv("DATABASE_URL"),
+		JwtSecret:   os.Getenv("JWT_SECRET"),
+	}
 }
 
 func parseEnv(s string) {
@@ -36,7 +40,9 @@ func parseEnv(s string) {
 	for _, line := range contentLines {
 		pair := strings.Split(line, "=")
 		if len(pair) > 1 {
-			os.Setenv(pair[0], pair[1])
+			key := pair[0]
+			val := strings.Join(pair[1:], "=")
+			os.Setenv(key, val)
 		}
 	}
 }

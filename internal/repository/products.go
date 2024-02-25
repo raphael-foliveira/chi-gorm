@@ -15,7 +15,7 @@ type products struct {
 }
 
 func NewProducts(db *gorm.DB) *products {
-	return &products{&repository[entities.Product]{db}}
+	return &products{newRepository[entities.Product](db)}
 }
 
 func (r *products) FindMany(ids []uint) ([]entities.Product, error) {

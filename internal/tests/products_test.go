@@ -16,7 +16,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test list", func(t *testing.T) {
 		setUp()
 		products := []entities.Product{}
-		testDatabase.Find(&products)
+		db.Find(&products)
 		expectedBody := schemas.NewProducts(products)
 
 		response, err := tClient.makeRequest("GET", "/products", nil)
@@ -41,7 +41,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test get", func(t *testing.T) {
 		setUp()
 		product := entities.Product{}
-		testDatabase.First(&product)
+		db.First(&product)
 		expectedBody := schemas.NewProduct(&product)
 
 		response, err := tClient.makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
@@ -93,7 +93,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test update", func(t *testing.T) {
 		setUp()
 		product := entities.Product{}
-		testDatabase.First(&product)
+		db.First(&product)
 		update := schemas.UpdateProduct{}
 		faker.FakeData(&update)
 		expectedBody := schemas.Product{}
@@ -122,7 +122,7 @@ func TestProducts(t *testing.T) {
 	t.Run("Test delete", func(t *testing.T) {
 		setUp()
 		product := entities.Product{}
-		testDatabase.First(&product)
+		db.First(&product)
 
 		response, err := tClient.makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
 		if err != nil {

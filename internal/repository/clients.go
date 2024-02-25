@@ -14,5 +14,5 @@ type clients struct {
 }
 
 func NewClients(db *gorm.DB) *clients {
-	return &clients{&repository[entities.Client]{db}}
+	return &clients{newRepository[entities.Client](db)}
 }

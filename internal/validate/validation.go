@@ -5,28 +5,24 @@ import (
 	"strings"
 )
 
-type ValidationError struct {
-	Errors map[string][]string `json:"errors"`
-}
+type ValidationError map[string][]string
 
 func Rules(err ...error) error {
-	validationError := &ValidationError{
-		Errors: make(map[string][]string),
-	}
+	validationError := ValidationError{}
 	for _, m := range err {
 		if m != nil {
 			splitMessage := strings.Split(m.Error(), ":")
 			key := strings.TrimSpace(splitMessage[0])
 			message := strings.TrimSpace(splitMessage[1])
-			validationError.Errors[key] = append(validationError.Errors[key], message)
+			validationError[key] = append(validationError[key], message)
 		}
 	}
-	if len(validationError.Errors) == 0 {
+	if len(validationError) == 0 {
 		return nil
 	}
-	return validationError
+	return &validationError
 }
 
 func (ve *ValidationError) Error() string {
-	return fmt.Sprintf("%v", ve.Errors)
+	return fmt.Sprintf("%v", *ve)
 }

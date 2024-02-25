@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -8,29 +9,39 @@ import (
 
 var instance *gorm.DB
 
-func GetDb(dbUrl string) (db *gorm.DB, err error) {
+func Db() *gorm.DB {
 	if instance != nil {
-		return instance, nil
+		return instance
 	}
-	dialector := postgres.Open(dbUrl)
-	db, err = gorm.Open(dialector)
+	db, err := start(cfg.Cfg().DatabaseURL)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	instance = db
-	migrateDb()
-	return instance, nil
-}
-
-func GetInstance() *gorm.DB {
+	err = migrateDb()
+	if err != nil {
+		panic(err)
+	}
 	return instance
 }
 
+func start(dbUrl string) (*gorm.DB, error) {
+	dialector := postgres.Open(dbUrl)
+	return gorm.Open(dialector)
+}
+
 func migrateDb() error {
-	return instance.AutoMigrate(&entities.Client{}, &entities.Product{}, &entities.Order{})
+	return instance.AutoMigrate(
+		&entities.Client{},
+		&entities.Product{},
+		&entities.Order{},
+	)
 }
 
 func CloseDb() error {
+	if instance == nil {
+		return nil
+	}
 	sqlDb, err := instance.DB()
 	if err != nil {
 		return err
