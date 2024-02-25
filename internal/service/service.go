@@ -25,5 +25,5 @@ func Encryption() *EncryptionService {
 }
 
 func Users() *UsersService {
-	return NewUsers(repository.Users(), Encryption())
+	return NewUsers(repository.Users(), Encryption(), Jwt())
 }

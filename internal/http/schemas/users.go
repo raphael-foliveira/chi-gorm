@@ -32,3 +32,16 @@ func (cu *CreateUser) ToEntity() *entities.User {
 type UpdateUser struct {
 	CreateUser
 }
+
+type Login struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (l *Login) Validate() error {
+	return nil
+}
+
+type LoginResponse struct {
+	Token string `json:"token"`
+}

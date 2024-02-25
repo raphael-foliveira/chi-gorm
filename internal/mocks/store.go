@@ -3,6 +3,7 @@ package mocks
 import (
 	"errors"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
@@ -49,6 +50,15 @@ func (s *store[T]) Delete(client *T) error {
 	return errors.New("not found")
 }
 
+func (s *store[T]) Clear() {
+	s.Store = []T{}
+}
+
+func (s *store[T]) Populate() {
+	s.Store = []T{}
+	faker.FakeData(&s.Store)
+}
+
 var ClientsStore = &clientsStore{store[entities.Client]{}}
 
 type clientsStore struct {
@@ -87,4 +97,19 @@ func (os *ordersStore) FindManyByClientId(clientId uint) ([]entities.Order, erro
 		}
 	}
 	return orders, os.Error
+}
+
+var UsersStore = &usersStore{store[entities.User]{}}
+
+type usersStore struct {
+	store[entities.User]
+}
+
+func (u *usersStore) FindOneByEmail(email string) (*entities.User, error) {
+	for _, user := range u.Store {
+		if user.Email == email {
+			return &user, nil
+		}
+	}
+	return nil, errors.New("user not found")
 }

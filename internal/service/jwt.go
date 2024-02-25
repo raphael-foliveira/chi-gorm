@@ -7,14 +7,14 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
 )
 
-type Payload struct {
-	ClientID   uint   `json:"id"`
-	ClientName string `json:"client_name"`
-	Email      string `json:"email"`
+type JwtPayload struct {
+	UserID   uint   `json:"id"`
+	Username string `json:"client_name"`
+	Email    string `json:"email"`
 }
 
 type Claims struct {
-	*Payload
+	*JwtPayload
 	*jwt.RegisteredClaims
 }
 
@@ -26,9 +26,9 @@ func NewJwt() *JwtService {
 	return &JwtService{[]byte(cfg.Cfg().JwtSecret)}
 }
 
-func (j *JwtService) Sign(payload *Payload) (string, error) {
+func (j *JwtService) Sign(payload *JwtPayload) (string, error) {
 	claims := Claims{
-		Payload: payload,
+		JwtPayload: payload,
 		RegisteredClaims: &jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -39,15 +39,15 @@ func (j *JwtService) Sign(payload *Payload) (string, error) {
 	return token.SignedString(j.secret)
 }
 
-func (j *JwtService) Verify(token string) (*Payload, error) {
+func (j *JwtService) Verify(token string) (*JwtPayload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.secret), nil
 	}
 	claims := &Claims{}
 	_, err := jwt.ParseWithClaims(token, claims, keyFunc)
-	return &Payload{
-		ClientID:   claims.ClientID,
-		ClientName: claims.ClientName,
-		Email:      claims.Email,
+	return &JwtPayload{
+		UserID:   claims.UserID,
+		Username: claims.Username,
+		Email:    claims.Email,
 	}, err
 }

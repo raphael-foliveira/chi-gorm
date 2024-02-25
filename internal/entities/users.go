@@ -9,6 +9,6 @@ type User struct {
 	Password   string
 }
 
-func (u *User) GetId() uint {
+func (u User) GetId() uint {
 	return u.ID
 }

@@ -1,6 +1,10 @@
 package service
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"errors"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type EncryptionService struct {
 	cost int
@@ -16,5 +20,11 @@ func (e *EncryptionService) Hash(password string) (string, error) {
 }
 
 func (e *EncryptionService) Compare(hash, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		return ErrPasswordsDoNotMatch
+	}
+	return nil
 }
+
+var ErrPasswordsDoNotMatch = errors.New("passwords do not match")
