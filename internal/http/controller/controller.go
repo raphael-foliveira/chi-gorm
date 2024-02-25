@@ -4,18 +4,18 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-func Clients() *clients {
-	return NewClients(service.Clients())
+func Clients() *clientsController {
+	return NewClientsController(service.Clients())
 }
 
-func Orders() *orders {
-	return NewOrders(service.Orders())
+func Orders() *ordersController {
+	return NewOrdersController(service.Orders())
 }
 
-func Products() *products {
-	return NewProducts(service.Products())
+func Products() *productsController {
+	return NewProductsController(service.Products())
 }
 
-func Users() *users {
-	return NewUsers(service.Users())
+func Users() *usersController {
+	return NewUsersController(service.Users())
 }

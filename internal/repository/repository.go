@@ -44,17 +44,17 @@ func (r *repository[T]) Delete(entity *T) error {
 }
 
 func Clients() ClientsRepository {
-	return NewClients(database.Db())
+	return NewClientsRepository(database.Db())
 }
 
 func Orders() OrdersRepository {
-	return NewOrders(database.Db())
+	return NewOrdersRepository(database.Db())
 }
 
 func Products() ProductsRepository {
-	return NewProducts(database.Db())
+	return NewProductsRepository(database.Db())
 }
 
 func Users() UsersRepository {
-	return NewUsers(database.Db())
+	return NewUsersRepository(database.Db())
 }

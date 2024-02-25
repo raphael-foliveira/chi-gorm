@@ -10,15 +10,15 @@ type ProductsRepository interface {
 	FindMany([]uint) ([]entities.Product, error)
 }
 
-type products struct {
+type productsRepository struct {
 	*repository[entities.Product]
 }
 
-func NewProducts(db *gorm.DB) *products {
-	return &products{newRepository[entities.Product](db)}
+func NewProductsRepository(db *gorm.DB) *productsRepository {
+	return &productsRepository{newRepository[entities.Product](db)}
 }
 
-func (r *products) FindMany(ids []uint) ([]entities.Product, error) {
+func (r *productsRepository) FindMany(ids []uint) ([]entities.Product, error) {
 	products := []entities.Product{}
 	return products, r.db.Find(&products, ids).Error
 }

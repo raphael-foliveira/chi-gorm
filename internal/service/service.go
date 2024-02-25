@@ -5,25 +5,25 @@ import (
 )
 
 func Orders() *OrdersService {
-	return NewOrders(repository.Orders())
+	return NewOrdersService(repository.Orders())
 }
 
 func Products() *ProductsService {
-	return NewProducts(repository.Products())
+	return NewProductsService(repository.Products())
 }
 
 func Clients() *ClientsService {
-	return NewClients(repository.Clients(), repository.Orders())
+	return NewClientsService(repository.Clients(), repository.Orders())
 }
 
 func Jwt() *JwtService {
-	return NewJwt()
+	return NewJwtService()
 }
 
 func Encryption() *EncryptionService {
-	return NewEncryption(10)
+	return NewEncryptionService(10)
 }
 
 func Users() *UsersService {
-	return NewUsers(repository.Users(), Encryption(), Jwt())
+	return NewUsersService(repository.Users(), Encryption(), Jwt())
 }

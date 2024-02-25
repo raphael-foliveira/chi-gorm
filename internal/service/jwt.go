@@ -22,7 +22,7 @@ type JwtService struct {
 	secret []byte
 }
 
-func NewJwt() *JwtService {
+func NewJwtService() *JwtService {
 	return &JwtService{[]byte(cfg.Cfg().JwtSecret)}
 }
 

@@ -10,7 +10,7 @@ type OrdersService struct {
 	repository repository.OrdersRepository
 }
 
-func NewOrders(repository repository.OrdersRepository) *OrdersService {
+func NewOrdersService(repository repository.OrdersRepository) *OrdersService {
 	return &OrdersService{repository}
 }
 

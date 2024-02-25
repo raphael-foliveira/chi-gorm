@@ -10,15 +10,15 @@ type UsersRepository interface {
 	FindOneByEmail(string) (*entities.User, error)
 }
 
-type users struct {
+type usersRepository struct {
 	*repository[entities.User]
 }
 
-func NewUsers(db *gorm.DB) UsersRepository {
-	return &users{newRepository[entities.User](db)}
+func NewUsersRepository(db *gorm.DB) UsersRepository {
+	return &usersRepository{newRepository[entities.User](db)}
 }
 
-func (u *users) FindOneByEmail(email string) (*entities.User, error) {
+func (u *usersRepository) FindOneByEmail(email string) (*entities.User, error) {
 	user := &entities.User{Email: email}
 	return user, u.db.Model(&entities.User{}).First(&user).Error
 }

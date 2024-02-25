@@ -8,15 +8,15 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type products struct {
+type productsController struct {
 	service *service.ProductsService
 }
 
-func NewProducts(service *service.ProductsService) *products {
-	return &products{service}
+func NewProductsController(service *service.ProductsService) *productsController {
+	return &productsController{service}
 }
 
-func (p *products) Create(w http.ResponseWriter, r *http.Request) error {
+func (p *productsController) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateProduct{})
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (p *products) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, schemas.NewProduct(newOrder))
 }
 
-func (p *products) Update(w http.ResponseWriter, r *http.Request) error {
+func (p *productsController) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (p *products) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewProduct(updatedOrder))
 }
 
-func (p *products) Delete(w http.ResponseWriter, r *http.Request) error {
+func (p *productsController) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (p *products) Delete(w http.ResponseWriter, r *http.Request) error {
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (p *products) List(w http.ResponseWriter, r *http.Request) error {
+func (p *productsController) List(w http.ResponseWriter, r *http.Request) error {
 	products, err := p.service.List()
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (p *products) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewProducts(products))
 }
 
-func (p *products) Get(w http.ResponseWriter, r *http.Request) error {
+func (p *productsController) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err

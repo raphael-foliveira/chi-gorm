@@ -8,15 +8,15 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type clients struct {
+type clientsController struct {
 	service *service.ClientsService
 }
 
-func NewClients(service *service.ClientsService) *clients {
-	return &clients{service}
+func NewClientsController(service *service.ClientsService) *clientsController {
+	return &clientsController{service}
 }
 
-func (c *clients) Create(w http.ResponseWriter, r *http.Request) error {
+func (c *clientsController) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateClient{})
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (c *clients) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, &newClient)
 }
 
-func (c *clients) Update(w http.ResponseWriter, r *http.Request) error {
+func (c *clientsController) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (c *clients) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, updatedClient)
 }
 
-func (c *clients) Delete(w http.ResponseWriter, r *http.Request) error {
+func (c *clientsController) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (c *clients) Delete(w http.ResponseWriter, r *http.Request) error {
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (c *clients) List(w http.ResponseWriter, r *http.Request) error {
+func (c *clientsController) List(w http.ResponseWriter, r *http.Request) error {
 	clients, err := c.service.List()
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (c *clients) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewClients(clients))
 }
 
-func (c *clients) Get(w http.ResponseWriter, r *http.Request) error {
+func (c *clientsController) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -76,7 +76,7 @@ func (c *clients) Get(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewClientDetail(client))
 }
 
-func (c *clients) GetProducts(w http.ResponseWriter, r *http.Request) error {
+func (c *clientsController) GetProducts(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err

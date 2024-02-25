@@ -8,15 +8,15 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type users struct {
+type usersController struct {
 	service *service.UsersService
 }
 
-func NewUsers(service *service.UsersService) *users {
-	return &users{service}
+func NewUsersController(service *service.UsersService) *usersController {
+	return &usersController{service}
 }
 
-func (u *users) Login(w http.ResponseWriter, r *http.Request) error {
+func (u *usersController) Login(w http.ResponseWriter, r *http.Request) error {
 	payload, err := parseBody(r, &schemas.Login{})
 	if err != nil {
 		return err

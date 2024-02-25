@@ -8,7 +8,7 @@ import (
 )
 
 func TestProductsRepository(t *testing.T) {
-	repository := NewProducts(database.Db())
+	repository := NewProductsRepository(database.Db())
 	t.Run("Should find many", func(t *testing.T) {
 		products := []entities.Product{
 			{

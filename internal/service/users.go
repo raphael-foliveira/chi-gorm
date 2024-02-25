@@ -12,7 +12,7 @@ type UsersService struct {
 	jwtService        *JwtService
 }
 
-func NewUsers(repo repository.UsersRepository, encryptionService *EncryptionService, jwtService *JwtService) *UsersService {
+func NewUsersService(repo repository.UsersRepository, encryptionService *EncryptionService, jwtService *JwtService) *UsersService {
 	return &UsersService{repo, encryptionService, jwtService}
 }
 

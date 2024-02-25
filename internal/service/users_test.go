@@ -10,7 +10,7 @@ import (
 func TestUsers(t *testing.T) {
 	encryptionService := Encryption()
 	jwtService := Jwt()
-	usersService := NewUsers(mocks.UsersStore, encryptionService, jwtService)
+	usersService := NewUsersService(mocks.UsersStore, encryptionService, jwtService)
 	setUp := func() {
 		mocks.UsersStore.Populate()
 		for i := range mocks.UsersStore.Store {

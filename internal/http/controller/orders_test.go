@@ -19,7 +19,7 @@ import (
 
 func TestOrders(t *testing.T) {
 
-	controller := NewOrders(service.NewOrders(mocks.OrdersStore))
+	controller := NewOrdersController(service.NewOrdersService(mocks.OrdersStore))
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all orders", func(t *testing.T) {
 			setUp()

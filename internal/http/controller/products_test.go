@@ -19,7 +19,7 @@ import (
 
 func TestProducts(t *testing.T) {
 
-	controller := NewProducts(service.NewProducts(mocks.ProductsStore))
+	controller := NewProductsController(service.NewProductsService(mocks.ProductsStore))
 
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all products", func(t *testing.T) {

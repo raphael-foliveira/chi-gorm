@@ -4,7 +4,7 @@ import "testing"
 
 func TestJwt(t *testing.T) {
 	t.Run("should sign a token", func(t *testing.T) {
-		jwt := NewJwt()
+		jwt := NewJwtService()
 		payload := &JwtPayload{
 			UserID:   1,
 			Username: "John Doe",
@@ -20,7 +20,7 @@ func TestJwt(t *testing.T) {
 	})
 
 	t.Run("should verify a token", func(t *testing.T) {
-		jwt := NewJwt()
+		jwt := NewJwtService()
 		payload := &JwtPayload{
 			UserID:   1,
 			Username: "John Doe",

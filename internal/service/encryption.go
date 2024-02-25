@@ -10,7 +10,7 @@ type EncryptionService struct {
 	cost int
 }
 
-func NewEncryption(cost int) *EncryptionService {
+func NewEncryptionService(cost int) *EncryptionService {
 	return &EncryptionService{cost}
 }
 
