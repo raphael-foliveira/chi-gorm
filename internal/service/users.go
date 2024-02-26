@@ -9,11 +9,10 @@ import (
 type UsersService struct {
 	repo              repository.UsersRepository
 	encryptionService *EncryptionService
-	jwtService        *JwtService
 }
 
-func NewUsersService(repo repository.UsersRepository, encryptionService *EncryptionService, jwtService *JwtService) *UsersService {
-	return &UsersService{repo, encryptionService, jwtService}
+func NewUsersService(repo repository.UsersRepository, encryptionService *EncryptionService) *UsersService {
+	return &UsersService{repo, encryptionService}
 }
 
 func (s *UsersService) Create(payload *schemas.CreateUser) (*entities.User, error) {
@@ -47,20 +46,4 @@ func (s *UsersService) Update(id uint, payload *schemas.UpdateUser) (*entities.U
 
 func (s *UsersService) Get(id uint) (*entities.User, error) {
 	return s.repo.Get(id)
-}
-
-func (s *UsersService) Login(email, password string) (string, error) {
-	user, err := s.repo.FindOneByEmail(email)
-	if err != nil {
-		return "", err
-	}
-	err = s.encryptionService.Compare(user.Password, password)
-	if err != nil {
-		return "", err
-	}
-	return s.jwtService.Sign(&JwtPayload{
-		UserID:   user.ID,
-		Email:    user.Email,
-		Username: user.Username,
-	})
 }

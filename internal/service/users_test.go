@@ -7,10 +7,10 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
 )
 
-func TestUsers(t *testing.T) {
+func TestAuth(t *testing.T) {
 	encryptionService := Encryption()
 	jwtService := Jwt()
-	usersService := NewUsersService(mocks.UsersStore, encryptionService, jwtService)
+	authService := NewAuthService(mocks.UsersStore, encryptionService, jwtService)
 	setUp := func() {
 		mocks.UsersStore.Populate()
 		for i := range mocks.UsersStore.Store {
@@ -27,7 +27,7 @@ func TestUsers(t *testing.T) {
 			expectedUser := &mocks.UsersStore.Store[0]
 			password, hash := getPasswordAndHash(encryptionService)
 			expectedUser.Password = hash
-			token, err := usersService.Login(expectedUser.Email, password)
+			token, err := authService.Login(expectedUser.Email, password)
 			if err != nil {
 				t.Errorf("Expected no error, got %v", err)
 			}

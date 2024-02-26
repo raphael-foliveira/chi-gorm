@@ -45,3 +45,13 @@ func (l *Login) Validate() error {
 type LoginResponse struct {
 	Token string `json:"token"`
 }
+
+type UserResponse struct {
+	ID       uint   `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+type RegisterResponse struct {
+	User *UserResponse `json:"user"`
+}

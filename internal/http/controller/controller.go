@@ -19,3 +19,7 @@ func Products() *productsController {
 func Users() *usersController {
 	return NewUsersController(service.Users())
 }
+
+func Auth() *authController {
+	return NewAuthController(service.Auth())
+}

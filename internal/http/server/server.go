@@ -41,6 +41,8 @@ func (a *app) mountRoutes(r *chi.Mux) {
 	r.Mount("/clients", routes.Clients())
 	r.Mount("/products", routes.Products())
 	r.Mount("/orders", routes.Orders())
+	r.Mount("/users", routes.Users())
+	r.Mount("/auth", routes.Auth())
 	r.Get("/health-check", routes.HealthCheck())
 }
 
