@@ -22,7 +22,7 @@ func TestAuth(t *testing.T) {
 		mocks.UsersStore.Clear()
 	}
 	t.Run("Login", func(t *testing.T) {
-		t.Run("Success", func(t *testing.T) {
+		t.Run("should successfully login", func(t *testing.T) {
 			setUp()
 			expectedUser := &mocks.UsersStore.Store[0]
 			password, hash := getPasswordAndHash(encryptionService)
