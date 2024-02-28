@@ -7,6 +7,11 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
+var ProductsStore = &productsStore{store[entities.Product]{}}
+var ClientsStore = &clientsStore{store[entities.Client]{}}
+var OrdersStore = &ordersStore{store[entities.Order]{}}
+var UsersStore = &usersStore{store[entities.User]{}}
+
 type store[T entities.Entity] struct {
 	Store []T
 	Error error
@@ -59,13 +64,9 @@ func (s *store[T]) Populate() {
 	faker.FakeData(&s.Store)
 }
 
-var ClientsStore = &clientsStore{store[entities.Client]{}}
-
 type clientsStore struct {
 	store[entities.Client]
 }
-
-var ProductsStore = &productsStore{store[entities.Product]{}}
 
 type productsStore struct {
 	store[entities.Product]
@@ -83,8 +84,6 @@ func (cr *productsStore) FindMany(ids []uint) ([]entities.Product, error) {
 	return products, cr.Error
 }
 
-var OrdersStore = &ordersStore{store[entities.Order]{}}
-
 type ordersStore struct {
 	store[entities.Order]
 }
@@ -98,8 +97,6 @@ func (os *ordersStore) FindManyByClientId(clientId uint) ([]entities.Order, erro
 	}
 	return orders, os.Error
 }
-
-var UsersStore = &usersStore{store[entities.User]{}}
 
 type usersStore struct {
 	store[entities.User]
