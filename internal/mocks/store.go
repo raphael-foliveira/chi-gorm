@@ -7,14 +7,18 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 )
 
-var ProductsStore = &productsStore{store[entities.Product]{}}
-var ClientsStore = &clientsStore{store[entities.Client]{}}
-var OrdersStore = &ordersStore{store[entities.Order]{}}
-var UsersStore = &usersStore{store[entities.User]{}}
+var ProductsStore = newProductsStore()
+var ClientsStore = newClientsStore()
+var OrdersStore = newOrdersStore()
+var UsersStore = newUsersStore()
 
 type store[T entities.Entity] struct {
 	Store []T
 	Error error
+}
+
+func newStore[T entities.Entity]() *store[T] {
+	return &store[T]{}
 }
 
 func (s *store[T]) List(conds ...interface{}) ([]T, error) {
@@ -65,11 +69,19 @@ func (s *store[T]) Populate() {
 }
 
 type clientsStore struct {
-	store[entities.Client]
+	*store[entities.Client]
+}
+
+func newClientsStore() *clientsStore {
+	return &clientsStore{newStore[entities.Client]()}
 }
 
 type productsStore struct {
-	store[entities.Product]
+	*store[entities.Product]
+}
+
+func newProductsStore() *productsStore {
+	return &productsStore{newStore[entities.Product]()}
 }
 
 func (cr *productsStore) FindMany(ids []uint) ([]entities.Product, error) {
@@ -85,7 +97,11 @@ func (cr *productsStore) FindMany(ids []uint) ([]entities.Product, error) {
 }
 
 type ordersStore struct {
-	store[entities.Order]
+	*store[entities.Order]
+}
+
+func newOrdersStore() *ordersStore {
+	return &ordersStore{newStore[entities.Order]()}
 }
 
 func (os *ordersStore) FindManyByClientId(clientId uint) ([]entities.Order, error) {
@@ -99,7 +115,11 @@ func (os *ordersStore) FindManyByClientId(clientId uint) ([]entities.Order, erro
 }
 
 type usersStore struct {
-	store[entities.User]
+	*store[entities.User]
+}
+
+func newUsersStore() *usersStore {
+	return &usersStore{newStore[entities.User]()}
 }
 
 func (u *usersStore) FindOneByEmail(email string) (*entities.User, error) {
