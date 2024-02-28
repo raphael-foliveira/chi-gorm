@@ -5,16 +5,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type UsersRepository interface {
-	Repository[entities.User]
-	FindOneByEmail(string) (*entities.User, error)
-}
-
 type usersRepository struct {
 	*repository[entities.User]
 }
 
-func NewUsersRepository(db *gorm.DB) UsersRepository {
+func NewUsersRepository(db *gorm.DB) *usersRepository {
 	return &usersRepository{newRepository[entities.User](db)}
 }
 

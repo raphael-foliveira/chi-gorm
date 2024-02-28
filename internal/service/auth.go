@@ -1,15 +1,13 @@
 package service
 
-import "github.com/raphael-foliveira/chi-gorm/internal/repository"
-
 type AuthService struct {
-	usersRepository   repository.UsersRepository
+	usersRepository   UsersRepository
 	encryptionService *EncryptionService
 	jwtService        *JwtService
 }
 
 func NewAuthService(
-	usersRepository repository.UsersRepository,
+	usersRepository UsersRepository,
 	encryptionService *EncryptionService,
 	jwtService *JwtService,
 ) *AuthService {

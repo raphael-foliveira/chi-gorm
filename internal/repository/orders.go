@@ -5,10 +5,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type OrdersRepository interface {
-	Repository[entities.Order]
-	FindManyByClientId(uint) ([]entities.Order, error)
-}
 
 type ordersRepository struct {
 	*repository[entities.Order]

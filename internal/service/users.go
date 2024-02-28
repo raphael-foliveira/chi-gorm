@@ -3,15 +3,14 @@ package service
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
 type UsersService struct {
-	repo              repository.UsersRepository
+	repo              UsersRepository
 	encryptionService *EncryptionService
 }
 
-func NewUsersService(repo repository.UsersRepository, encryptionService *EncryptionService) *UsersService {
+func NewUsersService(repo UsersRepository, encryptionService *EncryptionService) *UsersService {
 	return &UsersService{repo, encryptionService}
 }
 

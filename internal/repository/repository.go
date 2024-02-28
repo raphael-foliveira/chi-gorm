@@ -5,14 +5,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type Repository[T interface{}] interface {
-	List(...interface{}) ([]T, error)
-	Get(uint) (*T, error)
-	Create(*T) error
-	Update(*T) error
-	Delete(*T) error
-}
-
 type repository[T interface{}] struct {
 	db *gorm.DB
 }
@@ -43,18 +35,18 @@ func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
 
-func Clients() ClientsRepository {
+func Clients() *clientsRepository {
 	return NewClientsRepository(database.Db())
 }
 
-func Orders() OrdersRepository {
+func Orders() *ordersRepository {
 	return NewOrdersRepository(database.Db())
 }
 
-func Products() ProductsRepository {
+func Products() *productsRepository {
 	return NewProductsRepository(database.Db())
 }
 
-func Users() UsersRepository {
+func Users() *usersRepository {
 	return NewUsersRepository(database.Db())
 }
