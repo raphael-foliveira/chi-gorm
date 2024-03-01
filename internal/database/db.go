@@ -10,17 +10,16 @@ import (
 var instance *gorm.DB
 
 func Db() *gorm.DB {
-	if instance != nil {
-		return instance
-	}
-	db, err := start(cfg.Cfg().DatabaseURL)
-	if err != nil {
-		panic(err)
-	}
-	instance = db
-	err = migrateDb()
-	if err != nil {
-		panic(err)
+	if instance == nil {
+		db, err := start(cfg.Cfg().DatabaseURL)
+		if err != nil {
+			panic(err)
+		}
+		instance = db
+		err = migrateDb()
+		if err != nil {
+			panic(err)
+		}
 	}
 	return instance
 }
@@ -39,17 +38,16 @@ func migrateDb() error {
 }
 
 func CloseDb() error {
-	if instance == nil {
-		return nil
+	if instance != nil {
+		sqlDb, err := instance.DB()
+		if err != nil {
+			return err
+		}
+		err = sqlDb.Close()
+		if err != nil {
+			return err
+		}
+		instance = nil
 	}
-	sqlDb, err := instance.DB()
-	if err != nil {
-		return err
-	}
-	err = sqlDb.Close()
-	if err != nil {
-		return err
-	}
-	instance = nil
 	return nil
 }
