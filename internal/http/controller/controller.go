@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
@@ -23,3 +25,5 @@ func Users() *usersController {
 func Auth() *authController {
 	return NewAuthController(service.Auth())
 }
+
+type ControllerFunc func(http.ResponseWriter, *http.Request) error

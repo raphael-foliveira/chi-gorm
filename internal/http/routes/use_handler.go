@@ -6,13 +6,12 @@ import (
 	"net/http"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
 	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
-type ControllerFunc func(w http.ResponseWriter, r *http.Request) error
-
-func useHandler(fn ControllerFunc) http.HandlerFunc {
+func useHandler(fn controller.ControllerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := fn(w, r)
 		if err != nil {
