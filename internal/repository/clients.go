@@ -9,10 +9,10 @@ type ClientsRepository interface {
 	Repository[entities.Client]
 }
 
-type clients struct {
+type Clients struct {
 	*repository[entities.Client]
 }
 
-func NewClients(db *gorm.DB) *clients {
-	return &clients{newRepository[entities.Client](db)}
+func NewClients(db *gorm.DB) *Clients {
+	return &Clients{newRepository[entities.Client](db)}
 }

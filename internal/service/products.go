@@ -6,32 +6,40 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-type ProductsService struct {
+type Products struct {
 	repository repository.ProductsRepository
 }
 
-func NewProducts(repository repository.ProductsRepository) *ProductsService {
-	return &ProductsService{repository}
+func NewProducts(repository repository.ProductsRepository) *Products {
+	return &Products{repository}
 }
 
-func (c *ProductsService) Create(schema *schemas.CreateProduct) (*entities.Product, error) {
+func (c *Products) Create(schema *schemas.CreateProduct) (*entities.Product, error) {
 	newProduct := schema.ToModel()
 	err := c.repository.Create(newProduct)
 	return newProduct, err
 }
 
-func (c *ProductsService) Update(id uint, schema *schemas.UpdateProduct) (*entities.Product, error) {
+func (c *Products) Update(id uint, schema *schemas.UpdateProduct) (*entities.Product, error) {
 	entity, err := c.Get(id)
 	if err != nil {
 		return nil, err
 	}
-	entity.Name = schema.Name
-	entity.Price = schema.Price
+	c.updatePopulatedFields(entity, schema)
 	err = c.repository.Update(entity)
 	return entity, err
 }
 
-func (c *ProductsService) Delete(id uint) error {
+func (c *Products) updatePopulatedFields(product *entities.Product, schema *schemas.UpdateProduct) {
+	if schema.Name != "" {
+		product.Name = schema.Name
+	}
+	if schema.Price != 0 {
+		product.Price = schema.Price
+	}
+}
+
+func (c *Products) Delete(id uint) error {
 	client, err := c.Get(id)
 	if err != nil {
 		return err
@@ -43,11 +51,11 @@ func (c *ProductsService) Delete(id uint) error {
 	return nil
 }
 
-func (c *ProductsService) List() ([]entities.Product, error) {
+func (c *Products) List() ([]entities.Product, error) {
 	return c.repository.List()
 }
 
-func (c *ProductsService) Get(id uint) (*entities.Product, error) {
+func (c *Products) Get(id uint) (*entities.Product, error) {
 	product, err := c.repository.Get(id)
 	if err != nil || product == nil {
 		return nil, errProductNotFound

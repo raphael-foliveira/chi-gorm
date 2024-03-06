@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"gorm.io/gorm"
 )
 
@@ -41,16 +40,4 @@ func (r *repository[T]) Update(entity *T) error {
 
 func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
-}
-
-func Clients() *clients {
-	return NewClients(database.Db())
-}
-
-func Orders() *orders {
-	return NewOrders(database.Db())
-}
-
-func Products() *products {
-	return NewProducts(database.Db())
 }

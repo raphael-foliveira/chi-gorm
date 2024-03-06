@@ -18,15 +18,15 @@ type Claims struct {
 	*jwt.RegisteredClaims
 }
 
-type JwtService struct {
+type Jwt struct {
 	secret []byte
 }
 
-func NewJwt() *JwtService {
-	return &JwtService{[]byte(cfg.Cfg().JwtSecret)}
+func NewJwt() *Jwt {
+	return &Jwt{[]byte(cfg.Cfg().JwtSecret)}
 }
 
-func (j *JwtService) Sign(payload *Payload) (string, error) {
+func (j *Jwt) Sign(payload *Payload) (string, error) {
 	claims := Claims{
 		Payload: payload,
 		RegisteredClaims: &jwt.RegisteredClaims{
@@ -39,7 +39,7 @@ func (j *JwtService) Sign(payload *Payload) (string, error) {
 	return token.SignedString(j.secret)
 }
 
-func (j *JwtService) Verify(token string) (*Payload, error) {
+func (j *Jwt) Verify(token string) (*Payload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.secret), nil
 	}
