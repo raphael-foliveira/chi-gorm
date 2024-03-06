@@ -9,14 +9,13 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"gorm.io/gorm"
 )
 
 type app struct {
-	Db *gorm.DB
+	Db *database.DB
 }
 
-func NewApp(db *gorm.DB) *app {
+func NewApp(db *database.DB) *app {
 	return &app{Db: db}
 }
 

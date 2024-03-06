@@ -9,12 +9,11 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
 var tClient *testClient
-var db *gorm.DB
+var db *database.DB
 
 func TestMain(m *testing.M) {
 	config.LoadCfg("../../.env.test")

@@ -1,8 +1,8 @@
 package repository
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"gorm.io/gorm"
 )
 
 type ProductsRepository interface {
@@ -14,7 +14,7 @@ type Products struct {
 	*repository[entities.Product]
 }
 
-func NewProducts(db *gorm.DB) *Products {
+func NewProducts(db *database.DB) *Products {
 	return &Products{newRepository[entities.Product](db)}
 }
 
