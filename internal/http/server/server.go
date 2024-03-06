@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"gorm.io/gorm"
 )
@@ -37,10 +38,10 @@ func (a *app) CreateMainRouter() *chi.Mux {
 }
 
 func (a *app) mountRoutes(r *chi.Mux) {
-	r.Mount("/clients", clientsRoutes())
-	r.Mount("/products", productsRoutes())
-	r.Mount("/orders", ordersRoutes())
-	r.Mount("/health-check", healthCheckRoutes())
+	r.Mount("/clients", container.ClientsRoutes())
+	r.Mount("/products", container.ProductsRoutes())
+	r.Mount("/orders", container.OrdersRoutes())
+	r.Mount("/health-check", container.HealthCheckRoutes())
 }
 
 func (a *app) attachMiddleware(r *chi.Mux) {

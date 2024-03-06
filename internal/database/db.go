@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -13,7 +13,7 @@ func Db() *gorm.DB {
 	if instance != nil {
 		return instance
 	}
-	db, err := start(cfg.Cfg().DatabaseURL)
+	db, err := start(config.Cfg().DatabaseURL)
 	if err != nil {
 		panic(err)
 	}

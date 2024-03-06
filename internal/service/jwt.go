@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 )
 
 type Payload struct {
@@ -23,7 +23,7 @@ type Jwt struct {
 }
 
 func NewJwt() *Jwt {
-	return &Jwt{[]byte(cfg.Cfg().JwtSecret)}
+	return &Jwt{[]byte(config.Cfg().JwtSecret)}
 }
 
 func (j *Jwt) Sign(payload *Payload) (string, error) {

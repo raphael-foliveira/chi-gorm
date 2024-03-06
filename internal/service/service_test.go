@@ -3,10 +3,10 @@ package service
 import (
 	"testing"
 
-	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 )
 
 func TestMain(m *testing.M) {
-	cfg.LoadCfg("../../.env.test")
+	config.LoadCfg("../../.env.test")
 	m.Run()
 }

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
@@ -17,7 +17,7 @@ var tClient *testClient
 var db *gorm.DB
 
 func TestMain(m *testing.M) {
-	cfg.LoadCfg("../../.env.test")
+	config.LoadCfg("../../.env.test")
 	db = database.Db()
 	m.Run()
 	database.CloseDb()
