@@ -8,22 +8,22 @@ type router struct {
 	*chi.Mux
 }
 
-func (rr *router) Get(path string, fn ControllerFunc) {
-	rr.Mux.Get(path, useHandler(fn))
+func (r *router) Get(path string, fn ControllerFunc) {
+	r.Mux.Get(path, useHandler(fn))
 }
 
-func (rr *router) Post(path string, fn ControllerFunc) {
-	rr.Mux.Post(path, useHandler(fn))
+func (r *router) Post(path string, fn ControllerFunc) {
+	r.Mux.Post(path, useHandler(fn))
 }
 
-func (rr *router) Put(path string, fn ControllerFunc) {
-	rr.Mux.Put(path, useHandler(fn))
+func (r *router) Put(path string, fn ControllerFunc) {
+	r.Mux.Put(path, useHandler(fn))
 }
 
-func (rr *router) Patch(path string, fn ControllerFunc) {
-	rr.Mux.Patch(path, useHandler(fn))
+func (r *router) Patch(path string, fn ControllerFunc) {
+	r.Mux.Patch(path, useHandler(fn))
 }
 
-func (rr *router) Delete(path string, fn ControllerFunc) {
-	rr.Mux.Delete(path, useHandler(fn))
+func (r *router) Delete(path string, fn ControllerFunc) {
+	r.Mux.Delete(path, useHandler(fn))
 }
