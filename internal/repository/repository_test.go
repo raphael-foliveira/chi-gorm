@@ -11,7 +11,7 @@ func TestMain(m *testing.M) {
 	config.LoadCfg("../../.env.test")
 	database.Db()
 	m.Run()
-	err := database.CloseDb()
+	err := database.Close()
 	if err != nil {
 		panic(err)
 	}

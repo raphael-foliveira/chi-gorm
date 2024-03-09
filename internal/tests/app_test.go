@@ -19,11 +19,11 @@ func TestMain(m *testing.M) {
 	config.LoadCfg("../../.env.test")
 	db = database.Db()
 	m.Run()
-	database.CloseDb()
+	database.Close()
 }
 
 func setUp() {
-	testApp := server.App().CreateMainRouter()
+	testApp := server.NewApp(db).CreateMainRouter()
 	testServer = httptest.NewServer(testApp)
 	tClient = newTestClient(testServer)
 	populateTables()

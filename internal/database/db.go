@@ -42,7 +42,7 @@ func migrateDb() error {
 	)
 }
 
-func CloseDb() error {
+func Close() error {
 	if instance == nil {
 		return nil
 	}

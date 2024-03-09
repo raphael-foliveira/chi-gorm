@@ -19,10 +19,6 @@ func NewApp(db *database.DB) *app {
 	return &app{Db: db}
 }
 
-func App() *app {
-	return NewApp(database.Db())
-}
-
 func (a *app) Start() error {
 	app := a.CreateMainRouter()
 	slog.Info("listening on port 3000")

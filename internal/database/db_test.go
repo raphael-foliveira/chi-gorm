@@ -21,7 +21,7 @@ func TestInitDb(t *testing.T) {
 
 	t.Run("should close the database", func(t *testing.T) {
 		Db()
-		err := CloseDb()
+		err := Close()
 		if err != nil {
 			t.Error(err)
 		}
