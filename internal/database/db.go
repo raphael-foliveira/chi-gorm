@@ -17,7 +17,7 @@ func Db() *DB {
 	if instance != nil {
 		return instance
 	}
-	db, err := start(config.Cfg().DatabaseURL)
+	db, err := start(config.Get().DatabaseURL)
 	if err != nil {
 		panic(err)
 	}
