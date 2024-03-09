@@ -6,12 +6,12 @@ import (
 )
 
 func Clients(c *controller.Clients) *chi.Mux {
-	router := chi.NewRouter()
-	router.Get("/", useHandler(c.List))
-	router.Get("/{id}", useHandler(c.Get))
-	router.Get("/{id}/products", useHandler(c.GetProducts))
-	router.Post("/", useHandler(c.Create))
-	router.Delete("/{id}", useHandler(c.Delete))
-	router.Put("/{id}", useHandler(c.Update))
-	return router
+	router := router{chi.NewRouter()}
+	router.Get("/", c.List)
+	router.Get("/{id}", c.Get)
+	router.Get("/{id}/products", c.GetProducts)
+	router.Post("/", c.Create)
+	router.Delete("/{id}", c.Delete)
+	router.Put("/{id}", c.Update)
+	return router.Mux
 }
