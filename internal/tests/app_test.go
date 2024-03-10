@@ -5,26 +5,25 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"gorm.io/gorm"
 )
 
 var testServer *httptest.Server
 var tClient *testClient
-var db *gorm.DB
+var db *database.DB
 
 func TestMain(m *testing.M) {
-	cfg.LoadCfg("../../.env.test")
+	config.LoadCfg("../../.env.test")
 	db = database.Db()
 	m.Run()
-	database.CloseDb()
+	database.Close()
 }
 
 func setUp() {
-	testApp := server.App().CreateMainRouter()
+	testApp := server.NewApp(db).CreateMainRouter()
 	testServer = httptest.NewServer(testApp)
 	tClient = newTestClient(testServer)
 	populateTables()

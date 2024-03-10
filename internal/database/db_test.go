@@ -3,11 +3,11 @@ package database
 import (
 	"testing"
 
-	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 )
 
 func TestMain(m *testing.M) {
-	cfg.LoadCfg("../../.env.test")
+	config.LoadCfg("../../.env.test")
 	m.Run()
 }
 
@@ -21,7 +21,7 @@ func TestInitDb(t *testing.T) {
 
 	t.Run("should close the database", func(t *testing.T) {
 		Db()
-		err := CloseDb()
+		err := Close()
 		if err != nil {
 			t.Error(err)
 		}

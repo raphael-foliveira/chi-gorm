@@ -1,23 +1,27 @@
 package database
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/cfg"
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var instance *gorm.DB
+type DB struct {
+	*gorm.DB
+}
 
-func Db() *gorm.DB {
+var instance *DB
+
+func Db() *DB {
 	if instance != nil {
 		return instance
 	}
-	db, err := start(cfg.Cfg().DatabaseURL)
+	db, err := start(config.Get().DatabaseURL)
 	if err != nil {
 		panic(err)
 	}
-	instance = db
+	instance = &DB{db}
 	err = migrateDb()
 	if err != nil {
 		panic(err)
@@ -38,11 +42,11 @@ func migrateDb() error {
 	)
 }
 
-func CloseDb() error {
+func Close() error {
 	if instance == nil {
 		return nil
 	}
-	sqlDb, err := instance.DB()
+	sqlDb, err := instance.DB.DB()
 	if err != nil {
 		return err
 	}

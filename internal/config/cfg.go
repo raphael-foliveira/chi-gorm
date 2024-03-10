@@ -1,4 +1,4 @@
-package cfg
+package config
 
 import (
 	"os"
@@ -10,7 +10,7 @@ type cfg struct {
 	JwtSecret   string
 }
 
-var config *cfg
+var configInstance *cfg
 
 func LoadCfg(path string) {
 	content, err := getFileContent(path)
@@ -21,15 +21,15 @@ func LoadCfg(path string) {
 	setEnvs()
 }
 
-func Cfg() *cfg {
-	if config == nil {
+func Get() *cfg {
+	if configInstance == nil {
 		LoadCfg(".env")
 	}
-	return config
+	return configInstance
 }
 
 func setEnvs() {
-	config = &cfg{
+	configInstance = &cfg{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
 		JwtSecret:   os.Getenv("JWT_SECRET"),
 	}

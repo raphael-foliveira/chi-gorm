@@ -8,15 +8,15 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type orders struct {
-	service *service.OrdersService
+type Orders struct {
+	service *service.Orders
 }
 
-func NewOrders(service *service.OrdersService) *orders {
-	return &orders{service}
+func NewOrders(service *service.Orders) *Orders {
+	return &Orders{service}
 }
 
-func (o *orders) Create(w http.ResponseWriter, r *http.Request) error {
+func (o *Orders) Create(w http.ResponseWriter, r *http.Request) error {
 	body, err := parseBody(r, &schemas.CreateOrder{})
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (o *orders) Create(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusCreated, schemas.NewOrder(newOrder))
 }
 
-func (o *orders) Update(w http.ResponseWriter, r *http.Request) error {
+func (o *Orders) Update(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (o *orders) Update(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewOrder(updatedOrder))
 }
 
-func (o *orders) Delete(w http.ResponseWriter, r *http.Request) error {
+func (o *Orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (o *orders) Delete(w http.ResponseWriter, r *http.Request) error {
 	return res.SendStatus(w, http.StatusNoContent)
 }
 
-func (o *orders) List(w http.ResponseWriter, r *http.Request) error {
+func (o *Orders) List(w http.ResponseWriter, r *http.Request) error {
 	orders, err := o.service.List()
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (o *orders) List(w http.ResponseWriter, r *http.Request) error {
 	return res.JSON(w, http.StatusOK, schemas.NewOrders(orders))
 }
 
-func (o *orders) Get(w http.ResponseWriter, r *http.Request) error {
+func (o *Orders) Get(w http.ResponseWriter, r *http.Request) error {
 	id, err := getUintPathParam(r, "id")
 	if err != nil {
 		return err

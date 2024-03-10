@@ -7,21 +7,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/routes"
-	"gorm.io/gorm"
 )
 
 type app struct {
-	Db *gorm.DB
+	Db *database.DB
 }
 
-func NewApp(db *gorm.DB) *app {
+func NewApp(db *database.DB) *app {
 	return &app{Db: db}
-}
-
-func App() *app {
-	return NewApp(database.Db())
 }
 
 func (a *app) Start() error {
@@ -38,10 +33,10 @@ func (a *app) CreateMainRouter() *chi.Mux {
 }
 
 func (a *app) mountRoutes(r *chi.Mux) {
-	r.Mount("/clients", routes.Clients())
-	r.Mount("/products", routes.Products())
-	r.Mount("/orders", routes.Orders())
-	r.Get("/health-check", routes.HealthCheck())
+	r.Mount("/clients", container.ClientsRoutes())
+	r.Mount("/products", container.ProductsRoutes())
+	r.Mount("/orders", container.OrdersRoutes())
+	r.Mount("/health-check", container.HealthCheckRoutes())
 }
 
 func (a *app) attachMiddleware(r *chi.Mux) {

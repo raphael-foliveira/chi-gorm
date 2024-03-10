@@ -6,31 +6,33 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-type OrdersService struct {
+type Orders struct {
 	repository repository.OrdersRepository
 }
 
-func NewOrders(repository repository.OrdersRepository) *OrdersService {
-	return &OrdersService{repository}
+func NewOrders(repository repository.OrdersRepository) *Orders {
+	return &Orders{repository}
 }
 
-func (o *OrdersService) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
+func (o *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 	newOrder := schema.ToModel()
 	err := o.repository.Create(newOrder)
 	return newOrder, err
 }
 
-func (o *OrdersService) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
+func (o *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
 	entity, err := o.Get(id)
 	if err != nil {
 		return nil, err
 	}
-	entity.Quantity = schema.Quantity
+	if schema.Quantity != 0 {
+		entity.Quantity = schema.Quantity
+	}
 	err = o.repository.Update(entity)
 	return entity, err
 }
 
-func (o *OrdersService) Delete(id uint) error {
+func (o *Orders) Delete(id uint) error {
 	client, err := o.Get(id)
 	if err != nil {
 		return err
@@ -42,11 +44,11 @@ func (o *OrdersService) Delete(id uint) error {
 	return nil
 }
 
-func (o *OrdersService) List() ([]entities.Order, error) {
+func (o *Orders) List() ([]entities.Order, error) {
 	return o.repository.List()
 }
 
-func (o *OrdersService) Get(id uint) (*entities.Order, error) {
+func (o *Orders) Get(id uint) (*entities.Order, error) {
 	order, err := o.repository.Get(id)
 	if err != nil || order == nil {
 		return nil, errOrderNotFound
