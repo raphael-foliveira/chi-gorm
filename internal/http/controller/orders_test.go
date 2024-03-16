@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -106,8 +107,8 @@ func TestOrders(t *testing.T) {
 			if !ok {
 				t.Fatal("err should be an ApiError")
 			}
-			if apiErr.Status != 400 {
-				t.Errorf("Status code should be 400, got %v", recorder.Code)
+			if apiErr.Status != http.StatusUnprocessableEntity {
+				t.Errorf("Status code should be 422, got %v", apiErr.Status)
 			}
 		})
 
@@ -155,8 +156,8 @@ func TestOrders(t *testing.T) {
 			if !ok {
 				t.Fatal("err should be an ApiError")
 			}
-			if apiErr.Status != 400 {
-				t.Errorf("Status code should be 400, got %v", recorder.Code)
+			if apiErr.Status != http.StatusUnprocessableEntity {
+				t.Errorf("Status code should be 422, got %v", apiErr.Status)
 			}
 		})
 
