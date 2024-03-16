@@ -11,12 +11,12 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func testCase(testFunc func(*testing.T)) func(*testing.T) {
-	return func(t *testing.T) {
+func testCase(t *testing.T, testName string, testFunc func(*testing.T)) bool {
+	return t.Run(testName, func(t *testing.T) {
 		setUp()
 		defer tearDown()
 		testFunc(t)
-	}
+	})
 }
 
 func setUp() {
