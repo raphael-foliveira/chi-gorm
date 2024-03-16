@@ -10,11 +10,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 )
 
 func TestWrap(t *testing.T) {
 	t.Run("should handle an uncaught error", func(t *testing.T) {
-		cf := func(w http.ResponseWriter, r *http.Request) error {
+		cf := func(ctx *controller.Context) error {
 			return errors.New("uncaught error")
 		}
 		router := chi.NewRouter()
@@ -48,7 +49,9 @@ func TestHealthCheck(t *testing.T) {
 func TestHandleApiErr(t *testing.T) {
 	t.Run("should handle apiErr when err is ApiError", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
-		handleApiErr(recorder, &exceptions.ApiError{
+		handleApiErr(&controller.Context{
+			Response: recorder,
+		}, &exceptions.ApiError{
 			Message: "test",
 			Status:  400,
 		})
@@ -66,7 +69,9 @@ func TestHandleApiErr(t *testing.T) {
 
 	t.Run("should handle notFoundErr when err is NotFoundError", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
-		handleApiErr(recorder, exceptions.NotFound("test not found"))
+		handleApiErr(&controller.Context{
+			Response: recorder,
+		}, exceptions.NotFound("test not found"))
 		if recorder.Code != 404 {
 			t.Errorf("Status code should be 404, got %v", recorder.Code)
 		}
