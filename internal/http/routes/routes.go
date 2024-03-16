@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
@@ -35,18 +35,19 @@ func (r *router) Delete(path string, fn ControllerFunc) {
 	r.Mux.Delete(path, useHandler(fn))
 }
 
-type ControllerFunc func(w http.ResponseWriter, r *http.Request) error
+type ControllerFunc func(*controller.Context) error
 
 func useHandler(fn ControllerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := fn(w, r)
+		context := controller.NewContext(w, r)
+		err := fn(context)
 		if err != nil {
-			handleApiErr(w, err)
+			handleApiErr(context, err)
 		}
 	}
 }
 
-func handleApiErr(w http.ResponseWriter, err error) error {
+func handleApiErr(ctx *controller.Context, err error) error {
 	slog.Error(err.Error())
 	apiErr := &exceptions.ApiError{
 		Status:  http.StatusInternalServerError,
@@ -54,8 +55,8 @@ func handleApiErr(w http.ResponseWriter, err error) error {
 	}
 	validationErr := &validate.ValidationError{}
 	if errors.As(err, &validationErr) {
-		return res.JSON(w, http.StatusUnprocessableEntity, validationErr)
+		return ctx.JSON(http.StatusUnprocessableEntity, validationErr)
 	}
 	errors.As(err, &apiErr)
-	return res.JSON(w, apiErr.Status, apiErr)
+	return ctx.JSON(apiErr.Status, apiErr)
 }

@@ -3,7 +3,6 @@ package controller
 import (
 	"net/http"
 
-	"github.com/raphael-foliveira/chi-gorm/internal/http/res"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
@@ -16,8 +15,9 @@ func NewProducts(service *service.Products) *Products {
 	return &Products{service}
 }
 
-func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
-	body, err := parseBody(r, &schemas.CreateProduct{})
+func (p *Products) Create(ctx *Context) error {
+	body := &schemas.CreateProduct{}
+	err := ctx.ParseBody(body)
 	if err != nil {
 		return err
 	}
@@ -25,15 +25,16 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	return res.JSON(w, http.StatusCreated, schemas.NewProduct(newOrder))
+	return ctx.JSON(http.StatusCreated, schemas.NewProduct(newOrder))
 }
 
-func (p *Products) Update(w http.ResponseWriter, r *http.Request) error {
-	id, err := getUintPathParam(r, "id")
+func (p *Products) Update(ctx *Context) error {
+	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	body, err := parseBody(r, &schemas.UpdateProduct{})
+	body := &schemas.UpdateProduct{}
+	err = ctx.ParseBody(body)
 	if err != nil {
 		return err
 	}
@@ -41,11 +42,11 @@ func (p *Products) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	return res.JSON(w, http.StatusOK, schemas.NewProduct(updatedOrder))
+	return ctx.JSON(http.StatusOK, schemas.NewProduct(updatedOrder))
 }
 
-func (p *Products) Delete(w http.ResponseWriter, r *http.Request) error {
-	id, err := getUintPathParam(r, "id")
+func (p *Products) Delete(ctx *Context) error {
+	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
@@ -53,19 +54,19 @@ func (p *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	return res.SendStatus(w, http.StatusNoContent)
+	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (p *Products) List(w http.ResponseWriter, r *http.Request) error {
+func (p *Products) List(ctx *Context) error {
 	products, err := p.service.List()
 	if err != nil {
 		return err
 	}
-	return res.JSON(w, http.StatusOK, schemas.NewProducts(products))
+	return ctx.JSON(http.StatusOK, schemas.NewProducts(products))
 }
 
-func (p *Products) Get(w http.ResponseWriter, r *http.Request) error {
-	id, err := getUintPathParam(r, "id")
+func (p *Products) Get(ctx *Context) error {
+	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
@@ -73,5 +74,5 @@ func (p *Products) Get(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	return res.JSON(w, http.StatusOK, schemas.NewProduct(product))
+	return ctx.JSON(http.StatusOK, schemas.NewProduct(product))
 }
