@@ -13,8 +13,7 @@ import (
 
 func TestOrders(t *testing.T) {
 
-	t.Run("Test list", func(t *testing.T) {
-		setUp()
+	t.Run("Test list", testCase(func(t *testing.T) {
 		orders := []entities.Order{}
 		db.Find(&orders)
 		expectedBody := schemas.NewOrders(orders)
@@ -34,12 +33,9 @@ func TestOrders(t *testing.T) {
 		if responseBody[0].Quantity != expectedBody[0].Quantity {
 			t.Errorf("Expected quantity %d, got %d", expectedBody[0].Quantity, responseBody[0].Quantity)
 		}
+	}))
 
-		tearDown()
-	})
-
-	t.Run("Test get", func(t *testing.T) {
-		setUp()
+	t.Run("Test get", testCase(func(t *testing.T) {
 		order := entities.Order{}
 		db.First(&order)
 		expectedBody := schemas.NewOrder(&order)
@@ -59,12 +55,9 @@ func TestOrders(t *testing.T) {
 		if responseBody.Quantity != expectedBody.Quantity {
 			t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
 		}
+	}))
 
-		tearDown()
-	})
-
-	t.Run("Test create", func(t *testing.T) {
-		setUp()
+	t.Run("Test create", testCase(func(t *testing.T) {
 		product := entities.Product{}
 		db.First(&product)
 		client := entities.Client{}
@@ -92,12 +85,9 @@ func TestOrders(t *testing.T) {
 		if responseBody.Quantity != expectedBody.Quantity {
 			t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
 		}
+	}))
 
-		tearDown()
-	})
-
-	t.Run("Test update", func(t *testing.T) {
-		setUp()
+	t.Run("Test update", testCase(func(t *testing.T) {
 		order := entities.Order{}
 		db.First(&order)
 		update := schemas.UpdateOrder{}
@@ -120,12 +110,9 @@ func TestOrders(t *testing.T) {
 		if responseBody.Quantity != expectedBody.Quantity {
 			t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
 		}
+	}))
 
-		tearDown()
-	})
-
-	t.Run("Test delete", func(t *testing.T) {
-		setUp()
+	t.Run("Test delete", testCase(func(t *testing.T) {
 		order := entities.Order{}
 		db.First(&order)
 
@@ -138,8 +125,5 @@ func TestOrders(t *testing.T) {
 		if response.StatusCode != http.StatusNoContent {
 			t.Errorf("Expected status code %d, got %d", http.StatusNoContent, response.StatusCode)
 		}
-
-		tearDown()
-	})
-
+	}))
 }

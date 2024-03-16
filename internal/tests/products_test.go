@@ -13,8 +13,7 @@ import (
 
 func TestProducts(t *testing.T) {
 
-	t.Run("Test list", func(t *testing.T) {
-		setUp()
+	t.Run("Test list", testCase(func(t *testing.T) {
 		products := []entities.Product{}
 		db.Find(&products)
 		expectedBody := schemas.NewProducts(products)
@@ -34,12 +33,9 @@ func TestProducts(t *testing.T) {
 		if responseBody[0].Name != expectedBody[0].Name {
 			t.Errorf("Expected name %s, got %s", expectedBody[0].Name, responseBody[0].Name)
 		}
+	}))
 
-		tearDown()
-	})
-
-	t.Run("Test get", func(t *testing.T) {
-		setUp()
+	t.Run("Test get", testCase(func(t *testing.T) {
 		product := entities.Product{}
 		db.First(&product)
 		expectedBody := schemas.NewProduct(&product)
@@ -59,12 +55,9 @@ func TestProducts(t *testing.T) {
 		if responseBody.Name != expectedBody.Name {
 			t.Errorf("Expected name %s, got %s", expectedBody.Name, responseBody.Name)
 		}
+	}))
 
-		tearDown()
-	})
-
-	t.Run("Test create", func(t *testing.T) {
-		setUp()
+	t.Run("Test create", testCase(func(t *testing.T) {
 		product := schemas.CreateProduct{}
 		faker.FakeData(&product)
 		expectedBody := schemas.Product{}
@@ -86,12 +79,9 @@ func TestProducts(t *testing.T) {
 		if responseBody.Name != expectedBody.Name {
 			t.Errorf("Expected name %s, got %s", expectedBody.Name, responseBody.Name)
 		}
+	}))
 
-		tearDown()
-	})
-
-	t.Run("Test update", func(t *testing.T) {
-		setUp()
+	t.Run("Test update", testCase(func(t *testing.T) {
 		product := entities.Product{}
 		db.First(&product)
 		update := schemas.UpdateProduct{}
@@ -115,12 +105,9 @@ func TestProducts(t *testing.T) {
 		if responseBody.Name != expectedBody.Name {
 			t.Errorf("Expected name %s, got %s", expectedBody.Name, responseBody.Name)
 		}
+	}))
 
-		tearDown()
-	})
-
-	t.Run("Test delete", func(t *testing.T) {
-		setUp()
+	t.Run("Test delete", testCase(func(t *testing.T) {
 		product := entities.Product{}
 		db.First(&product)
 
@@ -133,7 +120,5 @@ func TestProducts(t *testing.T) {
 		if response.StatusCode != http.StatusNoContent {
 			t.Errorf("Expected status code %d, got %d", http.StatusNoContent, response.StatusCode)
 		}
-
-		tearDown()
-	})
+	}))
 }

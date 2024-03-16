@@ -23,7 +23,7 @@ type Jwt struct {
 }
 
 func NewJwt() *Jwt {
-	return &Jwt{[]byte(config.Get().JwtSecret)}
+	return &Jwt{[]byte(config.Config().JwtSecret)}
 }
 
 func (j *Jwt) Sign(payload *Payload) (string, error) {

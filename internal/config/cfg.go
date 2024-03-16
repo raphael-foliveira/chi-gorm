@@ -21,7 +21,7 @@ func LoadCfg(path string) {
 	setEnvs()
 }
 
-func Get() *cfg {
+func Config() *cfg {
 	if configInstance == nil {
 		LoadCfg(".env")
 	}
