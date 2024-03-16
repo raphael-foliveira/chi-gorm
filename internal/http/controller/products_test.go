@@ -21,7 +21,7 @@ import (
 func TestProducts(t *testing.T) {
 	controller := container.ProductsController()
 	t.Run("List", func(t *testing.T) {
-		testCase(t, "should list all products", func(t *testing.T) {
+		t.Run("should list all products", testCase(func(t *testing.T) {
 			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
@@ -32,9 +32,9 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		testCase(t, "should return an error when store fails", func(t *testing.T) {
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			mocks.ProductsRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
@@ -42,11 +42,11 @@ func TestProducts(t *testing.T) {
 			if err == nil {
 				t.Error("Should return an error")
 			}
-		})
+		}))
 	})
 
 	t.Run("Get", func(t *testing.T) {
-		testCase(t, "should get a product", func(t *testing.T) {
+		t.Run("should get a product", testCase(func(t *testing.T) {
 			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			productId := fmt.Sprintf("%v", mocks.ProductsRepository.Store[0].ID)
@@ -61,9 +61,9 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		testCase(t, "should return an error when store fails", func(t *testing.T) {
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/9999", nil)
 			tx := chi.NewRouteContext()
@@ -73,11 +73,11 @@ func TestProducts(t *testing.T) {
 			if err == nil {
 				t.Error("Should return an error")
 			}
-		})
+		}))
 	})
 
 	t.Run("Create", func(t *testing.T) {
-		testCase(t, "should create a product", func(t *testing.T) {
+		t.Run("should create a product", testCase(func(t *testing.T) {
 			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			var newProduct schemas.CreateProduct
@@ -91,8 +91,9 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 201 {
 				t.Errorf("Status code should be 201, got %v", recorder.Code)
 			}
-		})
-		testCase(t, "should return an error when sent invalid data", func(t *testing.T) {
+		}))
+
+		t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
 			invalidReqBody := `{"foo: 95}`
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
@@ -104,9 +105,9 @@ func TestProducts(t *testing.T) {
 			if apiErr.Status != http.StatusUnprocessableEntity {
 				t.Errorf("Status code should be 422, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		testCase(t, "should return an error when store fails", func(t *testing.T) {
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			mocks.ProductsRepository.Error = errors.New("")
 			var newProduct schemas.CreateProduct
 			faker.FakeData(&newProduct)
@@ -117,12 +118,11 @@ func TestProducts(t *testing.T) {
 			if err == nil {
 				t.Error("Should return an error")
 			}
-		})
-
+		}))
 	})
 
 	t.Run("Update", func(t *testing.T) {
-		testCase(t, "should update a product", func(t *testing.T) {
+		t.Run("should update a product", testCase(func(t *testing.T) {
 			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			product := mocks.ProductsRepository.Store[0]
@@ -139,9 +139,9 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		testCase(t, "should return an error when sent invalid data", func(t *testing.T) {
+		t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
 			invalidReqBody := `{"foo: 95}`
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("PUT", "/1", bytes.NewReader([]byte(invalidReqBody)))
@@ -156,9 +156,9 @@ func TestProducts(t *testing.T) {
 			if apiErr.Status != http.StatusUnprocessableEntity {
 				t.Errorf("Status code should be 422, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		testCase(t, "should return an error when store fails", func(t *testing.T) {
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			var newProduct schemas.UpdateProduct
 			faker.FakeData(&newProduct)
@@ -171,11 +171,11 @@ func TestProducts(t *testing.T) {
 			if err == nil {
 				t.Error("Should return an error")
 			}
-		})
+		}))
 	})
 
 	t.Run("Delete", func(t *testing.T) {
-		testCase(t, "should delete a product", func(t *testing.T) {
+		t.Run("should delete a product", testCase(func(t *testing.T) {
 			mocks.ProductsRepository.Error = nil
 			product := mocks.ProductsRepository.Store[0]
 			productId := fmt.Sprintf("%v", product.ID)
@@ -191,9 +191,9 @@ func TestProducts(t *testing.T) {
 			if recorder.Code != 204 {
 				t.Errorf("Status code should be 204, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		testCase(t, "should return an error when store fails", func(t *testing.T) {
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("DELETE", "/9999", nil)
 			tx := chi.NewRouteContext()
@@ -203,6 +203,6 @@ func TestProducts(t *testing.T) {
 			if err == nil {
 				t.Error("Should return an error")
 			}
-		})
+		}))
 	})
 }
