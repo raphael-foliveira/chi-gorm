@@ -11,6 +11,14 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
+func testCase(testFunc func(*testing.T)) func(*testing.T) {
+	return func(t *testing.T) {
+		setUp()
+		defer tearDown()
+		testFunc(t)
+	}
+}
+
 func setUp() {
 	mocks.Populate()
 }

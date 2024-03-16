@@ -21,8 +21,7 @@ func TestOrders(t *testing.T) {
 	controller := container.OrdersController()
 
 	t.Run("List", func(t *testing.T) {
-		t.Run("should list all orders", func(t *testing.T) {
-			setUp()
+		t.Run("should list all orders", testCase(func(t *testing.T) {
 			mocks.OrdersRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
@@ -33,9 +32,8 @@ func TestOrders(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
-			tearDown()
-		})
-		t.Run("should return an error when store fails", func(t *testing.T) {
+		}))
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			mocks.OrdersRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
@@ -43,12 +41,12 @@ func TestOrders(t *testing.T) {
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
-		})
+		}))
 	})
 
 	t.Run("Get", func(t *testing.T) {
-		t.Run("should get an order", func(t *testing.T) {
-			setUp()
+		t.Run("should get an order", testCase(func(t *testing.T) {
+
 			mocks.OrdersRepository.Error = nil
 			orderId := fmt.Sprintf("%v", mocks.OrdersRepository.Store[0].ID)
 			recorder := httptest.NewRecorder()
@@ -68,10 +66,10 @@ func TestOrders(t *testing.T) {
 			if requestBody.ID != mocks.OrdersRepository.Store[0].ID {
 				t.Errorf("Expected id to be %v, got %v", mocks.OrdersRepository.Store[0].ID, requestBody.ID)
 			}
-			tearDown()
-		})
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
+		}))
+
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/9999", nil)
 			tx := chi.NewRouteContext()
@@ -81,11 +79,11 @@ func TestOrders(t *testing.T) {
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
-		})
+		}))
 	})
 
 	t.Run("Create", func(t *testing.T) {
-		t.Run("should create an order", func(t *testing.T) {
+		t.Run("should create an order", testCase(func(t *testing.T) {
 			mocks.OrdersRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			var newOrder schemas.CreateOrder
@@ -99,9 +97,9 @@ func TestOrders(t *testing.T) {
 			if recorder.Code != 201 {
 				t.Errorf("Status code should be 201, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		t.Run("should return an error when sent invalid data", func(t *testing.T) {
+		t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
 			invalidReqBody := `{"foo: 95}`
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
@@ -113,9 +111,9 @@ func TestOrders(t *testing.T) {
 			if apiErr.Status != 400 {
 				t.Errorf("Status code should be 400, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			mocks.OrdersRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			var newOrder schemas.CreateOrder
@@ -126,12 +124,11 @@ func TestOrders(t *testing.T) {
 			if err == nil {
 				t.Error("Should return an error")
 			}
-		})
+		}))
 	})
 
 	t.Run("Update", func(t *testing.T) {
-		t.Run("should update an order", func(t *testing.T) {
-			setUp()
+		t.Run("should update an order", testCase(func(t *testing.T) {
 			mocks.OrdersRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			order := mocks.OrdersRepository.Store[0]
@@ -147,9 +144,8 @@ func TestOrders(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
-			tearDown()
-		})
-		t.Run("should return an error when sent invalid data", func(t *testing.T) {
+		}))
+		t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
 			invalidReqBody := `{"foo: 95}`
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("PUT", "/1", bytes.NewReader([]byte(invalidReqBody)))
@@ -164,9 +160,9 @@ func TestOrders(t *testing.T) {
 			if apiErr.Status != 400 {
 				t.Errorf("Status code should be 400, got %v", recorder.Code)
 			}
-		})
+		}))
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			var newOrder schemas.UpdateOrder
 			faker.FakeData(&newOrder)
@@ -179,12 +175,11 @@ func TestOrders(t *testing.T) {
 			if err == nil {
 				t.Error("Should return an error")
 			}
-		})
+		}))
 	})
 
 	t.Run("Delete", func(t *testing.T) {
-		t.Run("should delete an order", func(t *testing.T) {
-			setUp()
+		t.Run("should delete an order", testCase(func(t *testing.T) {
 			mocks.OrdersRepository.Error = nil
 			order := mocks.OrdersRepository.Store[0]
 			recorder := httptest.NewRecorder()
@@ -199,10 +194,9 @@ func TestOrders(t *testing.T) {
 			if recorder.Code != 204 {
 				t.Errorf("Status code should be 204, got %v", recorder.Code)
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("DELETE", "/9999", nil)
 			tx := chi.NewRouteContext()
@@ -212,7 +206,7 @@ func TestOrders(t *testing.T) {
 			if err == nil {
 				t.Error("Should return an error")
 			}
-		})
+		}))
 	})
 
 }

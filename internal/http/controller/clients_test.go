@@ -21,8 +21,7 @@ func TestClient(t *testing.T) {
 	controller := container.ClientsController()
 
 	t.Run("List", func(t *testing.T) {
-		t.Run("should list all clients", func(t *testing.T) {
-			setUp()
+		t.Run("should list all clients", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
@@ -33,11 +32,9 @@ func TestClient(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
-			setUp()
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
@@ -45,13 +42,11 @@ func TestClient(t *testing.T) {
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
-			tearDown()
-		})
+		}))
 	})
 
 	t.Run("Get", func(t *testing.T) {
-		t.Run("should get a client", func(t *testing.T) {
-			setUp()
+		t.Run("should get a client", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/1", nil)
@@ -65,11 +60,9 @@ func TestClient(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
-			setUp()
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/99", nil)
@@ -80,13 +73,11 @@ func TestClient(t *testing.T) {
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
-			tearDown()
-		})
+		}))
 	})
 
 	t.Run("Create", func(t *testing.T) {
-		t.Run("should create a client", func(t *testing.T) {
-			setUp()
+		t.Run("should create a client", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			var newClient schemas.CreateClient
@@ -100,11 +91,9 @@ func TestClient(t *testing.T) {
 			if recorder.Code != 201 {
 				t.Errorf("Status code should be 201, got %v", recorder.Code)
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("should return an error when sent invalid data", func(t *testing.T) {
-			setUp()
+		t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
 			invalidReqBody := `{"foo: 95}`
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
@@ -116,11 +105,9 @@ func TestClient(t *testing.T) {
 			if apiErr.Status != 400 {
 				t.Errorf("Status code should be 400, got %v", recorder.Code)
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
-			setUp()
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			var newClient schemas.CreateClient
@@ -131,13 +118,11 @@ func TestClient(t *testing.T) {
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
-			tearDown()
-		})
+		}))
 	})
 
 	t.Run("Update", func(t *testing.T) {
-		t.Run("should update a client", func(t *testing.T) {
-			setUp()
+		t.Run("should update a client", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			var newClient schemas.UpdateClient
@@ -154,11 +139,9 @@ func TestClient(t *testing.T) {
 			if recorder.Code != 200 {
 				t.Errorf("Status code should be 200, got %v", recorder.Code)
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("should return an error when sent invalid data", func(t *testing.T) {
-			setUp()
+		t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
 			invalidReqBody := `{"foo: 95}`
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("PUT", "/1", bytes.NewReader([]byte(invalidReqBody)))
@@ -173,11 +156,9 @@ func TestClient(t *testing.T) {
 			if apiErr.Status != 400 {
 				t.Errorf("Status code should be 400, got %v", recorder.Code)
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
-			setUp()
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			var newClient schemas.UpdateClient
 			faker.FakeData(&newClient)
@@ -190,13 +171,11 @@ func TestClient(t *testing.T) {
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
-			tearDown()
-		})
+		}))
 	})
 
 	t.Run("Delete", func(t *testing.T) {
-		t.Run("should delete a client", func(t *testing.T) {
-			setUp()
+		t.Run("should delete a client", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("DELETE", "/1", nil)
@@ -210,11 +189,9 @@ func TestClient(t *testing.T) {
 			if recorder.Code != 204 {
 				t.Errorf("Status code should be 204, got %v", recorder.Code)
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("should return an error when store fails", func(t *testing.T) {
-			setUp()
+		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("DELETE", "/99", nil)
 			tx := chi.NewRouteContext()
@@ -224,11 +201,9 @@ func TestClient(t *testing.T) {
 			if err == nil {
 				t.Fatal("err should not be nil")
 			}
-			tearDown()
-		})
+		}))
 
-		t.Run("GET products", func(t *testing.T) {
-			setUp()
+		t.Run("GET products", testCase(func(t *testing.T) {
 			mocks.ClientsRepository.Error = nil
 			client := mocks.ClientsRepository.Store[0]
 			recorder := httptest.NewRecorder()
@@ -240,8 +215,7 @@ func TestClient(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			tearDown()
-		})
+		}))
 	})
 
 }
