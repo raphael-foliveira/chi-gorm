@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 )
 
 type testClient struct {
@@ -18,7 +19,8 @@ func newTestClient(app *httptest.Server) *testClient {
 func (t *testClient) makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
 	hc := &http.Client{}
 	url := t.ts.URL + endpoint
-	if body != nil {
+	isNotGetOrDelete := !slices.Contains([]string{http.MethodGet, http.MethodDelete}, method)
+	if body != nil && isNotGetOrDelete {
 		return t.sendRequestWithBody(hc, method, body, url)
 	}
 	return t.sendRequest(hc, method, url)

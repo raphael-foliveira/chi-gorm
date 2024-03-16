@@ -1,4 +1,4 @@
-package controller
+package controller_test
 
 import (
 	"bytes"
@@ -11,19 +11,19 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 func TestOrders(t *testing.T) {
+	controller := container.OrdersController()
 
-	controller := NewOrders(service.NewOrders(mocks.OrdersStore))
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all orders", func(t *testing.T) {
 			setUp()
-			mocks.OrdersStore.Error = nil
+			mocks.OrdersRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
 			err := controller.List(recorder, request)
@@ -36,7 +36,7 @@ func TestOrders(t *testing.T) {
 			tearDown()
 		})
 		t.Run("should return an error when store fails", func(t *testing.T) {
-			mocks.OrdersStore.Error = errors.New("")
+			mocks.OrdersRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
 			err := controller.List(recorder, request)
@@ -49,8 +49,8 @@ func TestOrders(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		t.Run("should get an order", func(t *testing.T) {
 			setUp()
-			mocks.OrdersStore.Error = nil
-			orderId := fmt.Sprintf("%v", mocks.OrdersStore.Store[0].ID)
+			mocks.OrdersRepository.Error = nil
+			orderId := fmt.Sprintf("%v", mocks.OrdersRepository.Store[0].ID)
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/"+orderId, nil)
 			tx := chi.NewRouteContext()
@@ -65,8 +65,8 @@ func TestOrders(t *testing.T) {
 			}
 			var requestBody *schemas.Order
 			json.NewDecoder(recorder.Body).Decode(&requestBody)
-			if requestBody.ID != mocks.OrdersStore.Store[0].ID {
-				t.Errorf("Expected id to be %v, got %v", mocks.OrdersStore.Store[0].ID, requestBody.ID)
+			if requestBody.ID != mocks.OrdersRepository.Store[0].ID {
+				t.Errorf("Expected id to be %v, got %v", mocks.OrdersRepository.Store[0].ID, requestBody.ID)
 			}
 			tearDown()
 		})
@@ -86,7 +86,7 @@ func TestOrders(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		t.Run("should create an order", func(t *testing.T) {
-			mocks.OrdersStore.Error = nil
+			mocks.OrdersRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			var newOrder schemas.CreateOrder
 			faker.FakeData(&newOrder)
@@ -116,7 +116,7 @@ func TestOrders(t *testing.T) {
 		})
 
 		t.Run("should return an error when store fails", func(t *testing.T) {
-			mocks.OrdersStore.Error = errors.New("")
+			mocks.OrdersRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			var newOrder schemas.CreateOrder
 			faker.FakeData(&newOrder)
@@ -132,9 +132,9 @@ func TestOrders(t *testing.T) {
 	t.Run("Update", func(t *testing.T) {
 		t.Run("should update an order", func(t *testing.T) {
 			setUp()
-			mocks.OrdersStore.Error = nil
+			mocks.OrdersRepository.Error = nil
 			recorder := httptest.NewRecorder()
-			order := mocks.OrdersStore.Store[0]
+			order := mocks.OrdersRepository.Store[0]
 			reqBody, _ := json.Marshal(order)
 			request := httptest.NewRequest("PUT", fmt.Sprintf("/%v", order.ID), bytes.NewReader(reqBody))
 			tx := chi.NewRouteContext()
@@ -185,8 +185,8 @@ func TestOrders(t *testing.T) {
 	t.Run("Delete", func(t *testing.T) {
 		t.Run("should delete an order", func(t *testing.T) {
 			setUp()
-			mocks.OrdersStore.Error = nil
-			order := mocks.OrdersStore.Store[0]
+			mocks.OrdersRepository.Error = nil
+			order := mocks.OrdersRepository.Store[0]
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("DELETE", fmt.Sprintf("/%v", order.ID), nil)
 			tx := chi.NewRouteContext()

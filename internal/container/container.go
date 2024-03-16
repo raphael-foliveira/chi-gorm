@@ -9,54 +9,54 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-func ClientsRoutes() *chi.Mux {
+var ClientsRoutes = func() *chi.Mux {
 	return routes.Clients(ClientsController())
 }
 
-func ClientsController() *controller.Clients {
+var ClientsController = func() *controller.Clients {
 	return controller.NewClients(ClientsService())
 }
 
-func ClientsService() *service.Clients {
+var ClientsService = func() *service.Clients {
 	return service.NewClients(ClientsRepository(), OrdersRepository())
 }
 
-func OrdersRepository() *repository.Orders {
+var OrdersRepository = func() repository.OrdersRepository {
 	return repository.NewOrders(database.Db())
 }
 
-func ProductsRepository() *repository.Products {
+var ProductsRepository = func() repository.ProductsRepository {
 	return repository.NewProducts(database.Db())
 }
 
-func ProductsService() *service.Products {
+var ProductsService = func() *service.Products {
 	return service.NewProducts(ProductsRepository())
 }
 
-func ProductsController() *controller.Products {
+var ProductsController = func() *controller.Products {
 	return controller.NewProducts(ProductsService())
 }
 
-func ProductsRoutes() *chi.Mux {
+var ProductsRoutes = func() *chi.Mux {
 	return routes.Products(ProductsController())
 }
 
-func ClientsRepository() *repository.Clients {
+var ClientsRepository = func() repository.ClientsRepository {
 	return repository.NewClients(database.Db())
 }
 
-func OrdersService() *service.Orders {
+var OrdersService = func() *service.Orders {
 	return service.NewOrders(OrdersRepository())
 }
 
-func OrdersController() *controller.Orders {
+var OrdersController = func() *controller.Orders {
 	return controller.NewOrders(OrdersService())
 }
 
-func OrdersRoutes() *chi.Mux {
+var OrdersRoutes = func() *chi.Mux {
 	return routes.Orders(OrdersController())
 }
 
-func HealthCheckRoutes() *chi.Mux {
+var HealthCheckRoutes = func() *chi.Mux {
 	return routes.HealthCheck()
 }

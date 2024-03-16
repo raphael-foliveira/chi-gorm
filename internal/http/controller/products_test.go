@@ -1,4 +1,4 @@
-package controller
+package controller_test
 
 import (
 	"bytes"
@@ -11,20 +11,18 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 func TestProducts(t *testing.T) {
-
-	controller := NewProducts(service.NewProducts(mocks.ProductsStore))
-
+	controller := container.ProductsController()
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all products", func(t *testing.T) {
 			setUp()
-			mocks.ProductsStore.Error = nil
+			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
 			err := controller.List(recorder, request)
@@ -38,7 +36,7 @@ func TestProducts(t *testing.T) {
 		})
 
 		t.Run("should return an error when store fails", func(t *testing.T) {
-			mocks.ProductsStore.Error = errors.New("")
+			mocks.ProductsRepository.Error = errors.New("")
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
 			err := controller.List(recorder, request)
@@ -51,9 +49,9 @@ func TestProducts(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		t.Run("should get a product", func(t *testing.T) {
 			setUp()
-			mocks.ProductsStore.Error = nil
+			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
-			productId := fmt.Sprintf("%v", mocks.ProductsStore.Store[0].ID)
+			productId := fmt.Sprintf("%v", mocks.ProductsRepository.Store[0].ID)
 			request := httptest.NewRequest("GET", "/"+productId, nil)
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", productId)
@@ -83,7 +81,7 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		t.Run("should create a product", func(t *testing.T) {
-			mocks.ProductsStore.Error = nil
+			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			var newProduct schemas.CreateProduct
 			faker.FakeData(&newProduct)
@@ -113,7 +111,7 @@ func TestProducts(t *testing.T) {
 		})
 
 		t.Run("should return an error when store fails", func(t *testing.T) {
-			mocks.ProductsStore.Error = errors.New("")
+			mocks.ProductsRepository.Error = errors.New("")
 			var newProduct schemas.CreateProduct
 			faker.FakeData(&newProduct)
 			reqBody, _ := json.Marshal(newProduct)
@@ -129,9 +127,9 @@ func TestProducts(t *testing.T) {
 	t.Run("Update", func(t *testing.T) {
 		t.Run("should update a product", func(t *testing.T) {
 			setUp()
-			mocks.ProductsStore.Error = nil
+			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
-			product := mocks.ProductsStore.Store[0]
+			product := mocks.ProductsRepository.Store[0]
 			productId := fmt.Sprintf("%v", product.ID)
 			reqBody, _ := json.Marshal(product)
 			request := httptest.NewRequest("PUT", "/"+productId, bytes.NewReader(reqBody))
@@ -184,8 +182,8 @@ func TestProducts(t *testing.T) {
 	t.Run("Delete", func(t *testing.T) {
 		t.Run("should delete a product", func(t *testing.T) {
 			setUp()
-			mocks.ProductsStore.Error = nil
-			product := mocks.ProductsStore.Store[0]
+			mocks.ProductsRepository.Error = nil
+			product := mocks.ProductsRepository.Store[0]
 			productId := fmt.Sprintf("%v", product.ID)
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("DELETE", "/"+productId, nil)
