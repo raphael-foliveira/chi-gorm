@@ -11,119 +11,126 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 )
 
-func TestOrders(t *testing.T) {
+func TestOrders_List(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	orders := []entities.Order{}
+	db.Find(&orders)
+	expectedBody := schemas.NewOrders(orders)
 
-	t.Run("Test list", testCase(func(t *testing.T) {
-		orders := []entities.Order{}
-		db.Find(&orders)
-		expectedBody := schemas.NewOrders(orders)
+	response, err := tClient.makeRequest("GET", "/orders", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	defer response.Body.Close()
+	responseBody := []schemas.Order{}
+	json.NewDecoder(response.Body).Decode(&responseBody)
 
-		response, err := tClient.makeRequest("GET", "/orders", nil)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
-		responseBody := []schemas.Order{}
-		json.NewDecoder(response.Body).Decode(&responseBody)
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-		if response.StatusCode != http.StatusOK {
-			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
-		}
+	if responseBody[0].Quantity != expectedBody[0].Quantity {
+		t.Errorf("Expected quantity %d, got %d", expectedBody[0].Quantity, responseBody[0].Quantity)
+	}
+}
 
-		if responseBody[0].Quantity != expectedBody[0].Quantity {
-			t.Errorf("Expected quantity %d, got %d", expectedBody[0].Quantity, responseBody[0].Quantity)
-		}
-	}))
+func TestOrders_Get(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	order := entities.Order{}
+	db.First(&order)
+	expectedBody := schemas.NewOrder(&order)
 
-	t.Run("Test get", testCase(func(t *testing.T) {
-		order := entities.Order{}
-		db.First(&order)
-		expectedBody := schemas.NewOrder(&order)
+	response, err := tClient.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
+	if err != nil {
+		t.Error(err)
+	}
+	defer response.Body.Close()
+	responseBody := schemas.Order{}
+	json.NewDecoder(response.Body).Decode(&responseBody)
 
-		response, err := tClient.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
-		responseBody := schemas.Order{}
-		json.NewDecoder(response.Body).Decode(&responseBody)
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-		if response.StatusCode != http.StatusOK {
-			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
-		}
+	if responseBody.Quantity != expectedBody.Quantity {
+		t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
+	}
+}
 
-		if responseBody.Quantity != expectedBody.Quantity {
-			t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
-		}
-	}))
+func TestOrders_Create(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	product := entities.Product{}
+	db.First(&product)
+	client := entities.Client{}
+	db.First(&client)
+	order := schemas.CreateOrder{
+		ProductID: product.ID,
+		ClientID:  client.ID,
+	}
+	faker.FakeData(&order)
+	expectedBody := schemas.Order{}
+	expectedBody.Quantity = order.Quantity
 
-	t.Run("Test create", testCase(func(t *testing.T) {
-		product := entities.Product{}
-		db.First(&product)
-		client := entities.Client{}
-		db.First(&client)
-		order := schemas.CreateOrder{
-			ProductID: product.ID,
-			ClientID:  client.ID,
-		}
-		faker.FakeData(&order)
-		expectedBody := schemas.Order{}
-		expectedBody.Quantity = order.Quantity
+	response, err := tClient.makeRequest("POST", "/orders", order)
+	if err != nil {
+		t.Error(err)
+	}
+	defer response.Body.Close()
 
-		response, err := tClient.makeRequest("POST", "/orders", order)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
+	responseBody := entities.Order{}
+	json.NewDecoder(response.Body).Decode(&responseBody)
+	if response.StatusCode != http.StatusCreated {
+		t.Errorf("Expected status code %d, got %d", http.StatusCreated, response.StatusCode)
+	}
 
-		responseBody := entities.Order{}
-		json.NewDecoder(response.Body).Decode(&responseBody)
-		if response.StatusCode != http.StatusCreated {
-			t.Errorf("Expected status code %d, got %d", http.StatusCreated, response.StatusCode)
-		}
+	if responseBody.Quantity != expectedBody.Quantity {
+		t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
+	}
+}
 
-		if responseBody.Quantity != expectedBody.Quantity {
-			t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
-		}
-	}))
+func TestOrders_Update(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	order := entities.Order{}
+	db.First(&order)
+	update := schemas.UpdateOrder{}
+	faker.FakeData(&update)
+	expectedBody := schemas.Order{}
+	expectedBody.Quantity = update.Quantity
 
-	t.Run("Test update", testCase(func(t *testing.T) {
-		order := entities.Order{}
-		db.First(&order)
-		update := schemas.UpdateOrder{}
-		faker.FakeData(&update)
-		expectedBody := schemas.Order{}
-		expectedBody.Quantity = update.Quantity
+	response, err := tClient.makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
+	if err != nil {
+		t.Error(err)
+	}
+	defer response.Body.Close()
 
-		response, err := tClient.makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
+	responseBody := entities.Order{}
+	json.NewDecoder(response.Body).Decode(&responseBody)
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-		responseBody := entities.Order{}
-		json.NewDecoder(response.Body).Decode(&responseBody)
-		if response.StatusCode != http.StatusOK {
-			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
-		}
+	if responseBody.Quantity != expectedBody.Quantity {
+		t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
+	}
+}
 
-		if responseBody.Quantity != expectedBody.Quantity {
-			t.Errorf("Expected quantity %d, got %d", expectedBody.Quantity, responseBody.Quantity)
-		}
-	}))
+func TestOrders_Delete(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	order := entities.Order{}
+	db.First(&order)
 
-	t.Run("Test delete", testCase(func(t *testing.T) {
-		order := entities.Order{}
-		db.First(&order)
+	response, err := tClient.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
+	if err != nil {
+		t.Error(err)
+	}
+	defer response.Body.Close()
 
-		response, err := tClient.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
-
-		if response.StatusCode != http.StatusNoContent {
-			t.Errorf("Expected status code %d, got %d", http.StatusNoContent, response.StatusCode)
-		}
-	}))
+	if response.StatusCode != http.StatusNoContent {
+		t.Errorf("Expected status code %d, got %d", http.StatusNoContent, response.StatusCode)
+	}
 }
