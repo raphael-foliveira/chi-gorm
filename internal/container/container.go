@@ -1,7 +1,6 @@
 package container
 
 import (
-	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/routes"
@@ -9,7 +8,7 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-var ClientsRoutes = func() *chi.Mux {
+var ClientsRoutes = func() *routes.Router {
 	return routes.Clients(ClientsController())
 }
 
@@ -37,7 +36,7 @@ var ProductsController = func() *controller.Products {
 	return controller.NewProducts(ProductsService())
 }
 
-var ProductsRoutes = func() *chi.Mux {
+var ProductsRoutes = func() *routes.Router {
 	return routes.Products(ProductsController())
 }
 
@@ -53,10 +52,10 @@ var OrdersController = func() *controller.Orders {
 	return controller.NewOrders(OrdersService())
 }
 
-var OrdersRoutes = func() *chi.Mux {
+var OrdersRoutes = func() *routes.Router {
 	return routes.Orders(OrdersController())
 }
 
-var HealthCheckRoutes = func() *chi.Mux {
+var HealthCheckRoutes = func() *routes.Router {
 	return routes.HealthCheck()
 }
