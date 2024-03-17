@@ -16,6 +16,7 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -27,12 +28,8 @@ func TestOrders_List(t *testing.T) {
 		request := httptest.NewRequest("GET", "/", nil)
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.List(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 200 {
-			t.Errorf("Status code should be 200, got %v", recorder.Code)
-		}
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
 
 	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
@@ -41,9 +38,7 @@ func TestOrders_List(t *testing.T) {
 		request := httptest.NewRequest("GET", "/", nil)
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.List(ctx)
-		if err == nil {
-			t.Fatal("err should not be nil")
-		}
+		assert.Error(t, err)
 	}))
 }
 func TestOrders_Get(t *testing.T) {
@@ -56,17 +51,11 @@ func TestOrders_Get(t *testing.T) {
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Get(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 200 {
-			t.Errorf("Status code should be 200, got %v", recorder.Code)
-		}
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, recorder.Code)
 		var requestBody *schemas.Order
 		json.NewDecoder(recorder.Body).Decode(&requestBody)
-		if requestBody.ID != mocks.OrdersStub[0].ID {
-			t.Errorf("Expected id to be %v, got %v", mocks.OrdersStub[0].ID, requestBody.ID)
-		}
+		assert.Equal(t, mocks.OrdersStub[0].ID, requestBody.ID)
 	}))
 
 	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
@@ -78,9 +67,7 @@ func TestOrders_Get(t *testing.T) {
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Get(ctx)
-		if err == nil {
-			t.Fatal("err should not be nil")
-		}
+		assert.Error(t, err)
 	}))
 }
 
@@ -93,12 +80,8 @@ func TestOrders_Create(t *testing.T) {
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Create(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 201 {
-			t.Errorf("Status code should be 201, got %v", recorder.Code)
-		}
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusCreated, recorder.Code)
 	}))
 
 	t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
@@ -108,12 +91,8 @@ func TestOrders_Create(t *testing.T) {
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Create(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
-		if !ok {
-			t.Fatal("err should be an ApiError")
-		}
-		if apiErr.Status != http.StatusUnprocessableEntity {
-			t.Errorf("Status code should be 422, got %v", apiErr.Status)
-		}
+		assert.True(t, ok, "err should be an ApiError")
+		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
 	}))
 
 	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
@@ -126,9 +105,7 @@ func TestOrders_Create(t *testing.T) {
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Create(ctx)
-		if err == nil {
-			t.Error("Should return an error")
-		}
+		assert.Error(t, err)
 	}))
 }
 
@@ -143,12 +120,8 @@ func TestOrders_Update(t *testing.T) {
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Update(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 200 {
-			t.Errorf("Status code should be 200, got %v", recorder.Code)
-		}
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
 
 	t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
@@ -161,12 +134,8 @@ func TestOrders_Update(t *testing.T) {
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Update(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
-		if !ok {
-			t.Fatal("err should be an ApiError")
-		}
-		if apiErr.Status != http.StatusUnprocessableEntity {
-			t.Errorf("Status code should be 422, got %v", apiErr.Status)
-		}
+		assert.True(t, ok, "err should be an ApiError")
+		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
 	}))
 
 	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
@@ -181,9 +150,7 @@ func TestOrders_Update(t *testing.T) {
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Update(ctx)
-		if err == nil {
-			t.Error("Should return an error")
-		}
+		assert.Error(t, err)
 	}))
 }
 
@@ -197,12 +164,8 @@ func TestOrders_Delete(t *testing.T) {
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Delete(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if recorder.Code != 204 {
-			t.Errorf("Status code should be 204, got %v", recorder.Code)
-		}
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusNoContent, recorder.Code)
 	}))
 
 	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
@@ -214,8 +177,6 @@ func TestOrders_Delete(t *testing.T) {
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
 		err := ordersController.Delete(ctx)
-		if err == nil {
-			t.Error("Should return an error")
-		}
+		assert.Error(t, err)
 	}))
 }

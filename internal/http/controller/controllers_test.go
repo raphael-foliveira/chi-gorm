@@ -11,6 +11,7 @@ func TestMain(m *testing.M) {
 	mocks.UseMockRepositories()
 	clientsController = container.ClientsController()
 	ordersController = container.OrdersController()
+	productsController = container.ProductsController()
 	m.Run()
 }
 
