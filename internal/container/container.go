@@ -23,11 +23,11 @@ var ClientsService = func() *service.Clients {
 }
 
 var OrdersRepository = func() repository.OrdersRepository {
-	return repository.NewOrders(database.Db())
+	return repository.NewOrders(Db())
 }
 
 var ProductsRepository = func() repository.ProductsRepository {
-	return repository.NewProducts(database.Db())
+	return repository.NewProducts(Db())
 }
 
 var ProductsService = func() *service.Products {
@@ -43,7 +43,7 @@ var ProductsRoutes = func() *chi.Mux {
 }
 
 var ClientsRepository = func() repository.ClientsRepository {
-	return repository.NewClients(database.Db())
+	return repository.NewClients(Db())
 }
 
 var OrdersService = func() *service.Orders {
@@ -68,4 +68,8 @@ var JwtService = func() *service.Jwt {
 
 var AuthMiddleware = func() *middleware.AuthMiddleware {
 	return middleware.NewAuthMiddleware(JwtService())
+}
+
+var Db = func() *database.DB {
+	return database.Db()
 }
