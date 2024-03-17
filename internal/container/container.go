@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/middleware"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/routes"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
@@ -59,4 +60,12 @@ var OrdersRoutes = func() *chi.Mux {
 
 var HealthCheckRoutes = func() *chi.Mux {
 	return routes.HealthCheck()
+}
+
+var JwtService = func() *service.Jwt {
+	return service.NewJwt()
+}
+
+var AuthMiddleware = func() *middleware.AuthMiddleware {
+	return middleware.NewAuthMiddleware(JwtService())
 }

@@ -15,29 +15,27 @@ type router struct {
 	*chi.Mux
 }
 
-func (r *router) Get(path string, fn ControllerFunc) {
+func (r *router) Get(path string, fn controller.ControllerFunc) {
 	r.Mux.Get(path, useHandler(fn))
 }
 
-func (r *router) Post(path string, fn ControllerFunc) {
+func (r *router) Post(path string, fn controller.ControllerFunc) {
 	r.Mux.Post(path, useHandler(fn))
 }
 
-func (r *router) Put(path string, fn ControllerFunc) {
+func (r *router) Put(path string, fn controller.ControllerFunc) {
 	r.Mux.Put(path, useHandler(fn))
 }
 
-func (r *router) Patch(path string, fn ControllerFunc) {
+func (r *router) Patch(path string, fn controller.ControllerFunc) {
 	r.Mux.Patch(path, useHandler(fn))
 }
 
-func (r *router) Delete(path string, fn ControllerFunc) {
+func (r *router) Delete(path string, fn controller.ControllerFunc) {
 	r.Mux.Delete(path, useHandler(fn))
 }
 
-type ControllerFunc func(*controller.Context) error
-
-func useHandler(fn ControllerFunc) http.HandlerFunc {
+func useHandler(fn controller.ControllerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		context := controller.NewContext(w, r)
 		err := fn(context)

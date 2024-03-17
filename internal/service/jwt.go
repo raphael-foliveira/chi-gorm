@@ -45,9 +45,12 @@ func (j *Jwt) Verify(token string) (*Payload, error) {
 	}
 	claims := &Claims{}
 	_, err := jwt.ParseWithClaims(token, claims, keyFunc)
+	if err != nil {
+		return nil, err
+	}
 	return &Payload{
 		ClientID:   claims.ClientID,
 		ClientName: claims.ClientName,
 		Email:      claims.Email,
-	}, err
+	}, nil
 }
