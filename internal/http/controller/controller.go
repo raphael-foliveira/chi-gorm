@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 type Context struct {
@@ -54,3 +55,17 @@ func (c *Context) ParseBody(v schemas.Validatable) error {
 }
 
 type ControllerFunc func(*Context) error
+
+type Controllers struct {
+	ClientsController  *Clients
+	OrdersController   *Orders
+	ProductsController *Products
+}
+
+func NewControllers(services *service.Services) *Controllers {
+	return &Controllers{
+		ClientsController:  NewClients(services.ClientsService),
+		OrdersController:   NewOrders(services.OrdersService),
+		ProductsController: NewProducts(services.ProductsService),
+	}
+}

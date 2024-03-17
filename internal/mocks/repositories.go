@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
@@ -125,16 +124,10 @@ func addOrderToClient(client *entities.Client) {
 	OrdersRepository.Store = append(OrdersRepository.Store, order)
 }
 
-func UseMockRepositories() {
-	container.ProductsRepository = func() repository.ProductsRepository {
-		return ProductsRepository
-	}
-	container.OrdersRepository = func() repository.OrdersRepository {
-		return OrdersRepository
-	}
-	container.ClientsRepository = func() repository.ClientsRepository {
-		return ClientsRepository
-	}
+var Repositories = &repository.Repositories{
+	ClientsRepository:  ClientsRepository,
+	OrdersRepository:   OrdersRepository,
+	ProductsRepository: ProductsRepository,
 }
 
 func ClearRepositories() {

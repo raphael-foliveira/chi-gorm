@@ -41,3 +41,17 @@ func (r *repository[T]) Update(entity *T) error {
 func (r *repository[T]) Delete(entity *T) error {
 	return r.db.Delete(entity).Error
 }
+
+type Repositories struct {
+	ClientsRepository  ClientsRepository
+	OrdersRepository   OrdersRepository
+	ProductsRepository ProductsRepository
+}
+
+func NewRepositories(db *database.DB) *Repositories {
+	return &Repositories{
+		ClientsRepository:  NewClients(db),
+		OrdersRepository:   NewOrders(db),
+		ProductsRepository: NewProducts(db),
+	}
+}

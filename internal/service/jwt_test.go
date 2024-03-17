@@ -3,8 +3,8 @@ package service
 import "testing"
 
 func TestJwt(t *testing.T) {
+	jwt := NewJwt("")
 	t.Run("should sign a token", func(t *testing.T) {
-		jwt := NewJwt()
 		payload := &Payload{
 			ClientID:   1,
 			ClientName: "John Doe",
@@ -20,7 +20,6 @@ func TestJwt(t *testing.T) {
 	})
 
 	t.Run("should verify a token", func(t *testing.T) {
-		jwt := NewJwt()
 		payload := &Payload{
 			ClientID:   1,
 			ClientName: "John Doe",

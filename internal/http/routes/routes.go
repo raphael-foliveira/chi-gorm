@@ -58,3 +58,19 @@ func handleApiErr(ctx *controller.Context, err error) error {
 	errors.As(err, &apiErr)
 	return ctx.JSON(apiErr.Status, apiErr)
 }
+
+type Routes struct {
+	ClientsRoutes     *router
+	OrdersRoutes      *router
+	ProductsRoutes    *router
+	HealthcheckRoutes *router
+}
+
+func NewRoutes(controllers *controller.Controllers) *Routes {
+	return &Routes{
+		ClientsRoutes:     Clients(controllers.ClientsController),
+		OrdersRoutes:      Orders(controllers.OrdersController),
+		ProductsRoutes:    Products(controllers.ProductsController),
+		HealthcheckRoutes: HealthCheck(),
+	}
+}

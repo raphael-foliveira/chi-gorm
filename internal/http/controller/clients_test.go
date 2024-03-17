@@ -12,7 +12,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
@@ -20,7 +19,7 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	clientsController := container.ClientsController()
+	clientsController := controllers.ClientsController
 
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all clients", testCase(func(t *testing.T) {

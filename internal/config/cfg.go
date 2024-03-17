@@ -5,12 +5,12 @@ import (
 	"strings"
 )
 
-type cfg struct {
+type Cfg struct {
 	DatabaseURL string
 	JwtSecret   string
 }
 
-var configInstance *cfg
+var configInstance *Cfg
 
 func LoadCfg(path string) {
 	content, err := getFileContent(path)
@@ -21,7 +21,7 @@ func LoadCfg(path string) {
 	setEnvs()
 }
 
-func Config() *cfg {
+func Config() *Cfg {
 	if configInstance == nil {
 		LoadCfg(".env")
 	}
@@ -29,7 +29,7 @@ func Config() *cfg {
 }
 
 func setEnvs() {
-	configInstance = &cfg{
+	configInstance = &Cfg{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
 		JwtSecret:   os.Getenv("JWT_SECRET"),
 	}
