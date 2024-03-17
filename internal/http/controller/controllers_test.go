@@ -10,7 +10,7 @@ import (
 
 func TestMain(m *testing.M) {
 	mocks.UseMockRepositories()
-	config.LoadCfg("../../.env.test")
+	config.LoadCfg("../../../.env.test")
 	clientsController = container.ClientsController()
 	ordersController = container.OrdersController()
 	productsController = container.ProductsController()
