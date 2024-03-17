@@ -5,10 +5,10 @@ import (
 )
 
 type Client struct {
-	gorm.Model `faker:"-"`
-	Name       string  `faker:"name"`
-	Email      string  `faker:"email"`
-	Orders     []Order `faker:"-"`
+	gorm.Model
+	Name   string  `faker:"name"`
+	Email  string  `faker:"email"`
+	Orders []Order `faker:"-"`
 }
 
 func (p Client) GetId() uint {

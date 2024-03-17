@@ -12,215 +12,210 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
+	"github.com/stretchr/testify/mock"
 )
 
-func TestOrders(t *testing.T) {
-	ordersController := container.OrdersController()
+var ordersController *controller.Orders
 
-	t.Run("List", func(t *testing.T) {
-		t.Run("should list all orders", testCase(func(t *testing.T) {
-			mocks.OrdersRepository.Error = nil
-			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", "/", nil)
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.List(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if recorder.Code != 200 {
-				t.Errorf("Status code should be 200, got %v", recorder.Code)
-			}
-		}))
+func TestOrders_List(t *testing.T) {
+	t.Run("should list all orders", testCase(func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("GET", "/", nil)
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.List(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if recorder.Code != 200 {
+			t.Errorf("Status code should be 200, got %v", recorder.Code)
+		}
+	}))
 
-		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
-			mocks.OrdersRepository.Error = errors.New("")
-			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", "/", nil)
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.List(ctx)
-			if err == nil {
-				t.Fatal("err should not be nil")
-			}
-		}))
-	})
+	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
+		mocks.OrdersRepository.ExpectError()
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("GET", "/", nil)
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.List(ctx)
+		if err == nil {
+			t.Fatal("err should not be nil")
+		}
+	}))
+}
+func TestOrders_Get(t *testing.T) {
+	t.Run("should get an order", testCase(func(t *testing.T) {
+		orderId := fmt.Sprintf("%v", mocks.OrdersStub[0].ID)
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("GET", "/"+orderId, nil)
+		tx := chi.NewRouteContext()
+		tx.URLParams.Add("id", orderId)
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Get(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if recorder.Code != 200 {
+			t.Errorf("Status code should be 200, got %v", recorder.Code)
+		}
+		var requestBody *schemas.Order
+		json.NewDecoder(recorder.Body).Decode(&requestBody)
+		if requestBody.ID != mocks.OrdersStub[0].ID {
+			t.Errorf("Expected id to be %v, got %v", mocks.OrdersStub[0].ID, requestBody.ID)
+		}
+	}))
 
-	t.Run("Get", func(t *testing.T) {
-		t.Run("should get an order", testCase(func(t *testing.T) {
-			mocks.OrdersRepository.Error = nil
-			orderId := fmt.Sprintf("%v", mocks.OrdersRepository.Store[0].ID)
-			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", "/"+orderId, nil)
-			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", orderId)
-			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Get(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if recorder.Code != 200 {
-				t.Errorf("Status code should be 200, got %v", recorder.Code)
-			}
-			var requestBody *schemas.Order
-			json.NewDecoder(recorder.Body).Decode(&requestBody)
-			if requestBody.ID != mocks.OrdersRepository.Store[0].ID {
-				t.Errorf("Expected id to be %v, got %v", mocks.OrdersRepository.Store[0].ID, requestBody.ID)
-			}
-		}))
+	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
+		mocks.OrdersRepository.ExpectError()
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("GET", "/9999", nil)
+		tx := chi.NewRouteContext()
+		tx.URLParams.Add("id", "9999")
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Get(ctx)
+		if err == nil {
+			t.Fatal("err should not be nil")
+		}
+	}))
+}
 
-		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
-			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", "/9999", nil)
-			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", "9999")
-			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Get(ctx)
-			if err == nil {
-				t.Fatal("err should not be nil")
-			}
-		}))
-	})
+func TestOrders_Create(t *testing.T) {
+	t.Run("should create an order", testCase(func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		var newOrder schemas.CreateOrder
+		faker.FakeData(&newOrder)
+		reqBody, _ := json.Marshal(newOrder)
+		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Create(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if recorder.Code != 201 {
+			t.Errorf("Status code should be 201, got %v", recorder.Code)
+		}
+	}))
 
-	t.Run("Create", func(t *testing.T) {
-		t.Run("should create an order", testCase(func(t *testing.T) {
-			mocks.OrdersRepository.Error = nil
-			recorder := httptest.NewRecorder()
-			var newOrder schemas.CreateOrder
-			faker.FakeData(&newOrder)
-			reqBody, _ := json.Marshal(newOrder)
-			request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Create(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if recorder.Code != 201 {
-				t.Errorf("Status code should be 201, got %v", recorder.Code)
-			}
-		}))
+	t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
+		invalidReqBody := `{"foo: 95}`
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Create(ctx)
+		apiErr, ok := err.(*exceptions.ApiError)
+		if !ok {
+			t.Fatal("err should be an ApiError")
+		}
+		if apiErr.Status != http.StatusUnprocessableEntity {
+			t.Errorf("Status code should be 422, got %v", apiErr.Status)
+		}
+	}))
 
-		t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
-			invalidReqBody := `{"foo: 95}`
-			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Create(ctx)
-			apiErr, ok := err.(*exceptions.ApiError)
-			if !ok {
-				t.Fatal("err should be an ApiError")
-			}
-			if apiErr.Status != http.StatusUnprocessableEntity {
-				t.Errorf("Status code should be 422, got %v", apiErr.Status)
-			}
-		}))
+	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
+		mocks.OrdersRepository.ExpectError()
+		mocks.OrdersRepository.On("Create", mock.Anything).Return(nil, errors.New("")).Once()
+		recorder := httptest.NewRecorder()
+		var newOrder schemas.CreateOrder
+		faker.FakeData(&newOrder)
+		reqBody, _ := json.Marshal(newOrder)
+		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Create(ctx)
+		if err == nil {
+			t.Error("Should return an error")
+		}
+	}))
+}
 
-		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
-			mocks.OrdersRepository.Error = errors.New("")
-			recorder := httptest.NewRecorder()
-			var newOrder schemas.CreateOrder
-			faker.FakeData(&newOrder)
-			reqBody, _ := json.Marshal(newOrder)
-			request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Create(ctx)
-			if err == nil {
-				t.Error("Should return an error")
-			}
-		}))
-	})
+func TestOrders_Update(t *testing.T) {
+	t.Run("should update an order", testCase(func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		order := mocks.OrdersStub[0]
+		reqBody, _ := json.Marshal(order)
+		request := httptest.NewRequest("PUT", fmt.Sprintf("/%v", order.ID), bytes.NewReader(reqBody))
+		tx := chi.NewRouteContext()
+		tx.URLParams.Add("id", fmt.Sprintf("%v", order.ID))
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Update(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if recorder.Code != 200 {
+			t.Errorf("Status code should be 200, got %v", recorder.Code)
+		}
+	}))
 
-	t.Run("Update", func(t *testing.T) {
-		t.Run("should update an order", testCase(func(t *testing.T) {
-			mocks.OrdersRepository.Error = nil
-			recorder := httptest.NewRecorder()
-			order := mocks.OrdersRepository.Store[0]
-			reqBody, _ := json.Marshal(order)
-			request := httptest.NewRequest("PUT", fmt.Sprintf("/%v", order.ID), bytes.NewReader(reqBody))
-			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", fmt.Sprintf("%v", order.ID))
-			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Update(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if recorder.Code != 200 {
-				t.Errorf("Status code should be 200, got %v", recorder.Code)
-			}
-		}))
+	t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
+		invalidReqBody := `{"foo: 95}`
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("PUT", "/1", bytes.NewReader([]byte(invalidReqBody)))
+		tx := chi.NewRouteContext()
+		tx.URLParams.Add("id", "1")
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Update(ctx)
+		apiErr, ok := err.(*exceptions.ApiError)
+		if !ok {
+			t.Fatal("err should be an ApiError")
+		}
+		if apiErr.Status != http.StatusUnprocessableEntity {
+			t.Errorf("Status code should be 422, got %v", apiErr.Status)
+		}
+	}))
 
-		t.Run("should return an error when sent invalid data", testCase(func(t *testing.T) {
-			invalidReqBody := `{"foo: 95}`
-			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("PUT", "/1", bytes.NewReader([]byte(invalidReqBody)))
-			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", "1")
-			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Update(ctx)
-			apiErr, ok := err.(*exceptions.ApiError)
-			if !ok {
-				t.Fatal("err should be an ApiError")
-			}
-			if apiErr.Status != http.StatusUnprocessableEntity {
-				t.Errorf("Status code should be 422, got %v", apiErr.Status)
-			}
-		}))
+	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
+		mocks.OrdersRepository.ExpectError()
+		recorder := httptest.NewRecorder()
+		var newOrder schemas.UpdateOrder
+		faker.FakeData(&newOrder)
+		reqBody, _ := json.Marshal(newOrder)
+		request := httptest.NewRequest("PUT", "/9999", bytes.NewReader(reqBody))
+		tx := chi.NewRouteContext()
+		tx.URLParams.Add("id", "9999")
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Update(ctx)
+		if err == nil {
+			t.Error("Should return an error")
+		}
+	}))
+}
 
-		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
-			recorder := httptest.NewRecorder()
-			var newOrder schemas.UpdateOrder
-			faker.FakeData(&newOrder)
-			reqBody, _ := json.Marshal(newOrder)
-			request := httptest.NewRequest("PUT", "/9999", bytes.NewReader(reqBody))
-			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", "9999")
-			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Update(ctx)
-			if err == nil {
-				t.Error("Should return an error")
-			}
-		}))
-	})
+func TestOrders_Delete(t *testing.T) {
+	t.Run("should delete an order", testCase(func(t *testing.T) {
+		order := mocks.OrdersStub[0]
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("DELETE", fmt.Sprintf("/%v", order.ID), nil)
+		tx := chi.NewRouteContext()
+		tx.URLParams.Add("id", fmt.Sprintf("%v", order.ID))
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Delete(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if recorder.Code != 204 {
+			t.Errorf("Status code should be 204, got %v", recorder.Code)
+		}
+	}))
 
-	t.Run("Delete", func(t *testing.T) {
-		t.Run("should delete an order", testCase(func(t *testing.T) {
-			mocks.OrdersRepository.Error = nil
-			order := mocks.OrdersRepository.Store[0]
-			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("DELETE", fmt.Sprintf("/%v", order.ID), nil)
-			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", fmt.Sprintf("%v", order.ID))
-			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Delete(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if recorder.Code != 204 {
-				t.Errorf("Status code should be 204, got %v", recorder.Code)
-			}
-		}))
-
-		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
-			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("DELETE", "/9999", nil)
-			tx := chi.NewRouteContext()
-			tx.URLParams.Add("id", "9999")
-			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder, request)
-			err := ordersController.Delete(ctx)
-			if err == nil {
-				t.Error("Should return an error")
-			}
-		}))
-	})
-
+	t.Run("should return an error when store fails", testCase(func(t *testing.T) {
+		mocks.OrdersRepository.ExpectError()
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest("DELETE", "/9999", nil)
+		tx := chi.NewRouteContext()
+		tx.URLParams.Add("id", "9999")
+		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
+		ctx := controller.NewContext(recorder, request)
+		err := ordersController.Delete(ctx)
+		if err == nil {
+			t.Error("Should return an error")
+		}
+	}))
 }

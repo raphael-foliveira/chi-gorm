@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -23,10 +22,9 @@ func TestProducts(t *testing.T) {
 	productsController := container.ProductsController()
 	t.Run("List", func(t *testing.T) {
 		t.Run("should list all products", testCase(func(t *testing.T) {
-			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.List(ctx)
 			if err != nil {
 				t.Fatal(err)
@@ -37,10 +35,10 @@ func TestProducts(t *testing.T) {
 		}))
 
 		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
-			mocks.ProductsRepository.Error = errors.New("")
+			mocks.ProductsRepository.ExpectError()
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/", nil)
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.List(ctx)
 			if err == nil {
 				t.Error("Should return an error")
@@ -50,14 +48,13 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Get", func(t *testing.T) {
 		t.Run("should get a product", testCase(func(t *testing.T) {
-			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
-			productId := fmt.Sprintf("%v", mocks.ProductsRepository.Store[0].ID)
+			productId := fmt.Sprintf("%v", mocks.ProductsStub[0].ID)
 			request := httptest.NewRequest("GET", "/"+productId, nil)
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", productId)
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Get(ctx)
 			if err != nil {
 				t.Fatal(err)
@@ -68,12 +65,13 @@ func TestProducts(t *testing.T) {
 		}))
 
 		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
+			mocks.ProductsRepository.ExpectError()
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("GET", "/9999", nil)
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "9999")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Get(ctx)
 			if err == nil {
 				t.Error("Should return an error")
@@ -83,13 +81,12 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		t.Run("should create a product", testCase(func(t *testing.T) {
-			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
 			var newProduct schemas.CreateProduct
 			faker.FakeData(&newProduct)
 			reqBody, _ := json.Marshal(newProduct)
 			request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Create(ctx)
 			if err != nil {
 				t.Fatal(err)
@@ -103,7 +100,7 @@ func TestProducts(t *testing.T) {
 			invalidReqBody := `{"foo: 95}`
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Create(ctx)
 			apiErr, ok := err.(*exceptions.ApiError)
 			if !ok {
@@ -115,13 +112,13 @@ func TestProducts(t *testing.T) {
 		}))
 
 		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
-			mocks.ProductsRepository.Error = errors.New("")
+			mocks.ProductsRepository.ExpectError()
 			var newProduct schemas.CreateProduct
 			faker.FakeData(&newProduct)
 			reqBody, _ := json.Marshal(newProduct)
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Create(ctx)
 			if err == nil {
 				t.Error("Should return an error")
@@ -131,16 +128,15 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Update", func(t *testing.T) {
 		t.Run("should update a product", testCase(func(t *testing.T) {
-			mocks.ProductsRepository.Error = nil
 			recorder := httptest.NewRecorder()
-			product := mocks.ProductsRepository.Store[0]
+			product := mocks.ProductsStub[0]
 			productId := fmt.Sprintf("%v", product.ID)
 			reqBody, _ := json.Marshal(product)
 			request := httptest.NewRequest("PUT", "/"+productId, bytes.NewReader(reqBody))
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", productId)
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Update(ctx)
 			if err != nil {
 				t.Fatal(err)
@@ -157,7 +153,7 @@ func TestProducts(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "1")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Update(ctx)
 			apiErr, ok := err.(*exceptions.ApiError)
 			if !ok {
@@ -169,6 +165,7 @@ func TestProducts(t *testing.T) {
 		}))
 
 		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
+			mocks.ProductsRepository.ExpectError()
 			recorder := httptest.NewRecorder()
 			var newProduct schemas.UpdateProduct
 			faker.FakeData(&newProduct)
@@ -177,7 +174,7 @@ func TestProducts(t *testing.T) {
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "9999")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Update(ctx)
 			if err == nil {
 				t.Error("Should return an error")
@@ -187,15 +184,14 @@ func TestProducts(t *testing.T) {
 
 	t.Run("Delete", func(t *testing.T) {
 		t.Run("should delete a product", testCase(func(t *testing.T) {
-			mocks.ProductsRepository.Error = nil
-			product := mocks.ProductsRepository.Store[0]
+			product := mocks.ProductsStub[0]
 			productId := fmt.Sprintf("%v", product.ID)
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("DELETE", "/"+productId, nil)
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", productId)
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Delete(ctx)
 			if err != nil {
 				t.Fatal(err)
@@ -206,12 +202,13 @@ func TestProducts(t *testing.T) {
 		}))
 
 		t.Run("should return an error when store fails", testCase(func(t *testing.T) {
+			mocks.ProductsRepository.ExpectError()
 			recorder := httptest.NewRecorder()
 			request := httptest.NewRequest("DELETE", "/9999", nil)
 			tx := chi.NewRouteContext()
 			tx.URLParams.Add("id", "9999")
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-			ctx := controller.NewContext(recorder,request)
+			ctx := controller.NewContext(recorder, request)
 			err := productsController.Delete(ctx)
 			if err == nil {
 				t.Error("Should return an error")
