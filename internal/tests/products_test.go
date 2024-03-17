@@ -33,7 +33,6 @@ func TestProduct_Get(t *testing.T) {
 	product := entities.Product{}
 	db.First(&product)
 	expectedBody := schemas.NewProduct(&product)
-
 	response, err := tClient.makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
@@ -84,7 +83,6 @@ func TestProducts_Delete(t *testing.T) {
 	defer tearDown()
 	product := entities.Product{}
 	db.First(&product)
-
 	response, err := tClient.makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()

@@ -18,7 +18,6 @@ func TestOrders_List(t *testing.T) {
 	orders := []entities.Order{}
 	db.Find(&orders)
 	expectedBody := schemas.NewOrders(orders)
-
 	response, err := tClient.makeRequest("GET", "/orders", nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
@@ -34,13 +33,11 @@ func TestOrders_Get(t *testing.T) {
 	order := entities.Order{}
 	db.First(&order)
 	expectedBody := schemas.NewOrder(&order)
-
 	response, err := tClient.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Order{}
 	json.NewDecoder(response.Body).Decode(&responseBody)
-
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	assert.Equal(t, responseBody.Quantity, expectedBody.Quantity)
 }
@@ -77,11 +74,9 @@ func TestOrders_Update(t *testing.T) {
 	faker.FakeData(&update)
 	expectedBody := schemas.Order{}
 	expectedBody.Quantity = update.Quantity
-
 	response, err := tClient.makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-
 	responseBody := entities.Order{}
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
@@ -93,10 +88,8 @@ func TestOrders_Delete(t *testing.T) {
 	defer tearDown()
 	order := entities.Order{}
 	db.First(&order)
-
 	response, err := tClient.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)
 }

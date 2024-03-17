@@ -3,12 +3,14 @@ package controller_test
 import (
 	"testing"
 
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
 )
 
 func TestMain(m *testing.M) {
 	mocks.UseMockRepositories()
+	config.LoadCfg("../../.env.test")
 	clientsController = container.ClientsController()
 	ordersController = container.OrdersController()
 	productsController = container.ProductsController()
