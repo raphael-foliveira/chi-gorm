@@ -44,6 +44,7 @@ func (c *Context) GetUintPathParam(paramName string) (uint, error) {
 
 func (c *Context) ParseBody(v schemas.Validatable) error {
 	err := json.NewDecoder(c.Request.Body).Decode(v)
+	defer c.Request.Body.Close()
 	if err != nil {
 		return exceptions.UnprocessableEntity("invalid body")
 	}
