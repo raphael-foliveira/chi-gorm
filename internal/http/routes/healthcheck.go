@@ -11,8 +11,8 @@ func healthCheck(ctx *controller.Context) error {
 	return ctx.JSON(http.StatusOK, map[string]string{"status": "ok"})
 }
 
-func HealthCheck() *router {
-	router := &router{chi.NewRouter()}
+func HealthCheck() *Router {
+	router := &Router{chi.NewRouter()}
 	router.Get("/", healthCheck)
 	return router
 }

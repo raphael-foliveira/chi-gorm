@@ -30,9 +30,9 @@ type UpdateClient struct {
 }
 
 type Client struct {
-	ID    uint   `json:"id" faker:"-"`
-	Name  string `json:"name" faker:"name"`
-	Email string `json:"email" faker:"email"`
+	ID    uint   `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 func NewClient(e *entities.Client) *Client {
@@ -52,9 +52,9 @@ func NewClients(e []entities.Client) []Client {
 }
 
 type ClientOrder struct {
-	ID       uint     `json:"id" faker:"-"`
-	Quantity uint     `json:"quantity" faker:"-"`
-	Product  *Product `json:"product" faker:"-"`
+	ID       uint     `json:"id"`
+	Quantity uint     `json:"quantity"`
+	Product  *Product `json:"product"`
 }
 
 func NewClientOrder(e *entities.Order) *ClientOrder {
@@ -74,10 +74,10 @@ func NewClientOrders(e []entities.Order) []ClientOrder {
 }
 
 type ClientDetail struct {
-	ID     uint          `json:"id" faker:"-"`
+	ID     uint          `json:"id"`
 	Name   string        `json:"name" faker:"name"`
 	Email  string        `json:"email" faker:"email"`
-	Orders []ClientOrder `json:"orders" faker:"-"`
+	Orders []ClientOrder `json:"orders"`
 }
 
 func NewClientDetail(e *entities.Client) *ClientDetail {

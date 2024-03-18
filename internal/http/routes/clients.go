@@ -5,8 +5,8 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 )
 
-func Clients(c *controller.Clients) *router {
-	router := &router{chi.NewRouter()}
+func Clients(c *controller.Clients) *Router {
+	router := &Router{chi.NewRouter()}
 	router.Get("/", c.List)
 	router.Get("/{id}", c.Get)
 	router.Get("/{id}/products", c.GetProducts)

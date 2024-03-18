@@ -16,14 +16,14 @@ func newTestClient(app *httptest.Server) *testClient {
 	return &testClient{app}
 }
 
-func (t *testClient) makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
+func (tc *testClient) makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
 	hc := &http.Client{}
-	url := t.ts.URL + endpoint
+	url := tc.ts.URL + endpoint
 	isNotGetOrDelete := !slices.Contains([]string{http.MethodGet, http.MethodDelete}, method)
 	if body != nil && isNotGetOrDelete {
-		return t.sendRequestWithBody(hc, method, body, url)
+		return tc.sendRequestWithBody(hc, method, body, url)
 	}
-	return t.sendRequest(hc, method, url)
+	return tc.sendRequest(hc, method, url)
 }
 
 func (t *testClient) sendRequest(hc *http.Client, method string, url string) (*http.Response, error) {

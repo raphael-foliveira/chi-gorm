@@ -9,116 +9,82 @@ import (
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestProducts(t *testing.T) {
+func TestProducts_List(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	products := []entities.Product{}
+	db.Find(&products)
+	expectedBody := schemas.NewProducts(products)
+	response, err := tClient.makeRequest("GET", "/products", nil)
+	assert.NoError(t, err)
+	defer response.Body.Close()
+	responseBody := []schemas.Product{}
+	json.NewDecoder(response.Body).Decode(&responseBody)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, responseBody[0].Name, expectedBody[0].Name)
+}
 
-	t.Run("Test list", testCase(func(t *testing.T) {
-		products := []entities.Product{}
-		db.Find(&products)
-		expectedBody := schemas.NewProducts(products)
+func TestProduct_Get(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	product := entities.Product{}
+	db.First(&product)
+	expectedBody := schemas.NewProduct(&product)
+	response, err := tClient.makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
+	assert.NoError(t, err)
+	defer response.Body.Close()
+	responseBody := schemas.Product{}
+	json.NewDecoder(response.Body).Decode(&responseBody)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, responseBody.Name, expectedBody.Name)
+}
 
-		response, err := tClient.makeRequest("GET", "/products", nil)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
-		responseBody := []schemas.Product{}
-		json.NewDecoder(response.Body).Decode(&responseBody)
+func TestProducts_Create(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	product := schemas.CreateProduct{}
+	faker.FakeData(&product)
+	expectedBody := schemas.Product{}
+	expectedBody.Name = product.Name
+	expectedBody.Price = product.Price
+	response, err := tClient.makeRequest("POST", "/products", product)
+	assert.NoError(t, err)
+	defer response.Body.Close()
+	responseBody := entities.Product{}
+	json.NewDecoder(response.Body).Decode(&responseBody)
+	assert.Equal(t, http.StatusCreated, response.StatusCode)
+	assert.Equal(t, responseBody.Name, expectedBody.Name)
+}
 
-		if response.StatusCode != http.StatusOK {
-			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
-		}
+func TestProducts_Update(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	product := entities.Product{}
+	db.First(&product)
+	update := schemas.UpdateProduct{}
+	faker.FakeData(&update)
+	expectedBody := schemas.Product{}
+	expectedBody.Name = update.Name
+	expectedBody.Price = update.Price
+	response, err := tClient.makeRequest("PUT", "/products/"+fmt.Sprint(product.ID), update)
+	assert.NoError(t, err)
+	defer response.Body.Close()
+	responseBody := entities.Product{}
+	json.NewDecoder(response.Body).Decode(&responseBody)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, responseBody.Name, expectedBody.Name)
+}
 
-		if responseBody[0].Name != expectedBody[0].Name {
-			t.Errorf("Expected name %s, got %s", expectedBody[0].Name, responseBody[0].Name)
-		}
-	}))
-
-	t.Run("Test get", testCase(func(t *testing.T) {
-		product := entities.Product{}
-		db.First(&product)
-		expectedBody := schemas.NewProduct(&product)
-
-		response, err := tClient.makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
-		responseBody := schemas.Product{}
-		json.NewDecoder(response.Body).Decode(&responseBody)
-
-		if response.StatusCode != http.StatusOK {
-			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
-		}
-
-		if responseBody.Name != expectedBody.Name {
-			t.Errorf("Expected name %s, got %s", expectedBody.Name, responseBody.Name)
-		}
-	}))
-
-	t.Run("Test create", testCase(func(t *testing.T) {
-		product := schemas.CreateProduct{}
-		faker.FakeData(&product)
-		expectedBody := schemas.Product{}
-		expectedBody.Name = product.Name
-		expectedBody.Price = product.Price
-
-		response, err := tClient.makeRequest("POST", "/products", product)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
-
-		responseBody := entities.Product{}
-		json.NewDecoder(response.Body).Decode(&responseBody)
-		if response.StatusCode != http.StatusCreated {
-			t.Errorf("Expected status code %d, got %d", http.StatusCreated, response.StatusCode)
-		}
-
-		if responseBody.Name != expectedBody.Name {
-			t.Errorf("Expected name %s, got %s", expectedBody.Name, responseBody.Name)
-		}
-	}))
-
-	t.Run("Test update", testCase(func(t *testing.T) {
-		product := entities.Product{}
-		db.First(&product)
-		update := schemas.UpdateProduct{}
-		faker.FakeData(&update)
-		expectedBody := schemas.Product{}
-		expectedBody.Name = update.Name
-		expectedBody.Price = update.Price
-
-		response, err := tClient.makeRequest("PUT", "/products/"+fmt.Sprint(product.ID), update)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
-
-		responseBody := entities.Product{}
-		json.NewDecoder(response.Body).Decode(&responseBody)
-		if response.StatusCode != http.StatusOK {
-			t.Errorf("Expected status code %d, got %d", http.StatusOK, response.StatusCode)
-		}
-
-		if responseBody.Name != expectedBody.Name {
-			t.Errorf("Expected name %s, got %s", expectedBody.Name, responseBody.Name)
-		}
-	}))
-
-	t.Run("Test delete", testCase(func(t *testing.T) {
-		product := entities.Product{}
-		db.First(&product)
-
-		response, err := tClient.makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
-		if err != nil {
-			t.Error(err)
-		}
-		defer response.Body.Close()
-
-		if response.StatusCode != http.StatusNoContent {
-			t.Errorf("Expected status code %d, got %d", http.StatusNoContent, response.StatusCode)
-		}
-	}))
+func TestProducts_Delete(t *testing.T) {
+	tearDown := setUp()
+	defer tearDown()
+	product := entities.Product{}
+	db.First(&product)
+	response, err := tClient.makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
+	assert.NoError(t, err)
+	defer response.Body.Close()
+	assert.Equal(t, http.StatusNoContent, response.StatusCode)
 }

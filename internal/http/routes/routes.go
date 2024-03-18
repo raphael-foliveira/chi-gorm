@@ -11,27 +11,27 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
-type router struct {
+type Router struct {
 	*chi.Mux
 }
 
-func (r *router) Get(path string, fn controller.ControllerFunc) {
+func (r *Router) Get(path string, fn controller.ControllerFunc) {
 	r.Mux.Get(path, useHandler(fn))
 }
 
-func (r *router) Post(path string, fn controller.ControllerFunc) {
+func (r *Router) Post(path string, fn controller.ControllerFunc) {
 	r.Mux.Post(path, useHandler(fn))
 }
 
-func (r *router) Put(path string, fn controller.ControllerFunc) {
+func (r *Router) Put(path string, fn controller.ControllerFunc) {
 	r.Mux.Put(path, useHandler(fn))
 }
 
-func (r *router) Patch(path string, fn controller.ControllerFunc) {
+func (r *Router) Patch(path string, fn controller.ControllerFunc) {
 	r.Mux.Patch(path, useHandler(fn))
 }
 
-func (r *router) Delete(path string, fn controller.ControllerFunc) {
+func (r *Router) Delete(path string, fn controller.ControllerFunc) {
 	r.Mux.Delete(path, useHandler(fn))
 }
 
@@ -60,10 +60,10 @@ func handleApiErr(ctx *controller.Context, err error) error {
 }
 
 type Routes struct {
-	ClientsRoutes     *router
-	OrdersRoutes      *router
-	ProductsRoutes    *router
-	HealthcheckRoutes *router
+	ClientsRoutes     *Router
+	OrdersRoutes      *Router
+	ProductsRoutes    *Router
+	HealthcheckRoutes *Router
 }
 
 func NewRoutes(controllers *controller.Controllers) *Routes {

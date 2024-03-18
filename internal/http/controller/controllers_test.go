@@ -9,29 +9,23 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-var services *service.Services
 var controllers *controller.Controllers
 
 func TestMain(m *testing.M) {
-	services = service.NewServices(mocks.Repositories, &config.Cfg{
+	services := service.NewServices(mocks.Repositories, &config.Cfg{
 		JwtSecret: "",
 	})
+	config.LoadCfg("../../../.env.test")
 	controllers = controller.NewControllers(services)
+	clientsController = controllers.ClientsController
+	ordersController = controllers.OrdersController
+	productsController = controllers.ProductsController
 	m.Run()
 }
 
 func testCase(testFunc func(*testing.T)) func(*testing.T) {
 	return func(t *testing.T) {
-		setUp()
-		defer tearDown()
+		mocks.MountRepositoryStubs()
 		testFunc(t)
 	}
-}
-
-func setUp() {
-	mocks.Populate()
-}
-
-func tearDown() {
-	mocks.ClearRepositories()
 }

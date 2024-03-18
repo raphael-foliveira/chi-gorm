@@ -22,25 +22,16 @@ func TestMain(m *testing.M) {
 	database.Close()
 }
 
-func testCase(testFunc func(*testing.T)) func(*testing.T) {
-	return func(t *testing.T) {
-		setUp()
-		defer tearDown()
-		testFunc(t)
-	}
-}
-
-func setUp() {
+func setUp() func() {
 	testApp := server.NewApp(db).CreateMainRouter()
 	testServer = httptest.NewServer(testApp)
 	tClient = newTestClient(testServer)
 	populateTables()
-}
-
-func tearDown() {
-	db.Exec("DELETE FROM orders")
-	db.Exec("DELETE FROM products")
-	db.Exec("DELETE FROM clients")
+	return func() {
+		db.Exec("DELETE FROM orders")
+		db.Exec("DELETE FROM products")
+		db.Exec("DELETE FROM clients")
+	}
 }
 
 func populateTables() {
