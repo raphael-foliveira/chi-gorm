@@ -33,3 +33,11 @@ func InternalServerError(message string) *ApiError {
 func NotFound(message string) *ApiError {
 	return NewApiError(http.StatusNotFound, message)
 }
+
+func Unauthorized(message string) *ApiError {
+	return NewApiError(http.StatusUnauthorized, message)
+}
+
+func Forbidden(message string) *ApiError {
+	return NewApiError(http.StatusForbidden, message)
+}

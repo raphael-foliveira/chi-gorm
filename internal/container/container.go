@@ -3,6 +3,7 @@ package container
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/middleware"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/routes"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
@@ -21,11 +22,11 @@ var ClientsService = func() *service.Clients {
 }
 
 var OrdersRepository = func() repository.OrdersRepository {
-	return repository.NewOrders(database.Db())
+	return repository.NewOrders(Db())
 }
 
 var ProductsRepository = func() repository.ProductsRepository {
-	return repository.NewProducts(database.Db())
+	return repository.NewProducts(Db())
 }
 
 var ProductsService = func() *service.Products {
@@ -41,7 +42,7 @@ var ProductsRoutes = func() *routes.Router {
 }
 
 var ClientsRepository = func() repository.ClientsRepository {
-	return repository.NewClients(database.Db())
+	return repository.NewClients(Db())
 }
 
 var OrdersService = func() *service.Orders {
@@ -58,4 +59,16 @@ var OrdersRoutes = func() *routes.Router {
 
 var HealthCheckRoutes = func() *routes.Router {
 	return routes.HealthCheck()
+}
+
+var JwtService = func() *service.Jwt {
+	return service.NewJwt()
+}
+
+var AuthMiddleware = func() *middleware.AuthMiddleware {
+	return middleware.NewAuthMiddleware(JwtService())
+}
+
+var Db = func() *database.DB {
+	return database.Db()
 }

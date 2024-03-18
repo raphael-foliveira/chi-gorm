@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,14 +12,12 @@ import (
 )
 
 type Context struct {
-	Ctx      context.Context
 	Response http.ResponseWriter
 	Request  *http.Request
 }
 
 func NewContext(w http.ResponseWriter, r *http.Request) *Context {
 	return &Context{
-		Ctx:      context.Background(),
 		Response: w,
 		Request:  r,
 	}
@@ -55,3 +52,5 @@ func (c *Context) ParseBody(v schemas.Validatable) error {
 	}
 	return nil
 }
+
+type ControllerFunc func(*Context) error

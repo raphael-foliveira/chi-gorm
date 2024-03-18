@@ -1,11 +1,16 @@
 package validate
 
 import (
-	"fmt"
+	"encoding/json"
 	"strings"
 )
 
 type ValidationError map[string][]string
+
+func (ve *ValidationError) Error() string {
+	errBytes, _ := json.Marshal(ve)
+	return string(errBytes)
+}
 
 func Rules(err ...error) error {
 	validationError := ValidationError{}
@@ -21,8 +26,4 @@ func Rules(err ...error) error {
 		return nil
 	}
 	return &validationError
-}
-
-func (ve *ValidationError) Error() string {
-	return fmt.Sprintf("%v", *ve)
 }
