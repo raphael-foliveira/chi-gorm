@@ -4,10 +4,10 @@ import "gorm.io/gorm"
 
 type Order struct {
 	gorm.Model `faker:"-"`
-	ClientID   uint    `faker:"-"`
-	Client     Client  `faker:"-" gorm:"OnDelete:CASCADE;"`
-	ProductID  uint    `faker:"-"`
-	Product    Product `faker:"-" gorm:"OnDelete:CASCADE;"`
+	ClientID   uint
+	Client     Client `gorm:"OnDelete:CASCADE;"`
+	ProductID  uint
+	Product    Product `gorm:"OnDelete:CASCADE;"`
 	Quantity   uint
 }
 
