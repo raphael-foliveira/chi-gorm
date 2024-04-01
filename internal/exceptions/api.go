@@ -7,15 +7,15 @@ type ApiError struct {
 	Status  int    `json:"status"`
 }
 
-func (ae *ApiError) Error() string {
-	return ae.Message
-}
-
 func NewApiError(status int, message string) *ApiError {
 	return &ApiError{
 		Message: message,
 		Status:  status,
 	}
+}
+
+func (ae *ApiError) Error() string {
+	return ae.Message
 }
 
 func BadRequest(message string) *ApiError {
