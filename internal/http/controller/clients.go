@@ -10,11 +10,11 @@ import (
 
 type Clients struct {
 	Service *service.Clients
-	*Router
+	*router
 }
 
 func NewClients(service *service.Clients) *Clients {
-	router := &Router{chi.NewRouter()}
+	router := &router{chi.NewRouter()}
 	c := &Clients{service, router}
 	router.Get("/", c.List)
 	router.Get("/{id}", c.Get)

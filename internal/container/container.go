@@ -52,7 +52,7 @@ var AuthMiddleware = func() *middleware.AuthMiddleware {
 	return middleware.NewAuthMiddleware(JwtService())
 }
 
-var HealthcheckController = func() *controller.Router {
+var HealthcheckController = func() *controller.HealthcheckController {
 	return controller.NewHealthCheck()
 }
 

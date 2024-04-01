@@ -10,27 +10,27 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
-type Router struct {
+type router struct {
 	*chi.Mux
 }
 
-func (r *Router) Get(path string, fn ControllerFunc) {
+func (r *router) Get(path string, fn ControllerFunc) {
 	r.Mux.Get(path, useHandler(fn))
 }
 
-func (r *Router) Post(path string, fn ControllerFunc) {
+func (r *router) Post(path string, fn ControllerFunc) {
 	r.Mux.Post(path, useHandler(fn))
 }
 
-func (r *Router) Put(path string, fn ControllerFunc) {
+func (r *router) Put(path string, fn ControllerFunc) {
 	r.Mux.Put(path, useHandler(fn))
 }
 
-func (r *Router) Patch(path string, fn ControllerFunc) {
+func (r *router) Patch(path string, fn ControllerFunc) {
 	r.Mux.Patch(path, useHandler(fn))
 }
 
-func (r *Router) Delete(path string, fn ControllerFunc) {
+func (r *router) Delete(path string, fn ControllerFunc) {
 	r.Mux.Delete(path, useHandler(fn))
 }
 

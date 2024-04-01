@@ -10,11 +10,11 @@ import (
 
 type Orders struct {
 	Service *service.Orders
-	*Router
+	*router
 }
 
 func NewOrders(service *service.Orders) *Orders {
-	router := &Router{chi.NewRouter()}
+	router := &router{chi.NewRouter()}
 	c := &Orders{service, router}
 	router.Get("/", c.List)
 	router.Post("/", c.Create)
