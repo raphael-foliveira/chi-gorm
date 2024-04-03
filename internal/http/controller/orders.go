@@ -3,16 +3,25 @@ package controller
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 type Orders struct {
-	service *service.Orders
+	Service *service.Orders
+	*router
 }
 
 func NewOrders(service *service.Orders) *Orders {
-	return &Orders{service}
+	router := &router{chi.NewRouter()}
+	c := &Orders{service, router}
+	router.Get("/", c.List)
+	router.Post("/", c.Create)
+	router.Get("/{id}", c.Get)
+	router.Delete("/{id}", c.Delete)
+	router.Put("/{id}", c.Update)
+	return c
 }
 
 func (o *Orders) Create(ctx *Context) error {
@@ -21,7 +30,7 @@ func (o *Orders) Create(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	newOrder, err := o.service.Create(body)
+	newOrder, err := o.Service.Create(body)
 	if err != nil {
 		return err
 	}
@@ -38,7 +47,7 @@ func (o *Orders) Update(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	updatedOrder, err := o.service.Update(id, body)
+	updatedOrder, err := o.Service.Update(id, body)
 	if err != nil {
 		return err
 	}
@@ -50,7 +59,7 @@ func (o *Orders) Delete(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	err = o.service.Delete(id)
+	err = o.Service.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -58,7 +67,7 @@ func (o *Orders) Delete(ctx *Context) error {
 }
 
 func (o *Orders) List(ctx *Context) error {
-	orders, err := o.service.List()
+	orders, err := o.Service.List()
 	if err != nil {
 		return err
 	}
@@ -70,7 +79,7 @@ func (o *Orders) Get(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	order, err := o.service.Get(id)
+	order, err := o.Service.Get(id)
 	if err != nil {
 		return err
 	}

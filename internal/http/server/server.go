@@ -33,10 +33,10 @@ func (a *app) CreateMainRouter() *chi.Mux {
 }
 
 func (a *app) mountRoutes(r *chi.Mux) {
-	r.Mount("/clients", container.ClientsRoutes())
-	r.Mount("/products", container.ProductsRoutes())
-	r.Mount("/orders", container.OrdersRoutes())
-	r.Mount("/health-check", container.HealthCheckRoutes())
+	r.Mount("/clients", container.ClientsController())
+	r.Mount("/products", container.ProductsController())
+	r.Mount("/orders", container.OrdersController())
+	r.Mount("/health-check", container.HealthcheckController())
 }
 
 func (a *app) attachMiddleware(r *chi.Mux) {
