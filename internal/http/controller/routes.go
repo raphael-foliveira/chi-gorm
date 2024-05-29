@@ -47,8 +47,8 @@ func useHandler(fn ControllerFunc) http.HandlerFunc {
 func handleApiErr(ctx *Context, err error) error {
 	slog.Error(err.Error())
 	apiErr := &exceptions.ApiError{
-		Status:  http.StatusInternalServerError,
-		Message: "internal server error",
+		Status: http.StatusInternalServerError,
+		Err:    "internal server error",
 	}
 	validationErr := &validate.ValidationError{}
 	if errors.As(err, &validationErr) {

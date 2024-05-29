@@ -49,7 +49,7 @@ func (c *Context) ParseBody(v schemas.Validatable) error {
 		return exceptions.UnprocessableEntity("invalid body")
 	}
 	if err := v.Validate(); err != nil {
-		return err
+		return exceptions.NewApiError(http.StatusUnprocessableEntity, err)
 	}
 	return nil
 }
