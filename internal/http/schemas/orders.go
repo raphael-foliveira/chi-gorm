@@ -32,10 +32,10 @@ func (uo *UpdateOrder) Validate() error {
 }
 
 type Order struct {
-	Client   *Client  `json:"client" faker:"-"`
-	Product  *Product `json:"product" faker:"-"`
-	ID       uint     `json:"id" faker:"-"`
-	Quantity uint     `json:"quantity" faker:"-"`
+	Client   *Client  `json:"client"`
+	Product  *Product `json:"product"`
+	ID       uint     `json:"id"`
+	Quantity uint     `json:"quantity"`
 }
 
 func NewOrder(e *entities.Order) *Order {
