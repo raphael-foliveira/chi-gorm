@@ -1,21 +1,25 @@
 package exceptions
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 type ApiError struct {
-	Message string `json:"error"`
-	Status  int    `json:"status"`
+	Err    any `json:"error"`
+	Status int `json:"status"`
 }
 
 func NewApiError(status int, message string) *ApiError {
 	return &ApiError{
-		Message: message,
-		Status:  status,
+		Err:    message,
+		Status: status,
 	}
 }
 
 func (ae *ApiError) Error() string {
-	return ae.Message
+	data, _ := json.Marshal(ae.Err)
+	return string(data)
 }
 
 func BadRequest(message string) *ApiError {
