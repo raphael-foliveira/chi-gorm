@@ -19,7 +19,7 @@ func (co *CreateOrder) ToModel() *entities.Order {
 	}
 }
 
-func (co *CreateOrder) Validate() (err error) {
+func (co *CreateOrder) Validate() error {
 	return validate.Rules(validate.Min("quantity", int(co.Quantity), 1))
 }
 
@@ -27,15 +27,15 @@ type UpdateOrder struct {
 	Quantity uint `json:"quantity"`
 }
 
-func (uo *UpdateOrder) Validate() (err error) {
+func (uo *UpdateOrder) Validate() error {
 	return validate.Rules(validate.Min("quantity", int(uo.Quantity), 1))
 }
 
 type Order struct {
-	ID       uint     `json:"id" faker:"-"`
-	Quantity uint     `json:"quantity" faker:"-"`
 	Client   *Client  `json:"client" faker:"-"`
 	Product  *Product `json:"product" faker:"-"`
+	ID       uint     `json:"id" faker:"-"`
+	Quantity uint     `json:"quantity" faker:"-"`
 }
 
 func NewOrder(e *entities.Order) *Order {

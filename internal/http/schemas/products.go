@@ -17,7 +17,7 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 	}
 }
 
-func (cp *CreateProduct) Validate() (err error) {
+func (cp *CreateProduct) Validate() error {
 	return validate.Rules(validate.Required("name", cp.Name), validate.Min("price", int(cp.Price), 0))
 }
 
@@ -26,8 +26,8 @@ type UpdateProduct struct {
 }
 
 type Product struct {
-	ID    uint    `json:"id"`
 	Name  string  `json:"name" faker:"name"`
+	ID    uint    `json:"id"`
 	Price float64 `json:"price" faker:"amount"`
 }
 

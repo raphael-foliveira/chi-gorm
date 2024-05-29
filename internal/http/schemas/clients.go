@@ -17,7 +17,7 @@ func (cc *CreateClient) ToModel() *entities.Client {
 	}
 }
 
-func (cc *CreateClient) Validate() (err error) {
+func (cc *CreateClient) Validate() error {
 	return validate.Rules(
 		validate.Required("name", cc.Name),
 		validate.Required("email", cc.Email),
@@ -30,9 +30,9 @@ type UpdateClient struct {
 }
 
 type Client struct {
-	ID    uint   `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
+	ID    uint   `json:"id"`
 }
 
 func NewClient(e *entities.Client) *Client {
