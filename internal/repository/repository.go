@@ -4,23 +4,23 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 )
 
-type Repository[T interface{}] interface {
-	List(...interface{}) ([]T, error)
+type Repository[T any] interface {
+	List(...any) ([]T, error)
 	Get(uint) (*T, error)
 	Create(*T) error
 	Update(*T) error
 	Delete(*T) error
 }
 
-type repository[T interface{}] struct {
+type repository[T any] struct {
 	db *database.DB
 }
 
-func newRepository[T interface{}](db *database.DB) *repository[T] {
+func newRepository[T any](db *database.DB) *repository[T] {
 	return &repository[T]{db}
 }
 
-func (r *repository[T]) List(conds ...interface{}) ([]T, error) {
+func (r *repository[T]) List(conds ...any) ([]T, error) {
 	entities := []T{}
 	return entities, r.db.Find(&entities, conds...).Error
 }

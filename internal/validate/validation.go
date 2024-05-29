@@ -16,7 +16,7 @@ func Rules(err ...error) error {
 	validationError := ValidationError{}
 	for _, m := range err {
 		if m != nil {
-			splitMessage := strings.Split(m.Error(), ":")
+			splitMessage := strings.SplitN(m.Error(), ":", 2)
 			key := strings.TrimSpace(splitMessage[0])
 			message := strings.TrimSpace(splitMessage[1])
 			validationError[key] = append(validationError[key], message)
