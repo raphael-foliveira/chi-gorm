@@ -10,9 +10,9 @@ type ApiError struct {
 	Status int `json:"status"`
 }
 
-func NewApiError(status int, message string) *ApiError {
+func NewApiError(status int, errors any) *ApiError {
 	return &ApiError{
-		Err:    message,
+		Err:    errors,
 		Status: status,
 	}
 }

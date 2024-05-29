@@ -7,7 +7,7 @@ import (
 
 type ValidationError map[string][]string
 
-func (ve *ValidationError) Error() string {
+func (ve ValidationError) Error() string {
 	errBytes, _ := json.Marshal(ve)
 	return string(errBytes)
 }
@@ -25,5 +25,5 @@ func Rules(err ...error) error {
 	if len(validationError) == 0 {
 		return nil
 	}
-	return &validationError
+	return validationError
 }
