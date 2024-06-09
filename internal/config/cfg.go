@@ -22,10 +22,10 @@ func LoadCfg(path string) {
 }
 
 func Config() *cfg {
-	if configInstance == nil {
-		LoadCfg(".env")
+	return &cfg{
+		DatabaseURL: os.Getenv("DATABASE_URL"),
+		JwtSecret:   os.Getenv("JWT_SECRET"),
 	}
-	return configInstance
 }
 
 func setEnvs() {

@@ -2,18 +2,19 @@ services:
   database:
     image: postgres:alpine
     ports:
-      - '5432:5432'
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
+      - database_data:/var/lib/postgresql/data
 
   api:
     build: .
     ports:
-      - '3000:3000'
+      - "3000:3000"
     depends_on:
       - database
     environment:
@@ -22,3 +23,6 @@ services:
       - ./cmd:/app/cmd
       - ./internal:/app/internal
     command: air
+
+volumes:
+  database_data:
