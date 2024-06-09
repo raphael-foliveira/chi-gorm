@@ -1,51 +1,60 @@
 package config
 
 import (
+	"errors"
+	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 )
 
-type cfg struct {
+type Cfg struct {
 	DatabaseURL string
 	JwtSecret   string
 }
 
-var configInstance *cfg
+var configInstance *Cfg
 
-func LoadCfg(path string) {
+func LoadCfg(path string) *Cfg {
 	content, err := getFileContent(path)
 	if err != nil {
 		panic(err)
 	}
 	parseEnv(content)
 	setEnvs()
+	return configInstance
 }
 
-func Config() *cfg {
-	return &cfg{
+func Config() *Cfg {
+	return &Cfg{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
 		JwtSecret:   os.Getenv("JWT_SECRET"),
 	}
 }
 
 func setEnvs() {
-	configInstance = &cfg{
+	configInstance = &Cfg{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
 		JwtSecret:   os.Getenv("JWT_SECRET"),
 	}
 }
 
-func parseEnv(s string) {
+func parseEnv(s string) error {
 	contentLines := strings.Split(s, "\n")
 	for _, line := range contentLines {
-		pair := strings.Split(line, "=")
-		if len(pair) > 1 {
-			key := pair[0]
-			val := strings.Join(pair[1:], "=")
-			os.Setenv(key, val)
+		pair := strings.SplitN(line, "=", 2)
+		if len(pair) != 2 {
+			slog.Error(fmt.Sprintf("pair: %s", pair))
+			return ErrMalformedEnvEntry
 		}
+		key := pair[0]
+		val := strings.Join(pair[1:], "=")
+		os.Setenv(key, val)
 	}
+	return nil
 }
+
+var ErrMalformedEnvEntry = errors.New("malformed env entry")
 
 func getFileContent(path string) (string, error) {
 	bytes, err := os.ReadFile(path)

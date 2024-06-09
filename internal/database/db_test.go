@@ -6,21 +6,23 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
 )
 
+var testCfg *config.Cfg
+
 func TestMain(m *testing.M) {
-	config.LoadCfg("../../.env.test")
+	testCfg = config.LoadCfg("../../.env.test")
 	m.Run()
 }
 
 func TestInitDb(t *testing.T) {
 	t.Run("should retrieve a database instance", func(t *testing.T) {
-		db := Db()
+		db := Db(testCfg.DatabaseURL)
 		if db == nil {
 			t.Error("Db not initialized")
 		}
 	})
 
 	t.Run("should close the database", func(t *testing.T) {
-		Db()
+		Db(testCfg.DatabaseURL)
 		err := Close()
 		if err != nil {
 			t.Error(err)

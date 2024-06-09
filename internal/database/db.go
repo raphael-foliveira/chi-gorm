@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -13,11 +12,11 @@ type DB struct {
 
 var instance *DB
 
-func Db() *DB {
+func Db(databaseUrl string) *DB {
 	if instance != nil {
 		return instance
 	}
-	db, err := start(config.Config().DatabaseURL)
+	db, err := start(databaseUrl)
 	if err != nil {
 		panic(err)
 	}

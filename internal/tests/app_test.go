@@ -11,13 +11,15 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
 )
 
-var testServer *httptest.Server
-var tClient *testClient
-var db *database.DB
+var (
+	testServer *httptest.Server
+	tClient    *testClient
+	db         *database.DB
+)
 
 func TestMain(m *testing.M) {
-	config.LoadCfg("../../.env.test")
-	db = database.Db()
+	config := config.LoadCfg("../../.env.test")
+	db = database.Db(config.DatabaseURL)
 	m.Run()
 	database.Close()
 }
