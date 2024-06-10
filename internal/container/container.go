@@ -1,6 +1,7 @@
 package container
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/middleware"
@@ -56,6 +57,10 @@ var HealthcheckController = func() *controller.HealthcheckController {
 	return controller.NewHealthCheck()
 }
 
+var Config = func() *config.Cfg {
+	return config.Config()
+}
+
 var Db = func() *database.DB {
-	return database.Db()
+	return database.Db(Config().DatabaseURL)
 }

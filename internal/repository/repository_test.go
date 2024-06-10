@@ -8,8 +8,8 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	config.LoadCfg("../../.env.test")
-	database.Db()
+	config := config.LoadCfg("../../.env.test")
+	database.Db(config.DatabaseURL)
 	m.Run()
 	err := database.Close()
 	if err != nil {
