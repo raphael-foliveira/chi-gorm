@@ -7,6 +7,9 @@ cover:
 test:
 	go test ./... -cover -coverpkg=../... -coverprofile=c.out;
 
+test-watch:
+	air -c .air.test.toml
+
 build:
 	GOOS=linux go build -o bin/main cmd/main.go
 	GOOS=windows go build -o bin/main.exe cmd/main.go
