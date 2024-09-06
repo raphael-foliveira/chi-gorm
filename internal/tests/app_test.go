@@ -13,9 +13,8 @@ import (
 )
 
 var (
-	testServer *httptest.Server
-	tClient    *testClient
-	db         *gorm.DB
+	tClient *testClient
+	db      *gorm.DB
 )
 
 func TestMain(m *testing.M) {
@@ -32,7 +31,7 @@ func initializeDependencies() {
 
 func setUp(t *testing.T) {
 	initializeDependencies()
-	tClient = newTestClient(testServer)
+	tClient = newTestClient()
 	populateTables()
 	t.Cleanup(func() {
 		db.Exec("DELETE FROM orders")

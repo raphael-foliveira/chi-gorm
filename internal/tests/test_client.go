@@ -8,17 +8,17 @@ import (
 	"slices"
 )
 
-type testClient struct {
-	ts *httptest.Server
-}
+var testServer *httptest.Server
 
-func newTestClient(app *httptest.Server) *testClient {
-	return &testClient{app}
+type testClient struct{}
+
+func newTestClient() *testClient {
+	return &testClient{}
 }
 
 func (tc *testClient) makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
 	hc := &http.Client{}
-	url := tc.ts.URL + endpoint
+	url := testServer.URL + endpoint
 	isNotGetOrDelete := !slices.Contains([]string{http.MethodGet, http.MethodDelete}, method)
 	if body != nil && isNotGetOrDelete {
 		return tc.sendRequestWithBody(hc, method, body, url)
