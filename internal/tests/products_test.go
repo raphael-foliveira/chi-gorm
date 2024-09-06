@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/stretchr/testify/assert"
@@ -15,7 +16,7 @@ import (
 func TestProducts_List(t *testing.T) {
 	setUp(t)
 	products := []entities.Product{}
-	db.Find(&products)
+	database.DB.Find(&products)
 	expectedBody := schemas.NewProducts(products)
 	response, err := makeRequest("GET", "/products", nil)
 	assert.NoError(t, err)
@@ -29,7 +30,7 @@ func TestProducts_List(t *testing.T) {
 func TestProduct_Get(t *testing.T) {
 	setUp(t)
 	product := entities.Product{}
-	db.First(&product)
+	database.DB.First(&product)
 	expectedBody := schemas.NewProduct(&product)
 	response, err := makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
 	assert.NoError(t, err)
@@ -59,7 +60,7 @@ func TestProducts_Create(t *testing.T) {
 func TestProducts_Update(t *testing.T) {
 	setUp(t)
 	product := entities.Product{}
-	db.First(&product)
+	database.DB.First(&product)
 	update := schemas.UpdateProduct{}
 	faker.FakeData(&update)
 	expectedBody := schemas.Product{}
@@ -77,7 +78,7 @@ func TestProducts_Update(t *testing.T) {
 func TestProducts_Delete(t *testing.T) {
 	setUp(t)
 	product := entities.Product{}
-	db.First(&product)
+	database.DB.First(&product)
 	response, err := makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()

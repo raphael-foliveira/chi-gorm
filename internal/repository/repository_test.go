@@ -8,8 +8,8 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	config := config.LoadCfg("../../.env.test")
-	db := database.New(config.DatabaseURL)
+	config.Initialize("../../.env.test")
+	database.Initialize(config.DatabaseURL)
 	m.Run()
-	database.Close(db)
+	database.Close()
 }

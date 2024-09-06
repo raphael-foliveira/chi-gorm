@@ -1,34 +1,53 @@
 package controller
 
 import (
-	"errors"
-	"log/slog"
-	"net/http"
-
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
-	"github.com/raphael-foliveira/chi-gorm/internal/validate"
+	"github.com/go-chi/chi/v5"
 )
 
-func useHandler(fn ControllerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		context := NewContext(w, r)
-		err := fn(context)
-		if err != nil {
-			handleApiErr(context, err)
-		}
-	}
+func clientsRoutes() *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(Clients.List))
+	router.Get("/{id}", useHandler(Clients.Get))
+	router.Get("/{id}/products", useHandler(Clients.GetProducts))
+	router.Post("/", useHandler(Clients.Create))
+	router.Delete("/{id}", useHandler(Clients.Delete))
+	router.Put("/{id}", useHandler(Clients.Update))
+
+	return router
 }
 
-func handleApiErr(ctx *Context, err error) error {
-	slog.Error(err.Error())
-	apiErr := &exceptions.ApiError{
-		Status: http.StatusInternalServerError,
-		Err:    "internal server error",
-	}
-	validationErr := &validate.ValidationError{}
-	if errors.As(err, &validationErr) {
-		return ctx.JSON(http.StatusUnprocessableEntity, validationErr)
-	}
-	errors.As(err, &apiErr)
-	return ctx.JSON(apiErr.Status, apiErr)
+func productsRoutes() *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(Products.List))
+	router.Post("/", useHandler(Products.Create))
+	router.Get("/{id}", useHandler(Products.Get))
+	router.Delete("/{id}", useHandler(Products.Delete))
+	router.Put("/{id}", useHandler(Products.Update))
+
+	return router
+}
+
+func ordersRoutes() *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(Orders.List))
+	router.Post("/", useHandler(Orders.Create))
+	router.Get("/{id}", useHandler(Orders.Get))
+	router.Delete("/{id}", useHandler(Orders.Delete))
+	router.Put("/{id}", useHandler(Orders.Update))
+
+	return router
+}
+
+func healthCheckRoutes() *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(HealthCheck.healthCheck))
+
+	return router
+}
+
+func Mount(mux *chi.Mux) {
+	mux.Mount("/clients", clientsRoutes())
+	mux.Mount("/products", productsRoutes())
+	mux.Mount("/orders", ordersRoutes())
+	mux.Mount("/health-check", healthCheckRoutes())
 }

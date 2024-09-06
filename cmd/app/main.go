@@ -6,14 +6,24 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
-	"github.com/raphael-foliveira/chi-gorm/internal/container"
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/repository"
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 func main() {
-	cfg := config.Config()
-	mux, cleanup := container.InitializeDependencies(cfg)
-	defer cleanup()
+	config.Initialize()
+	database.Initialize(config.DatabaseURL)
+	repository.Initialize()
+	service.Initialize()
+	controller.Initialize()
+
+	mux := chi.NewMux()
+
+	controller.Mount(mux)
 
 	s := &http.Server{
 		Addr:    ":3000",

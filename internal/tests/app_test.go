@@ -12,36 +12,23 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
-	"gorm.io/gorm"
 )
-
-var db *gorm.DB
 
 func TestMain(m *testing.M) {
 	m.Run()
 }
 
 func initializeDependencies() {
-	config := config.LoadCfg("../../.env.test")
-	db = database.New(config.DatabaseURL)
-
-	healthcheckController := controller.NewHealthCheck()
-	clientsRepository := repository.NewClients(db)
-	productsRepository := repository.NewProducts(db)
-	ordersRepository := repository.NewOrders(db)
-	clientsService := service.NewClients(clientsRepository, ordersRepository)
-	productsService := service.NewProducts(productsRepository)
-	ordersService := service.NewOrders(ordersRepository)
-	clientsController := controller.NewClients(clientsService)
-	productsController := controller.NewProducts(productsService)
-	ordersController := controller.NewOrders(ordersService)
+	config.Initialize("../../.env.test")
+	database.Initialize(config.DatabaseURL)
+	repository.Initialize()
+	service.Initialize()
+	controller.Initialize()
 
 	app := server.CreateMainRouter()
 
-	clientsController.Mount(app)
-	productsController.Mount(app)
-	ordersController.Mount(app)
-	healthcheckController.Mount(app)
+	controller.Mount(app)
+
 	testServer = httptest.NewServer(app)
 }
 
@@ -49,10 +36,10 @@ func setUp(t *testing.T) {
 	initializeDependencies()
 	populateTables()
 	t.Cleanup(func() {
-		db.Exec("DELETE FROM orders")
-		db.Exec("DELETE FROM products")
-		db.Exec("DELETE FROM clients")
-		database.Close(db)
+		database.DB.Exec("DELETE FROM orders")
+		database.DB.Exec("DELETE FROM products")
+		database.DB.Exec("DELETE FROM clients")
+		database.Close()
 	})
 }
 
@@ -64,8 +51,8 @@ func populateTables() {
 	faker.FakeData(&products)
 	faker.FakeData(&orders)
 
-	db.Create(&clients)
-	db.Create(&products)
+	database.DB.Create(&clients)
+	database.DB.Create(&products)
 
 	for i := range orders {
 		orders[i].ID = 0
@@ -74,5 +61,5 @@ func populateTables() {
 		orders[i].ProductID = products[i].ID
 		orders[i].ProductID = products[i].ID
 	}
-	db.Create(&orders)
+	database.DB.Create(&orders)
 }

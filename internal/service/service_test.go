@@ -7,6 +7,6 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	config.LoadCfg("../../.env.test")
+	config.Initialize("../../.env.test")
 	m.Run()
 }

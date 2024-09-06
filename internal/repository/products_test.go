@@ -9,9 +9,10 @@ import (
 )
 
 func TestProductsRepository(t *testing.T) {
-	config := config.LoadCfg("../../.env.test")
-	db := database.New(config.DatabaseURL)
-	repository := NewProducts(db)
+	config.Initialize("../../.env.test")
+	database.Initialize(config.DatabaseURL)
+	Initialize()
+
 	t.Run("Should find many", func(t *testing.T) {
 		products := []entities.Product{
 			{
@@ -23,8 +24,8 @@ func TestProductsRepository(t *testing.T) {
 				Price: 2.0,
 			},
 		}
-		db.Create(&products)
-		foundProducts, err := repository.FindMany([]uint{products[0].ID, products[1].ID})
+		database.DB.Create(&products)
+		foundProducts, err := Products.FindMany([]uint{products[0].ID, products[1].ID})
 		if err != nil {
 			t.Error(err)
 		}

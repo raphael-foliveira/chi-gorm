@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -133,6 +134,9 @@ func MountRepositoryStubs() {
 	OrdersRepository.ExpectSuccess()
 	ProductsRepository.ExpectSuccess()
 	ClientsRepository.ExpectSuccess()
+	repository.Clients = ClientsRepository
+	repository.Products = ProductsRepository
+	repository.Orders = OrdersRepository
 }
 
 func ClearRepositoryMocks() {

@@ -6,19 +6,19 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type HealthCheck struct{}
+type healthCheck struct{}
 
-func healthCheck(ctx *Context) error {
+func (h *healthCheck) healthCheck(ctx *Context) error {
 	return ctx.JSON(http.StatusOK, map[string]string{"status": "ok"})
 }
 
-func NewHealthCheck() *HealthCheck {
-	return &HealthCheck{}
+func NewHealthCheck() *healthCheck {
+	return &healthCheck{}
 }
 
-func (h *HealthCheck) Mount(mux *chi.Mux) {
+func (h *healthCheck) Mount(mux *chi.Mux) {
 	router := chi.NewRouter()
-	router.Get("/", useHandler(healthCheck))
+	router.Get("/", useHandler(h.healthCheck))
 
 	mux.Mount("/health-check", router)
 }
