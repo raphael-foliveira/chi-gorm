@@ -10,7 +10,3 @@ type Client struct {
 	Email      string  `faker:"email"`
 	Orders     []Order `faker:"-"`
 }
-
-func (p Client) GetId() uint {
-	return p.ID
-}

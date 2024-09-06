@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type Repo[T entities.Entity] struct {
+type Repo[T interface{}] struct {
 	mock.Mock
 }
 

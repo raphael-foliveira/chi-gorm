@@ -10,7 +10,3 @@ type Order struct {
 	Product    Product `gorm:"OnDelete:CASCADE;"`
 	Quantity   uint
 }
-
-func (p Order) GetId() uint {
-	return p.ID
-}

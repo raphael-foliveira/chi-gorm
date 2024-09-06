@@ -7,7 +7,3 @@ type Product struct {
 	Name       string  `gorm:"not null" faker:"word"`
 	Price      float64 `gorm:"not null" faker:"amount"`
 }
-
-func (p Product) GetId() uint {
-	return p.ID
-}
