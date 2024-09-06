@@ -15,19 +15,19 @@ func TestMain(m *testing.M) {
 
 func TestInitDb(t *testing.T) {
 	t.Run("should retrieve a database instance", func(t *testing.T) {
-		db := Db(testCfg.DatabaseURL)
-		if db == nil {
+		Initialize(testCfg.DatabaseURL)
+		if DB == nil {
 			t.Error("Db not initialized")
 		}
 	})
 
 	t.Run("should close the database", func(t *testing.T) {
-		Db(testCfg.DatabaseURL)
+		Initialize(testCfg.DatabaseURL)
 		err := Close()
 		if err != nil {
 			t.Error(err)
 		}
-		if instance != nil {
+		if DB != nil {
 			t.Error("Db not closed")
 		}
 	})

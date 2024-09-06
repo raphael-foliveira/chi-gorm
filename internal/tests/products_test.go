@@ -13,8 +13,7 @@ import (
 )
 
 func TestProducts_List(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	products := []entities.Product{}
 	db.Find(&products)
 	expectedBody := schemas.NewProducts(products)
@@ -28,8 +27,7 @@ func TestProducts_List(t *testing.T) {
 }
 
 func TestProduct_Get(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	product := entities.Product{}
 	db.First(&product)
 	expectedBody := schemas.NewProduct(&product)
@@ -43,8 +41,7 @@ func TestProduct_Get(t *testing.T) {
 }
 
 func TestProducts_Create(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	product := schemas.CreateProduct{}
 	faker.FakeData(&product)
 	expectedBody := schemas.Product{}
@@ -60,8 +57,7 @@ func TestProducts_Create(t *testing.T) {
 }
 
 func TestProducts_Update(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	product := entities.Product{}
 	db.First(&product)
 	update := schemas.UpdateProduct{}
@@ -79,8 +75,7 @@ func TestProducts_Update(t *testing.T) {
 }
 
 func TestProducts_Delete(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	product := entities.Product{}
 	db.First(&product)
 	response, err := tClient.makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)

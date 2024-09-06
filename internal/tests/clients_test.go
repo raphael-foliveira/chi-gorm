@@ -13,8 +13,7 @@ import (
 )
 
 func TestClients_List(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	clients := []entities.Client{}
 	db.Find(&clients)
 	expectedBody := schemas.NewClients(clients)
@@ -29,8 +28,7 @@ func TestClients_List(t *testing.T) {
 }
 
 func TestClients_Get(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	client := entities.Client{}
 	db.First(&client)
 	expectedBody := schemas.NewClient(&client)
@@ -44,8 +42,7 @@ func TestClients_Get(t *testing.T) {
 }
 
 func TestClients_Create(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	client := schemas.CreateClient{}
 	faker.FakeData(&client)
 	expectedBody := schemas.Client{}
@@ -61,8 +58,7 @@ func TestClients_Create(t *testing.T) {
 }
 
 func TestClients_Update(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	client := entities.Client{}
 	db.First(&client)
 	update := schemas.UpdateClient{}
@@ -80,8 +76,7 @@ func TestClients_Update(t *testing.T) {
 }
 
 func TestClients_Delete(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	client := entities.Client{}
 	db.First(&client)
 	response, err := tClient.makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)

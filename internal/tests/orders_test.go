@@ -13,8 +13,7 @@ import (
 )
 
 func TestOrders_List(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	orders := []entities.Order{}
 	db.Find(&orders)
 	expectedBody := schemas.NewOrders(orders)
@@ -28,8 +27,7 @@ func TestOrders_List(t *testing.T) {
 }
 
 func TestOrders_Get(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	order := entities.Order{}
 	db.First(&order)
 	expectedBody := schemas.NewOrder(&order)
@@ -43,8 +41,7 @@ func TestOrders_Get(t *testing.T) {
 }
 
 func TestOrders_Create(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	product := entities.Product{}
 	db.First(&product)
 	client := entities.Client{}
@@ -66,8 +63,7 @@ func TestOrders_Create(t *testing.T) {
 }
 
 func TestOrders_Update(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	order := entities.Order{}
 	db.First(&order)
 	update := schemas.UpdateOrder{}
@@ -84,8 +80,7 @@ func TestOrders_Update(t *testing.T) {
 }
 
 func TestOrders_Delete(t *testing.T) {
-	tearDown := setUp()
-	defer tearDown()
+	setUp(t)
 	order := entities.Order{}
 	db.First(&order)
 	response, err := tClient.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)

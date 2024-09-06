@@ -17,13 +17,14 @@ func main() {
 	defer database.Close()
 
 	s := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":3000",
 		Handler: mux,
 	}
 
 	ch := make(chan os.Signal)
 	signal.Notify(ch, os.Interrupt, os.Kill)
 
+	log.Println("server starting on port 3000")
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
 			log.Println(err)
