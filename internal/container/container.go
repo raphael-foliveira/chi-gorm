@@ -12,56 +12,56 @@ import (
 )
 
 type Repositories struct {
-	clients  repository.Clients
-	products repository.Products
-	orders   repository.Orders
+	Clients  repository.Clients
+	Products repository.Products
+	Orders   repository.Orders
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
 	return &Repositories{
-		clients:  repository.NewClients(db),
-		products: repository.NewProducts(db),
-		orders:   repository.NewOrders(db),
+		Clients:  repository.NewClients(db),
+		Products: repository.NewProducts(db),
+		Orders:   repository.NewOrders(db),
 	}
 }
 
 type Services struct {
-	clients  *service.Clients
-	products *service.Products
-	orders   *service.Orders
-	jwt      *service.Jwt
+	Clients  *service.Clients
+	Products *service.Products
+	Orders   *service.Orders
+	Jwt      *service.Jwt
 }
 
 func NewServices(repositories *Repositories) *Services {
 	return &Services{
-		clients:  service.NewClients(repositories.clients, repositories.orders),
-		products: service.NewProducts(repositories.products),
-		orders:   service.NewOrders(repositories.orders),
-		jwt:      service.NewJwt(),
+		Clients:  service.NewClients(repositories.Clients, repositories.Orders),
+		Products: service.NewProducts(repositories.Products),
+		Orders:   service.NewOrders(repositories.Orders),
+		Jwt:      service.NewJwt(),
 	}
 }
 
 type Controllers struct {
-	clients     *controller.Clients
-	products    *controller.Products
-	orders      *controller.Orders
-	healthcheck *controller.HealthCheck
+	Clients     *controller.Clients
+	Products    *controller.Products
+	Orders      *controller.Orders
+	Healthcheck *controller.HealthCheck
 }
 
 func NewControllers(services *Services) *Controllers {
 	return &Controllers{
-		clients:     controller.NewClients(services.clients),
-		products:    controller.NewProducts(services.products),
-		orders:      controller.NewOrders(services.orders),
-		healthcheck: controller.NewHealthCheck(),
+		Clients:     controller.NewClients(services.Clients),
+		Products:    controller.NewProducts(services.Products),
+		Orders:      controller.NewOrders(services.Orders),
+		Healthcheck: controller.NewHealthCheck(),
 	}
 }
 
 func (c *Controllers) Mount(app *chi.Mux) {
-	c.clients.Mount(app)
-	c.products.Mount(app)
-	c.orders.Mount(app)
-	c.healthcheck.Mount(app)
+	c.Clients.Mount(app)
+	c.Products.Mount(app)
+	c.Orders.Mount(app)
+	c.Healthcheck.Mount(app)
 }
 
 func InitializeDependencies(cfg *config.Cfg) (*chi.Mux, func()) {
