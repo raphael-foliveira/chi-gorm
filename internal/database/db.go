@@ -8,7 +8,7 @@ import (
 
 var DB *gorm.DB
 
-func Initialize(databaseUrl string) *gorm.DB {
+func Initialize(databaseUrl string) {
 	db, err := start(databaseUrl)
 	if err != nil {
 		panic(err)
@@ -18,7 +18,6 @@ func Initialize(databaseUrl string) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
-	return DB
 }
 
 func start(dbUrl string) (*gorm.DB, error) {

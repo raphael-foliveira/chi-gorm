@@ -5,11 +5,11 @@ import (
 )
 
 type Products struct {
-	*repository[entities.Product]
+	*Repository[entities.Product]
 }
 
 func NewProducts() *Products {
-	return &Products{newRepository[entities.Product]()}
+	return &Products{New[entities.Product]()}
 }
 
 func (r *Products) FindMany(ids []uint) ([]entities.Product, error) {

@@ -5,11 +5,11 @@ import (
 )
 
 type Orders struct {
-	*repository[entities.Order]
+	*Repository[entities.Order]
 }
 
 func NewOrders() *Orders {
-	return &Orders{newRepository[entities.Order]()}
+	return &Orders{New[entities.Order]()}
 }
 
 func (o *Orders) FindManyByClientId(clientId uint) ([]entities.Order, error) {

@@ -1,37 +1,42 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"log"
 
-var db *gorm.DB
+	"gorm.io/gorm"
+)
 
-func SetDB(database *gorm.DB) {
-	db = database
+type Repository[T any] struct{}
+
+func New[T any]() *Repository[T] {
+	return &Repository[T]{}
 }
 
-type repository[T any] struct{}
-
-func newRepository[T any]() *repository[T] {
-	return &repository[T]{}
-}
-
-func (r *repository[T]) List(conds ...any) ([]T, error) {
+func (r *Repository[T]) List(conds ...any) ([]T, error) {
 	entities := []T{}
+	log.Printf("db: %+v\n", db)
 	return entities, db.Find(&entities, conds...).Error
 }
 
-func (r *repository[T]) Get(id uint) (*T, error) {
+func (r *Repository[T]) Get(id uint) (*T, error) {
 	entity := new(T)
 	return entity, db.Model(new(T)).First(entity, id).Error
 }
 
-func (r *repository[T]) Create(entity *T) error {
+func (r *Repository[T]) Create(entity *T) error {
 	return db.Create(entity).Error
 }
 
-func (r *repository[T]) Update(entity *T) error {
+func (r *Repository[T]) Update(entity *T) error {
 	return db.Save(entity).Error
 }
 
-func (r *repository[T]) Delete(entity *T) error {
+func (r *Repository[T]) Delete(entity *T) error {
 	return db.Delete(entity).Error
+}
+
+var db *gorm.DB
+
+func Initialize(gormDb *gorm.DB) {
+	db = gormDb
 }

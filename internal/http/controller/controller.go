@@ -20,8 +20,18 @@ var (
 	productsService          = service.NewProducts()
 )
 
-func GetApp() *chi.Mux {
-	return app
+type Config struct {
+	Router          *chi.Mux
+	ClientsService  *service.Clients
+	OrdersService   *service.Orders
+	ProductsService *service.Products
+}
+
+func Initialize(cfg *Config) {
+	app = cfg.Router
+	clientsService = cfg.ClientsService
+	ordersService = cfg.OrdersService
+	productsService = cfg.ProductsService
 }
 
 type Context struct {

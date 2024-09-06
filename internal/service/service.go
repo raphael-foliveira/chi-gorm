@@ -1,6 +1,8 @@
 package service
 
-import "github.com/raphael-foliveira/chi-gorm/internal/entities"
+import (
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+)
 
 var (
 	clientsRepository  ClientsRepository
@@ -32,4 +34,16 @@ type ProductsRepository interface {
 	Get(id uint) (*entities.Product, error)
 	List(conds ...any) ([]entities.Product, error)
 	Update(entity *entities.Product) error
+}
+
+type Config struct {
+	ClientsRepository  ClientsRepository
+	OrdersRepository   OrdersRepository
+	ProductsRepository ProductsRepository
+}
+
+func Initialize(config *Config) {
+	clientsRepository = config.ClientsRepository
+	ordersRepository = config.OrdersRepository
+	productsRepository = config.ProductsRepository
 }

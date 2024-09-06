@@ -19,7 +19,8 @@ func TestMain(m *testing.M) {
 	database.Close()
 }
 
-func initializeDependencies() {
+func initializeDependencies(t *testing.T) {
+	t.Helper()
 	config := config.LoadCfg("../../.env.test")
 	app := container.InitializeDependencies(config)
 	db = database.DB
@@ -27,8 +28,9 @@ func initializeDependencies() {
 }
 
 func setUp(t *testing.T) {
-	initializeDependencies()
-	populateTables()
+	t.Helper()
+	initializeDependencies(t)
+	populateTables(t)
 	t.Cleanup(func() {
 		db.Exec("DELETE FROM orders")
 		db.Exec("DELETE FROM products")
@@ -37,7 +39,8 @@ func setUp(t *testing.T) {
 	})
 }
 
-func populateTables() {
+func populateTables(t *testing.T) {
+	t.Helper()
 	clients := [20]entities.Client{}
 	products := [20]entities.Product{}
 	orders := [20]entities.Order{}

@@ -5,9 +5,9 @@ import (
 )
 
 type Clients struct {
-	*repository[entities.Client]
+	*Repository[entities.Client]
 }
 
 func NewClients() *Clients {
-	return &Clients{newRepository[entities.Client]()}
+	return &Clients{New[entities.Client]()}
 }

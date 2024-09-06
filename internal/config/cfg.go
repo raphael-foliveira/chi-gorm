@@ -3,7 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
-	"log/slog"
+	"log"
 	"os"
 	"strings"
 )
@@ -42,9 +42,12 @@ func setEnvs() {
 func parseEnv(s string) error {
 	contentLines := strings.Split(s, "\n")
 	for _, line := range contentLines {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
 		pair := strings.SplitN(line, "=", 2)
 		if len(pair) != 2 {
-			slog.Error(fmt.Sprintf("pair: %s", pair))
+			log.Println(fmt.Sprintf("pair: %s", pair))
 			return ErrMalformedEnvEntry
 		}
 		key := pair[0]
