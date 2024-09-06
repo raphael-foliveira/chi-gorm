@@ -1,4 +1,4 @@
-package repository
+package repository_test
 
 import (
 	"testing"
@@ -6,12 +6,14 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
 func TestProductsRepository(t *testing.T) {
 	config.Initialize("../../.env.test")
 	database.Initialize(config.DatabaseURL)
-	Initialize()
+	repository.Initialize()
+	defer database.Close()
 
 	t.Run("Should find many", func(t *testing.T) {
 		products := []entities.Product{
@@ -25,7 +27,7 @@ func TestProductsRepository(t *testing.T) {
 			},
 		}
 		database.DB.Create(&products)
-		foundProducts, err := Products.FindMany([]uint{products[0].ID, products[1].ID})
+		foundProducts, err := repository.Products.FindMany([]uint{products[0].ID, products[1].ID})
 		if err != nil {
 			t.Error(err)
 		}

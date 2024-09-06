@@ -17,6 +17,7 @@ import (
 func main() {
 	config.Initialize()
 	database.Initialize(config.DatabaseURL)
+	defer database.Close()
 	repository.Initialize()
 	service.Initialize()
 	controller.Initialize()

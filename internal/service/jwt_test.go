@@ -8,28 +8,22 @@ import (
 )
 
 func TestJwt(t *testing.T) {
+	payload := &service.Payload{
+		ClientID:   1,
+		ClientName: "John Doe",
+		Email:      "john@doe.com",
+	}
+
 	t.Run("should sign a token", func(t *testing.T) {
-		jwt := service.NewJwt()
-		payload := &service.Payload{
-			ClientID:   1,
-			ClientName: "John Doe",
-			Email:      "john@doe.com",
-		}
-		tokenString, err := jwt.Sign(payload)
+		tokenString, err := service.Jwt.Sign(payload)
 		assert.NoError(t, err)
 		assert.NotEqual(t, "", tokenString)
 	})
 
 	t.Run("should verify a token", func(t *testing.T) {
-		jwt := service.NewJwt()
-		payload := &service.Payload{
-			ClientID:   1,
-			ClientName: "John Doe",
-			Email:      "john@doe.com",
-		}
-		tokenString, err := jwt.Sign(payload)
+		tokenString, err := service.Jwt.Sign(payload)
 		assert.NoError(t, err)
-		tokenPayload, err := jwt.Verify(tokenString)
+		tokenPayload, err := service.Jwt.Verify(tokenString)
 		assert.NoError(t, err)
 		assert.Equal(t, payload.ClientID, tokenPayload.ClientID)
 		assert.Equal(t, payload.ClientName, tokenPayload.ClientName)

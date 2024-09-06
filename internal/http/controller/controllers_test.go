@@ -13,7 +13,7 @@ import (
 func testCase(testFunc func(*testing.T)) func(*testing.T) {
 	return func(t *testing.T) {
 		config.Initialize("../../../.env.test")
-		mocks.MountRepositoryStubs()
+		mocks.MountRepositories()
 		service.Initialize()
 		controller.Initialize()
 		mux := chi.NewMux()
