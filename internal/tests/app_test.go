@@ -6,12 +6,9 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
+	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
 	"gorm.io/gorm"
 )
 
@@ -22,28 +19,14 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	config := config.LoadCfg("../../.env.test")
-	db = database.Initialize(config.DatabaseURL)
 	m.Run()
 	database.Close()
 }
 
 func initializeDependencies() {
-	clientsRepository := repository.NewClients(db)
-	productsRepository := repository.NewProducts(db)
-	ordersRepository := repository.NewOrders(db)
-	clientsService := service.NewClients(clientsRepository, ordersRepository)
-	productsService := service.NewProducts(productsRepository)
-	ordersService := service.NewOrders(ordersRepository)
-	clientsController := controller.NewClients(clientsService)
-	productsController := controller.NewProducts(productsService)
-	ordersController := controller.NewOrders(ordersService)
-
-	app := server.CreateMainRouter()
-
-	clientsController.Mount(app)
-	productsController.Mount(app)
-	ordersController.Mount(app)
+	config := config.LoadCfg("../../.env.test")
+	app := container.InitializeDependencies(config)
+	db = database.DB
 	testServer = httptest.NewServer(app)
 }
 
@@ -55,6 +38,7 @@ func setUp(t *testing.T) {
 		db.Exec("DELETE FROM orders")
 		db.Exec("DELETE FROM products")
 		db.Exec("DELETE FROM clients")
+		database.Close()
 	})
 }
 

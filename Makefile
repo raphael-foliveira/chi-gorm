@@ -5,7 +5,10 @@ cover:
 	go tool cover -html=c.out;
 
 test:
+	docker compose up -d database;
 	go test ./... -cover -coverpkg=../... -coverprofile=c.out;
+
+test-cover: test cover
 
 test-watch:
 	air -c .air.test.toml
