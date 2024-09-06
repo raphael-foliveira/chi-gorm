@@ -4,9 +4,7 @@ import (
 	"errors"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -116,21 +114,11 @@ func (or *ordersRepository) ExpectError() {
 	or.On("FindManyByClientId", mock.Anything).Return(nil, errMock)
 }
 
-func UseMockRepositories() {
-	container.ProductsRepository = func() repository.ProductsRepository {
-		return ProductsRepository
-	}
-	container.OrdersRepository = func() repository.OrdersRepository {
-		return OrdersRepository
-	}
-	container.ClientsRepository = func() repository.ClientsRepository {
-		return ClientsRepository
-	}
-}
-
-var ClientsStub []entities.Client
-var ProductsStub []entities.Product
-var OrdersStub []entities.Order
+var (
+	ClientsStub  []entities.Client
+	ProductsStub []entities.Product
+	OrdersStub   []entities.Order
+)
 
 func init() {
 	faker.FakeData(&ClientsStub)

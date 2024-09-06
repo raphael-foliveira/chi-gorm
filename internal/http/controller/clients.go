@@ -10,19 +10,22 @@ import (
 
 type Clients struct {
 	Service *service.Clients
-	*router
 }
 
 func NewClients(service *service.Clients) *Clients {
-	router := &router{chi.NewRouter()}
-	c := &Clients{service, router}
-	router.Get("/", c.List)
-	router.Get("/{id}", c.Get)
-	router.Get("/{id}/products", c.GetProducts)
-	router.Post("/", c.Create)
-	router.Delete("/{id}", c.Delete)
-	router.Put("/{id}", c.Update)
-	return c
+	return &Clients{service}
+}
+
+func (c *Clients) Mount(mux *chi.Mux) {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(c.List))
+	router.Get("/{id}", useHandler(c.Get))
+	router.Get("/{id}/products", useHandler(c.GetProducts))
+	router.Post("/", useHandler(c.Create))
+	router.Delete("/{id}", useHandler(c.Delete))
+	router.Put("/{id}", useHandler(c.Update))
+
+	mux.Mount("/clients", router)
 }
 
 func (c *Clients) Create(ctx *Context) error {

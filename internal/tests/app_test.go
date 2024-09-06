@@ -6,34 +6,35 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
+	"github.com/raphael-foliveira/chi-gorm/internal/container"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
+	"gorm.io/gorm"
 )
 
-var (
-	testServer *httptest.Server
-	tClient    *testClient
-	db         *database.DB
-)
+var db *gorm.DB
 
 func TestMain(m *testing.M) {
-	config := config.LoadCfg("../../.env.test")
-	db = database.Db(config.DatabaseURL)
 	m.Run()
 	database.Close()
 }
 
-func setUp() func() {
-	testApp := server.NewApp(db).CreateMainRouter()
-	testServer = httptest.NewServer(testApp)
-	tClient = newTestClient(testServer)
+func initializeDependencies() {
+	config := config.LoadCfg("../../.env.test")
+	app := container.InitializeDependencies(config)
+	db = database.DB
+	testServer = httptest.NewServer(app)
+}
+
+func setUp(t *testing.T) {
+	initializeDependencies()
 	populateTables()
-	return func() {
+	t.Cleanup(func() {
 		db.Exec("DELETE FROM orders")
 		db.Exec("DELETE FROM products")
 		db.Exec("DELETE FROM clients")
-	}
+		database.Close()
+	})
 }
 
 func populateTables() {

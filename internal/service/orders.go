@@ -7,10 +7,10 @@ import (
 )
 
 type Orders struct {
-	repository repository.OrdersRepository
+	repository repository.Orders
 }
 
-func NewOrders(repository repository.OrdersRepository) *Orders {
+func NewOrders(repository repository.Orders) *Orders {
 	return &Orders{repository}
 }
 

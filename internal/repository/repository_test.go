@@ -9,7 +9,7 @@ import (
 
 func TestMain(m *testing.M) {
 	config := config.LoadCfg("../../.env.test")
-	database.Db(config.DatabaseURL)
+	database.Initialize(config.DatabaseURL)
 	m.Run()
 	err := database.Close()
 	if err != nil {

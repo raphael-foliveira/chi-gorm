@@ -7,11 +7,11 @@ import (
 )
 
 type Clients struct {
-	repository       repository.ClientsRepository
-	ordersRepository repository.OrdersRepository
+	repository       repository.Clients
+	ordersRepository repository.Orders
 }
 
-func NewClients(repository repository.ClientsRepository, ordersRepository repository.OrdersRepository) *Clients {
+func NewClients(repository repository.Clients, ordersRepository repository.Orders) *Clients {
 	return &Clients{repository, ordersRepository}
 }
 
