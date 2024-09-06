@@ -5,8 +5,9 @@ cover:
 	go tool cover -html=c.out;
 
 test:
-	docker compose up -d database;
+	docker compose up -d database && \
 	go test ./... -cover -coverpkg=../... -coverprofile=c.out;
+	docker compose stop;
 
 test-cover: test cover
 

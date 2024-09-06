@@ -8,13 +8,12 @@ import (
 
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/container"
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
 )
 
 func main() {
 	cfg := config.Config()
-	mux := container.InitializeDependencies(cfg)
-	defer database.Close()
+	mux, cleanup := container.InitializeDependencies(cfg)
+	defer cleanup()
 
 	s := &http.Server{
 		Addr:    ":3000",

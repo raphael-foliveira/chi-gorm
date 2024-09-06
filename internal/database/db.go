@@ -6,19 +6,16 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
-func Initialize(databaseUrl string) *gorm.DB {
+func New(databaseUrl string) *gorm.DB {
 	db, err := start(databaseUrl)
 	if err != nil {
 		panic(err)
 	}
-	DB = db
-	err = migrateDb()
+	err = migrateDb(db)
 	if err != nil {
 		panic(err)
 	}
-	return DB
+	return db
 }
 
 func start(dbUrl string) (*gorm.DB, error) {
@@ -26,26 +23,18 @@ func start(dbUrl string) (*gorm.DB, error) {
 	return gorm.Open(dialector)
 }
 
-func migrateDb() error {
-	return DB.AutoMigrate(
+func migrateDb(db *gorm.DB) error {
+	return db.AutoMigrate(
 		&entities.Client{},
 		&entities.Product{},
 		&entities.Order{},
 	)
 }
 
-func Close() error {
-	if DB == nil {
-		return nil
-	}
-	sqlDb, err := DB.DB()
+func Close(db *gorm.DB) {
+	sqlDb, err := db.DB()
 	if err != nil {
-		return err
+		panic(err)
 	}
-	err = sqlDb.Close()
-	if err != nil {
-		return err
-	}
-	DB = nil
-	return nil
+	sqlDb.Close()
 }

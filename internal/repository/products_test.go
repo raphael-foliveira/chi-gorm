@@ -10,7 +10,7 @@ import (
 
 func TestProductsRepository(t *testing.T) {
 	config := config.LoadCfg("../../.env.test")
-	db := database.Initialize(config.DatabaseURL)
+	db := database.New(config.DatabaseURL)
 	repository := NewProducts(db)
 	t.Run("Should find many", func(t *testing.T) {
 		products := []entities.Product{
