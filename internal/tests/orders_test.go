@@ -17,7 +17,7 @@ func TestOrders_List(t *testing.T) {
 	orders := []entities.Order{}
 	db.Find(&orders)
 	expectedBody := schemas.NewOrders(orders)
-	response, err := tClient.makeRequest("GET", "/orders", nil)
+	response, err := makeRequest("GET", "/orders", nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := []schemas.Order{}
@@ -31,7 +31,7 @@ func TestOrders_Get(t *testing.T) {
 	order := entities.Order{}
 	db.First(&order)
 	expectedBody := schemas.NewOrder(&order)
-	response, err := tClient.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
+	response, err := makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Order{}
@@ -53,7 +53,7 @@ func TestOrders_Create(t *testing.T) {
 	faker.FakeData(&order)
 	expectedBody := schemas.Order{}
 	expectedBody.Quantity = order.Quantity
-	response, err := tClient.makeRequest("POST", "/orders", order)
+	response, err := makeRequest("POST", "/orders", order)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Order{}
@@ -70,7 +70,7 @@ func TestOrders_Update(t *testing.T) {
 	faker.FakeData(&update)
 	expectedBody := schemas.Order{}
 	expectedBody.Quantity = update.Quantity
-	response, err := tClient.makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
+	response, err := makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Order{}
@@ -83,7 +83,7 @@ func TestOrders_Delete(t *testing.T) {
 	setUp(t)
 	order := entities.Order{}
 	db.First(&order)
-	response, err := tClient.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
+	response, err := makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)

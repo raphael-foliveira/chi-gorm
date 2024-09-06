@@ -17,7 +17,7 @@ func TestClients_List(t *testing.T) {
 	clients := []entities.Client{}
 	db.Find(&clients)
 	expectedBody := schemas.NewClients(clients)
-	response, err := tClient.makeRequest("GET", "/clients", nil)
+	response, err := makeRequest("GET", "/clients", nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := []schemas.Client{}
@@ -32,7 +32,7 @@ func TestClients_Get(t *testing.T) {
 	client := entities.Client{}
 	db.First(&client)
 	expectedBody := schemas.NewClient(&client)
-	response, err := tClient.makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
+	response, err := makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Client{}
@@ -48,7 +48,7 @@ func TestClients_Create(t *testing.T) {
 	expectedBody := schemas.Client{}
 	expectedBody.Name = client.Name
 	expectedBody.Email = client.Email
-	response, err := tClient.makeRequest("POST", "/clients", client)
+	response, err := makeRequest("POST", "/clients", client)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Client{}
@@ -66,7 +66,7 @@ func TestClients_Update(t *testing.T) {
 	expectedBody := schemas.Client{}
 	expectedBody.Name = update.Name
 	expectedBody.Email = update.Email
-	response, err := tClient.makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
+	response, err := makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Client{}
@@ -79,7 +79,7 @@ func TestClients_Delete(t *testing.T) {
 	setUp(t)
 	client := entities.Client{}
 	db.First(&client)
-	response, err := tClient.makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
+	response, err := makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)

@@ -5,28 +5,20 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"slices"
 )
 
 var testServer *httptest.Server
 
-type testClient struct{}
-
-func newTestClient() *testClient {
-	return &testClient{}
-}
-
-func (tc *testClient) makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
+func makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
 	hc := &http.Client{}
 	url := testServer.URL + endpoint
-	isNotGetOrDelete := !slices.Contains([]string{http.MethodGet, http.MethodDelete}, method)
-	if body != nil && isNotGetOrDelete {
-		return tc.sendRequestWithBody(hc, method, body, url)
+	if body != nil {
+		return sendRequestWithBody(hc, method, body, url)
 	}
-	return tc.sendRequest(hc, method, url)
+	return sendRequest(hc, method, url)
 }
 
-func (t *testClient) sendRequest(hc *http.Client, method string, url string) (*http.Response, error) {
+func sendRequest(hc *http.Client, method string, url string) (*http.Response, error) {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, err
@@ -34,7 +26,7 @@ func (t *testClient) sendRequest(hc *http.Client, method string, url string) (*h
 	return hc.Do(req)
 }
 
-func (t *testClient) sendRequestWithBody(hc *http.Client, method string, body interface{}, url string) (*http.Response, error) {
+func sendRequestWithBody(hc *http.Client, method string, body interface{}, url string) (*http.Response, error) {
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
