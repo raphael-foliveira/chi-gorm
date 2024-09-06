@@ -4,7 +4,7 @@ var (
 	Clients  *clients
 	Orders   *orders
 	Products *products
-	Jwt      *jwtImpl
+	Jwt      *jwtS
 )
 
 func Initialize() {
