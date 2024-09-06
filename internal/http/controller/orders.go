@@ -5,25 +5,22 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type Orders struct {
-	Service *service.Orders
+type Orders struct{}
+
+func NewOrders() *Orders {
+	return &Orders{}
 }
 
-func NewOrders(service *service.Orders) *Orders {
-	return &Orders{service}
-}
-
-func (o *Orders) Mount(mux *chi.Mux) {
+func (o *Orders) Mount() {
 	router := chi.NewRouter()
 	router.Get("/", useHandler(o.List))
 	router.Post("/", useHandler(o.Create))
 	router.Get("/{id}", useHandler(o.Get))
 	router.Delete("/{id}", useHandler(o.Delete))
 	router.Put("/{id}", useHandler(o.Update))
-	mux.Mount("/orders", router)
+	app.Mount("/orders", router)
 }
 
 func (o *Orders) Create(ctx *Context) error {
@@ -32,7 +29,7 @@ func (o *Orders) Create(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	newOrder, err := o.Service.Create(body)
+	newOrder, err := ordersService.Create(body)
 	if err != nil {
 		return err
 	}
@@ -49,7 +46,7 @@ func (o *Orders) Update(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	updatedOrder, err := o.Service.Update(id, body)
+	updatedOrder, err := ordersService.Update(id, body)
 	if err != nil {
 		return err
 	}
@@ -61,7 +58,7 @@ func (o *Orders) Delete(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	err = o.Service.Delete(id)
+	err = ordersService.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -69,7 +66,7 @@ func (o *Orders) Delete(ctx *Context) error {
 }
 
 func (o *Orders) List(ctx *Context) error {
-	orders, err := o.Service.List()
+	orders, err := ordersService.List()
 	if err != nil {
 		return err
 	}
@@ -81,7 +78,7 @@ func (o *Orders) Get(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	order, err := o.Service.Get(id)
+	order, err := ordersService.Get(id)
 	if err != nil {
 		return err
 	}

@@ -2,17 +2,12 @@ package repository
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"gorm.io/gorm"
 )
 
-type Clients interface {
-	Repository[entities.Client]
-}
-
-type clients struct {
+type Clients struct {
 	*repository[entities.Client]
 }
 
-func NewClients(db *gorm.DB) *clients {
-	return &clients{newRepository[entities.Client](db)}
+func NewClients() *Clients {
+	return &Clients{newRepository[entities.Client]()}
 }

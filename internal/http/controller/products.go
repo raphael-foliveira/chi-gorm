@@ -5,18 +5,15 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type Products struct {
-	Service *service.Products
+type Products struct{}
+
+func NewProducts() *Products {
+	return &Products{}
 }
 
-func NewProducts(service *service.Products) *Products {
-	return &Products{service}
-}
-
-func (p *Products) Mount(mux *chi.Mux) {
+func (p *Products) Mount() {
 	router := chi.NewRouter()
 	router.Get("/", useHandler(p.List))
 	router.Post("/", useHandler(p.Create))
@@ -24,7 +21,7 @@ func (p *Products) Mount(mux *chi.Mux) {
 	router.Delete("/{id}", useHandler(p.Delete))
 	router.Put("/{id}", useHandler(p.Update))
 
-	mux.Mount("/products", router)
+	app.Mount("/products", router)
 }
 
 func (p *Products) Create(ctx *Context) error {
@@ -33,7 +30,7 @@ func (p *Products) Create(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	newOrder, err := p.Service.Create(body)
+	newOrder, err := productsService.Create(body)
 	if err != nil {
 		return err
 	}
@@ -50,7 +47,7 @@ func (p *Products) Update(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	updatedOrder, err := p.Service.Update(id, body)
+	updatedOrder, err := productsService.Update(id, body)
 	if err != nil {
 		return err
 	}
@@ -62,7 +59,7 @@ func (p *Products) Delete(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	err = p.Service.Delete(id)
+	err = productsService.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -70,7 +67,7 @@ func (p *Products) Delete(ctx *Context) error {
 }
 
 func (p *Products) List(ctx *Context) error {
-	products, err := p.Service.List()
+	products, err := productsService.List()
 	if err != nil {
 		return err
 	}
@@ -82,7 +79,7 @@ func (p *Products) Get(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	product, err := p.Service.Get(id)
+	product, err := productsService.Get(id)
 	if err != nil {
 		return err
 	}

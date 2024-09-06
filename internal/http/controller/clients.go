@@ -5,18 +5,15 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type Clients struct {
-	Service *service.Clients
+type Clients struct{}
+
+func NewClients() *Clients {
+	return &Clients{}
 }
 
-func NewClients(service *service.Clients) *Clients {
-	return &Clients{service}
-}
-
-func (c *Clients) Mount(mux *chi.Mux) {
+func (c *Clients) Mount() {
 	router := chi.NewRouter()
 	router.Get("/", useHandler(c.List))
 	router.Get("/{id}", useHandler(c.Get))
@@ -25,7 +22,7 @@ func (c *Clients) Mount(mux *chi.Mux) {
 	router.Delete("/{id}", useHandler(c.Delete))
 	router.Put("/{id}", useHandler(c.Update))
 
-	mux.Mount("/clients", router)
+	app.Mount("/clients", router)
 }
 
 func (c *Clients) Create(ctx *Context) error {
@@ -34,7 +31,7 @@ func (c *Clients) Create(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	newClient, err := c.Service.Create(body)
+	newClient, err := clientsService.Create(body)
 	if err != nil {
 		return err
 	}
@@ -51,7 +48,7 @@ func (c *Clients) Update(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	updatedClient, err := c.Service.Update(id, body)
+	updatedClient, err := clientsService.Update(id, body)
 	if err != nil {
 		return err
 	}
@@ -63,7 +60,7 @@ func (c *Clients) Delete(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	err = c.Service.Delete(id)
+	err = clientsService.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -71,7 +68,7 @@ func (c *Clients) Delete(ctx *Context) error {
 }
 
 func (c *Clients) List(ctx *Context) error {
-	clients, err := c.Service.List()
+	clients, err := clientsService.List()
 	if err != nil {
 		return err
 	}
@@ -83,7 +80,7 @@ func (c *Clients) Get(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	client, err := c.Service.Get(id)
+	client, err := clientsService.Get(id)
 	if err != nil {
 		return err
 	}
@@ -95,7 +92,7 @@ func (c *Clients) GetProducts(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	orders, err := c.Service.GetOrders(id)
+	orders, err := clientsService.GetOrders(id)
 	if err != nil {
 		return err
 	}

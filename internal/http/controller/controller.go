@@ -9,7 +9,20 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
+
+var (
+	app             *chi.Mux = server.CreateMainRouter()
+	clientsService           = service.NewClients()
+	ordersService            = service.NewOrders()
+	productsService          = service.NewProducts()
+)
+
+func GetApp() *chi.Mux {
+	return app
+}
 
 type Context struct {
 	Response http.ResponseWriter
