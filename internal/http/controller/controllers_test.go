@@ -4,16 +4,26 @@ import (
 	"testing"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
-	"github.com/raphael-foliveira/chi-gorm/internal/container"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
+	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 func TestMain(m *testing.M) {
-	mocks.UseMockRepositories()
 	config.LoadCfg("../../../.env.test")
-	clientsController = container.ClientsController()
-	ordersController = container.OrdersController()
-	productsController = container.ProductsController()
+	clientsController = controller.NewClients(
+		service.NewClients(
+			mocks.ClientsRepository,
+			mocks.OrdersRepository,
+		))
+	productsController = controller.NewProducts(
+		service.NewProducts(
+			mocks.ProductsRepository,
+		))
+	ordersController = controller.NewOrders(
+		service.NewOrders(
+			mocks.OrdersRepository,
+		))
 	m.Run()
 }
 

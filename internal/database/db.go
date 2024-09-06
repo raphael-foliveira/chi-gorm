@@ -6,13 +6,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type DB struct {
-	*gorm.DB
-}
+var instance *gorm.DB
 
-var instance *DB
-
-func Db(databaseUrl string) *DB {
+func Db(databaseUrl string) *gorm.DB {
 	if instance != nil {
 		return instance
 	}
@@ -20,7 +16,7 @@ func Db(databaseUrl string) *DB {
 	if err != nil {
 		panic(err)
 	}
-	instance = &DB{db}
+	instance = db
 	err = migrateDb()
 	if err != nil {
 		panic(err)
@@ -45,7 +41,7 @@ func Close() error {
 	if instance == nil {
 		return nil
 	}
-	sqlDb, err := instance.DB.DB()
+	sqlDb, err := instance.DB()
 	if err != nil {
 		return err
 	}

@@ -10,18 +10,21 @@ import (
 
 type Products struct {
 	Service *service.Products
-	*router
 }
 
 func NewProducts(service *service.Products) *Products {
-	router := &router{chi.NewRouter()}
-	c := &Products{service, router}
-	router.Get("/", c.List)
-	router.Post("/", c.Create)
-	router.Get("/{id}", c.Get)
-	router.Delete("/{id}", c.Delete)
-	router.Put("/{id}", c.Update)
-	return c
+	return &Products{service}
+}
+
+func (p *Products) Mount(mux *chi.Mux) {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(p.List))
+	router.Post("/", useHandler(p.Create))
+	router.Get("/{id}", useHandler(p.Get))
+	router.Delete("/{id}", useHandler(p.Delete))
+	router.Put("/{id}", useHandler(p.Update))
+
+	mux.Mount("/products", router)
 }
 
 func (p *Products) Create(ctx *Context) error {

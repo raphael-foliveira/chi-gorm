@@ -1,66 +1,50 @@
 package container
 
 import (
+	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/middleware"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
+	"gorm.io/gorm"
 )
 
-var ClientsController = func() *controller.Clients {
-	return controller.NewClients(ClientsService())
-}
+var (
+	db                    *gorm.DB
+	clientsController     *controller.Clients
+	productsController    *controller.Products
+	ordersController      *controller.Orders
+	healthcheckController *controller.HealthCheck
+	clientsService        *service.Clients
+	productsService       *service.Products
+	ordersService         *service.Orders
+	clientsRepository     repository.Clients
+	productsRepository    repository.Products
+	ordersRepository      repository.Orders
+	app                   *chi.Mux
+)
 
-var ClientsService = func() *service.Clients {
-	return service.NewClients(ClientsRepository(), OrdersRepository())
-}
+func InitializeDependencies(cfg *config.Cfg) *chi.Mux {
+	db = database.Db(cfg.DatabaseURL)
 
-var OrdersRepository = func() repository.OrdersRepository {
-	return repository.NewOrders(Db())
-}
+	clientsRepository = repository.NewClients(db)
+	productsRepository = repository.NewProducts(db)
+	ordersRepository = repository.NewOrders(db)
+	clientsService = service.NewClients(clientsRepository, ordersRepository)
+	productsService = service.NewProducts(productsRepository)
+	ordersService = service.NewOrders(ordersRepository)
+	clientsController = controller.NewClients(clientsService)
+	productsController = controller.NewProducts(productsService)
+	ordersController = controller.NewOrders(ordersService)
+	healthcheckController = controller.NewHealthCheck()
 
-var ProductsRepository = func() repository.ProductsRepository {
-	return repository.NewProducts(Db())
-}
+	app = server.CreateMainRouter()
 
-var ProductsService = func() *service.Products {
-	return service.NewProducts(ProductsRepository())
-}
-
-var ProductsController = func() *controller.Products {
-	return controller.NewProducts(ProductsService())
-}
-
-var ClientsRepository = func() repository.ClientsRepository {
-	return repository.NewClients(Db())
-}
-
-var OrdersService = func() *service.Orders {
-	return service.NewOrders(OrdersRepository())
-}
-
-var OrdersController = func() *controller.Orders {
-	return controller.NewOrders(OrdersService())
-}
-
-var JwtService = func() *service.Jwt {
-	return service.NewJwt()
-}
-
-var AuthMiddleware = func() *middleware.AuthMiddleware {
-	return middleware.NewAuthMiddleware(JwtService())
-}
-
-var HealthcheckController = func() *controller.HealthcheckController {
-	return controller.NewHealthCheck()
-}
-
-var Config = func() *config.Cfg {
-	return config.Config()
-}
-
-var Db = func() *database.DB {
-	return database.Db(Config().DatabaseURL)
+	clientsController.Mount(app)
+	productsController.Mount(app)
+	ordersController.Mount(app)
+	healthcheckController.Mount(app)
+	return app
 }

@@ -10,18 +10,20 @@ import (
 
 type Orders struct {
 	Service *service.Orders
-	*router
 }
 
 func NewOrders(service *service.Orders) *Orders {
-	router := &router{chi.NewRouter()}
-	c := &Orders{service, router}
-	router.Get("/", c.List)
-	router.Post("/", c.Create)
-	router.Get("/{id}", c.Get)
-	router.Delete("/{id}", c.Delete)
-	router.Put("/{id}", c.Update)
-	return c
+	return &Orders{service}
+}
+
+func (o *Orders) Mount(mux *chi.Mux) {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(o.List))
+	router.Post("/", useHandler(o.Create))
+	router.Get("/{id}", useHandler(o.Get))
+	router.Delete("/{id}", useHandler(o.Delete))
+	router.Put("/{id}", useHandler(o.Update))
+	mux.Mount("/orders", router)
 }
 
 func (o *Orders) Create(ctx *Context) error {

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
+	"gorm.io/gorm"
 )
 
 type Repository[T any] interface {
@@ -13,10 +13,10 @@ type Repository[T any] interface {
 }
 
 type repository[T any] struct {
-	db *database.DB
+	db *gorm.DB
 }
 
-func newRepository[T any](db *database.DB) *repository[T] {
+func newRepository[T any](db *gorm.DB) *repository[T] {
 	return &repository[T]{db}
 }
 
