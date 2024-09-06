@@ -12,37 +12,32 @@ import (
 )
 
 type Repositories struct {
-	db *gorm.DB
+	clients  repository.Clients
+	products repository.Products
+	orders   repository.Orders
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
-	return &Repositories{db}
-}
-
-func (r *Repositories) Clients() repository.Clients {
-	return repository.NewClients(r.db)
-}
-
-func (r *Repositories) Products() repository.Products {
-	return repository.NewProducts(r.db)
-}
-
-func (r *Repositories) Orders() repository.Orders {
-	return repository.NewOrders(r.db)
+	return &Repositories{
+		clients:  repository.NewClients(db),
+		products: repository.NewProducts(db),
+		orders:   repository.NewOrders(db),
+	}
 }
 
 type Services struct {
 	clients  *service.Clients
 	products *service.Products
 	orders   *service.Orders
+	jwt      *service.Jwt
 }
 
 func NewServices(repositories *Repositories) *Services {
-	ordersRepo := repositories.Orders()
 	return &Services{
-		clients:  service.NewClients(repositories.Clients(), ordersRepo),
-		products: service.NewProducts(repositories.Products()),
-		orders:   service.NewOrders(ordersRepo),
+		clients:  service.NewClients(repositories.clients, repositories.orders),
+		products: service.NewProducts(repositories.products),
+		orders:   service.NewOrders(repositories.orders),
+		jwt:      service.NewJwt(),
 	}
 }
 
