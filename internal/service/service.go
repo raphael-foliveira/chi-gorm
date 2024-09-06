@@ -1,10 +1,12 @@
 package service
 
+import "github.com/raphael-foliveira/chi-gorm/internal/ports"
+
 var (
-	Clients  *clients
-	Orders   *orders
-	Products *products
-	Jwt      *jwtS
+	Clients  ports.ClientsService
+	Orders   ports.OrdersService
+	Products ports.ProductsService
+	Jwt      ports.JwtService
 )
 
 func Initialize() {

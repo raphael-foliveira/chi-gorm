@@ -13,7 +13,6 @@ type ClientsService interface {
 	GetOrders(clientId uint) ([]entities.Order, error)
 	List() ([]entities.Client, error)
 	Update(id uint, schema *schemas.UpdateClient) (*entities.Client, error)
-	updatePopulatedFields(client *entities.Client, schema *schemas.UpdateClient)
 }
 
 type JwtService interface {
@@ -35,5 +34,4 @@ type ProductsService interface {
 	Get(id uint) (*entities.Product, error)
 	List() ([]entities.Product, error)
 	Update(id uint, schema *schemas.UpdateProduct) (*entities.Product, error)
-	updatePopulatedFields(product *entities.Product, schema *schemas.UpdateProduct)
 }
