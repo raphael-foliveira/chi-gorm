@@ -48,7 +48,6 @@ func TestClients_Create(t *testing.T) {
 	faker.FakeData(&client)
 	expectedBody := schemas.Client{}
 	expectedBody.Name = client.Name
-	expectedBody.Email = client.Email
 	response, err := makeRequest("POST", "/clients", client)
 	assert.NoError(t, err)
 	defer response.Body.Close()

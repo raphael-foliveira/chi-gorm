@@ -14,20 +14,21 @@ var (
 )
 
 func init() {
-	Load(".env")
+	Load()
 }
 
-func Load(path ...string) {
+func Load(path ...string) error {
 	if len(path) > 0 {
 		content, err := getFileContent(path[0])
 		if err != nil {
-			panic(fmt.Errorf("error loading env file (path: %s): %w", path[0], err))
+			return fmt.Errorf("error loading env file (path: %s): %w", path[0], err)
 		}
 		if err := parseEnv(content); err != nil {
-			panic(err)
+			return fmt.Errorf("error parsing env file (path: %s): %w", path[0], err)
 		}
 	}
 	load()
+	return nil
 }
 
 func load() {

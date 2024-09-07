@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -8,8 +9,8 @@ import (
 
 var DB *gorm.DB
 
-func Start(databaseUrl string) error {
-	db, err := start(databaseUrl)
+func Start() error {
+	db, err := start(config.DatabaseURL)
 	if err != nil {
 		return err
 	}
@@ -39,6 +40,8 @@ func Close() error {
 	if err != nil {
 		return err
 	}
-	sqlDb.Close()
+	if err := sqlDb.Close(); err != nil {
+		return err
+	}
 	return nil
 }

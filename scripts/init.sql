@@ -1,1 +1,1 @@
-CREATE DATABASE test;
+CREATE DATABASE chi_gorm_test;

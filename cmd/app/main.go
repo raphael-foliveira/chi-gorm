@@ -8,13 +8,14 @@ import (
 	"syscall"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 )
 
 func main() {
-	database.Start(config.DatabaseURL)
+	if err := database.Start(); err != nil {
+		log.Fatal("database.Start failed:", err)
+	}
 	defer database.Close()
 
 	mux := chi.NewMux()
@@ -32,9 +33,10 @@ func main() {
 	log.Println("server starting on port 3000")
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 	}()
+
 	<-ch
 
 	log.Println("server interrupted")
