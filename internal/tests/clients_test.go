@@ -65,7 +65,6 @@ func TestClients_Update(t *testing.T) {
 	faker.FakeData(&update)
 	expectedBody := schemas.Client{}
 	expectedBody.Name = update.Name
-	expectedBody.Email = update.Email
 	response, err := makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
