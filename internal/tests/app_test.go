@@ -10,8 +10,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 func TestMain(m *testing.M) {
@@ -19,11 +17,8 @@ func TestMain(m *testing.M) {
 }
 
 func initializeDependencies() {
-	config.Initialize("../../.env.test")
-	database.Initialize(config.DatabaseURL)
-	repository.Initialize()
-	service.Initialize()
-	controller.Initialize()
+	config.Load("../../.env.test")
+	database.Start(config.DatabaseURL)
 
 	app := server.CreateMainRouter()
 

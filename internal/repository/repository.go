@@ -6,16 +6,10 @@ import (
 )
 
 var (
-	Clients  ports.ClientsRepository
-	Products ports.ProductsRepository
-	Orders   ports.OrdersRepository
+	Clients  ports.ClientsRepository  = NewClients()
+	Products ports.ProductsRepository = NewProducts()
+	Orders   ports.OrdersRepository   = NewOrders()
 )
-
-func Initialize() {
-	Clients = NewClients()
-	Products = NewProducts()
-	Orders = NewOrders()
-}
 
 type repository[T any] struct{}
 

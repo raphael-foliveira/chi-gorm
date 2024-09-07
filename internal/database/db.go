@@ -8,7 +8,7 @@ import (
 
 var DB *gorm.DB
 
-func Initialize(databaseUrl string) error {
+func Start(databaseUrl string) error {
 	db, err := start(databaseUrl)
 	if err != nil {
 		return err

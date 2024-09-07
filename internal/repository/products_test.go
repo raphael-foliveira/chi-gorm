@@ -10,9 +10,8 @@ import (
 )
 
 func TestProductsRepository(t *testing.T) {
-	config.Initialize("../../.env.test")
-	database.Initialize(config.DatabaseURL)
-	repository.Initialize()
+	config.Load("../../.env.test")
+	database.Start(config.DatabaseURL)
 	defer database.Close()
 
 	t.Run("Should find many", func(t *testing.T) {

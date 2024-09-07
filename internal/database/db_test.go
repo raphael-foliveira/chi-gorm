@@ -8,13 +8,13 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	config.Initialize("../../.env.test")
+	config.Load("../../.env.test")
 	m.Run()
 }
 
 func TestInitDb(t *testing.T) {
 	t.Run("should retrieve a database instance", func(t *testing.T) {
-		database.Initialize(config.DatabaseURL)
+		database.Start(config.DatabaseURL)
 		if database.DB == nil {
 			t.Error("Db not initialized")
 		}
