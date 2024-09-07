@@ -130,7 +130,7 @@ func init() {
 	}
 }
 
-func MountRepositories() {
+func Repositories() {
 	OrdersRepository.ExpectSuccess()
 	ProductsRepository.ExpectSuccess()
 	ClientsRepository.ExpectSuccess()

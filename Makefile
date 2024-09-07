@@ -2,11 +2,11 @@ run:
 	go run cmd/main.go
 	
 test-unit:
-	go test ./... -tags=unit -v -cover -coverpkg=../... -coverprofile=c.out;
+	go test ./... -tags=unit -cover -coverpkg=../... -coverprofile=c.out;
 
 test-integration:
 	docker compose up -d database && \
-	go test ./... -tags=integration -cover -v -coverpkg=../... -coverprofile=c.out;
+	go test ./... -tags=integration -cover -coverpkg=../... -coverprofile=c.out;
 	docker compose stop;
 
 cover:
@@ -14,7 +14,7 @@ cover:
 
 test-all: 
 	docker compose up -d database && \
-	go test ./... -tags="integration,unit" -v -cover -coverpkg=../... -coverprofile=c.out;
+	go test ./... -tags=integration,unit -cover -coverpkg=../... -coverprofile=c.out;
 	docker compose stop;
 
 test-cover: test cover
