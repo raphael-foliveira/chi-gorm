@@ -6,21 +6,19 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-type Orders struct {
-	repository repository.Orders
+type orders struct{}
+
+func NewOrders() *orders {
+	return &orders{}
 }
 
-func NewOrders(repository repository.Orders) *Orders {
-	return &Orders{repository}
-}
-
-func (o *Orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
+func (o *orders) Create(schema *schemas.CreateOrder) (*entities.Order, error) {
 	newOrder := schema.ToModel()
-	err := o.repository.Create(newOrder)
+	err := repository.Orders.Create(newOrder)
 	return newOrder, err
 }
 
-func (o *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
+func (o *orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, error) {
 	entity, err := o.Get(id)
 	if err != nil {
 		return nil, err
@@ -28,28 +26,28 @@ func (o *Orders) Update(id uint, schema *schemas.UpdateOrder) (*entities.Order, 
 	if schema.Quantity != 0 {
 		entity.Quantity = schema.Quantity
 	}
-	err = o.repository.Update(entity)
+	err = repository.Orders.Update(entity)
 	return entity, err
 }
 
-func (o *Orders) Delete(id uint) error {
+func (o *orders) Delete(id uint) error {
 	client, err := o.Get(id)
 	if err != nil {
 		return err
 	}
-	err = o.repository.Delete(client)
+	err = repository.Orders.Delete(client)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o *Orders) List() ([]entities.Order, error) {
-	return o.repository.List()
+func (o *orders) List() ([]entities.Order, error) {
+	return repository.Orders.List()
 }
 
-func (o *Orders) Get(id uint) (*entities.Order, error) {
-	order, err := o.repository.Get(id)
+func (o *orders) Get(id uint) (*entities.Order, error) {
+	order, err := repository.Orders.Get(id)
 	if err != nil || order == nil {
 		return nil, errOrderNotFound
 	}

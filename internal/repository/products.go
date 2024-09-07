@@ -1,24 +1,19 @@
 package repository
 
 import (
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"gorm.io/gorm"
 )
-
-type Products interface {
-	Repository[entities.Product]
-	FindMany([]uint) ([]entities.Product, error)
-}
 
 type products struct {
 	*repository[entities.Product]
 }
 
-func NewProducts(db *gorm.DB) *products {
-	return &products{newRepository[entities.Product](db)}
+func NewProducts() *products {
+	return &products{newRepository[entities.Product]()}
 }
 
 func (r *products) FindMany(ids []uint) ([]entities.Product, error) {
 	products := []entities.Product{}
-	return products, r.db.Find(&products, ids).Error
+	return products, database.DB.Find(&products, ids).Error
 }

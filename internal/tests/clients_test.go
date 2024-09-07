@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/stretchr/testify/assert"
@@ -15,7 +16,7 @@ import (
 func TestClients_List(t *testing.T) {
 	setUp(t)
 	clients := []entities.Client{}
-	db.Find(&clients)
+	database.DB.Find(&clients)
 	expectedBody := schemas.NewClients(clients)
 	response, err := makeRequest("GET", "/clients", nil)
 	assert.NoError(t, err)
@@ -30,7 +31,7 @@ func TestClients_List(t *testing.T) {
 func TestClients_Get(t *testing.T) {
 	setUp(t)
 	client := entities.Client{}
-	db.First(&client)
+	database.DB.First(&client)
 	expectedBody := schemas.NewClient(&client)
 	response, err := makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
 	assert.NoError(t, err)
@@ -60,7 +61,7 @@ func TestClients_Create(t *testing.T) {
 func TestClients_Update(t *testing.T) {
 	setUp(t)
 	client := entities.Client{}
-	db.First(&client)
+	database.DB.First(&client)
 	update := schemas.UpdateClient{}
 	faker.FakeData(&update)
 	expectedBody := schemas.Client{}
@@ -78,7 +79,7 @@ func TestClients_Update(t *testing.T) {
 func TestClients_Delete(t *testing.T) {
 	setUp(t)
 	client := entities.Client{}
-	db.First(&client)
+	database.DB.First(&client)
 	response, err := makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()

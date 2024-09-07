@@ -5,30 +5,20 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/config"
+	"github.com/raphael-foliveira/chi-gorm/internal/dto"
 )
 
-type Payload struct {
-	ClientID   uint   `json:"id"`
-	ClientName string `json:"client_name"`
-	Email      string `json:"email"`
-}
-
-type Claims struct {
-	*Payload
-	*jwt.RegisteredClaims
-}
-
-type Jwt struct {
+type jwtS struct {
 	secret []byte
 }
 
-func NewJwt() *Jwt {
-	return &Jwt{[]byte(config.Config().JwtSecret)}
+func NewJwt() *jwtS {
+	return &jwtS{[]byte(config.JwtSecret)}
 }
 
-func (j *Jwt) Sign(payload *Payload) (string, error) {
-	claims := Claims{
-		Payload: payload,
+func (j *jwtS) Sign(payload *dto.JwtPayload) (string, error) {
+	claims := dto.JwtClaims{
+		JwtPayload: payload,
 		RegisteredClaims: &jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -39,16 +29,16 @@ func (j *Jwt) Sign(payload *Payload) (string, error) {
 	return token.SignedString(j.secret)
 }
 
-func (j *Jwt) Verify(token string) (*Payload, error) {
+func (j *jwtS) Verify(token string) (*dto.JwtPayload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.secret), nil
 	}
-	claims := &Claims{}
+	claims := &dto.JwtClaims{}
 	_, err := jwt.ParseWithClaims(token, claims, keyFunc)
 	if err != nil {
 		return nil, err
 	}
-	return &Payload{
+	return &dto.JwtPayload{
 		ClientID:   claims.ClientID,
 		ClientName: claims.ClientName,
 		Email:      claims.Email,

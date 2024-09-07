@@ -5,10 +5,11 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/stretchr/testify/mock"
 )
 
-type Repo[T entities.Entity] struct {
+type Repo[T interface{}] struct {
 	mock.Mock
 }
 
@@ -129,10 +130,13 @@ func init() {
 	}
 }
 
-func MountRepositoryStubs() {
+func MountRepositories() {
 	OrdersRepository.ExpectSuccess()
 	ProductsRepository.ExpectSuccess()
 	ClientsRepository.ExpectSuccess()
+	repository.Clients = ClientsRepository
+	repository.Products = ProductsRepository
+	repository.Orders = OrdersRepository
 }
 
 func ClearRepositoryMocks() {

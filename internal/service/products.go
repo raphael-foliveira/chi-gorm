@@ -6,31 +6,29 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
-type Products struct {
-	repository repository.Products
+type products struct{}
+
+func NewProducts() *products {
+	return &products{}
 }
 
-func NewProducts(repository repository.Products) *Products {
-	return &Products{repository}
-}
-
-func (c *Products) Create(schema *schemas.CreateProduct) (*entities.Product, error) {
+func (c *products) Create(schema *schemas.CreateProduct) (*entities.Product, error) {
 	newProduct := schema.ToModel()
-	err := c.repository.Create(newProduct)
+	err := repository.Products.Create(newProduct)
 	return newProduct, err
 }
 
-func (c *Products) Update(id uint, schema *schemas.UpdateProduct) (*entities.Product, error) {
+func (c *products) Update(id uint, schema *schemas.UpdateProduct) (*entities.Product, error) {
 	entity, err := c.Get(id)
 	if err != nil {
 		return nil, err
 	}
 	c.updatePopulatedFields(entity, schema)
-	err = c.repository.Update(entity)
+	err = repository.Products.Update(entity)
 	return entity, err
 }
 
-func (c *Products) updatePopulatedFields(product *entities.Product, schema *schemas.UpdateProduct) {
+func (c *products) updatePopulatedFields(product *entities.Product, schema *schemas.UpdateProduct) {
 	if schema.Name != "" {
 		product.Name = schema.Name
 	}
@@ -39,24 +37,24 @@ func (c *Products) updatePopulatedFields(product *entities.Product, schema *sche
 	}
 }
 
-func (c *Products) Delete(id uint) error {
+func (c *products) Delete(id uint) error {
 	client, err := c.Get(id)
 	if err != nil {
 		return err
 	}
-	err = c.repository.Delete(client)
+	err = repository.Products.Delete(client)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Products) List() ([]entities.Product, error) {
-	return c.repository.List()
+func (c *products) List() ([]entities.Product, error) {
+	return repository.Products.List()
 }
 
-func (c *Products) Get(id uint) (*entities.Product, error) {
-	product, err := c.repository.Get(id)
+func (c *products) Get(id uint) (*entities.Product, error) {
+	product, err := repository.Products.Get(id)
 	if err != nil || product == nil {
 		return nil, errProductNotFound
 	}

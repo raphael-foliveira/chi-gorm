@@ -8,40 +8,33 @@ import (
 	"strings"
 )
 
-type Cfg struct {
+var (
 	DatabaseURL string
 	JwtSecret   string
+)
+
+func Initialize(path ...string) {
+	if len(path) > 0 {
+		content, err := getFileContent(path[0])
+		if err != nil {
+			panic(err)
+		}
+		parseEnv(content)
+	}
+	Load()
 }
 
-var configInstance *Cfg
-
-func LoadCfg(path string) *Cfg {
-	content, err := getFileContent(path)
-	if err != nil {
-		panic(err)
-	}
-	parseEnv(content)
-	setEnvs()
-	return configInstance
-}
-
-func Config() *Cfg {
-	return &Cfg{
-		DatabaseURL: os.Getenv("DATABASE_URL"),
-		JwtSecret:   os.Getenv("JWT_SECRET"),
-	}
-}
-
-func setEnvs() {
-	configInstance = &Cfg{
-		DatabaseURL: os.Getenv("DATABASE_URL"),
-		JwtSecret:   os.Getenv("JWT_SECRET"),
-	}
+func Load() {
+	DatabaseURL = os.Getenv("DATABASE_URL")
+	JwtSecret = os.Getenv("JWT_SECRET")
 }
 
 func parseEnv(s string) error {
 	contentLines := strings.Split(s, "\n")
 	for _, line := range contentLines {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
 		pair := strings.SplitN(line, "=", 2)
 		if len(pair) != 2 {
 			slog.Error(fmt.Sprintf("pair: %s", pair))

@@ -9,12 +9,10 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type AuthMiddleware struct {
-	jwtService *service.Jwt
-}
+type AuthMiddleware struct{}
 
-func NewAuthMiddleware(jwtService *service.Jwt) *AuthMiddleware {
-	return &AuthMiddleware{jwtService}
+func NewAuthMiddleware() *AuthMiddleware {
+	return &AuthMiddleware{}
 }
 
 func (am *AuthMiddleware) Auth(next controller.ControllerFunc) controller.ControllerFunc {
@@ -23,7 +21,7 @@ func (am *AuthMiddleware) Auth(next controller.ControllerFunc) controller.Contro
 		if authorizationHeader == "" {
 			return exceptions.Unauthorized("Missing authorization header not present")
 		}
-		payload, err := am.jwtService.Verify(ctx.Request.Header.Get("Authorization"))
+		payload, err := service.Jwt.Verify(ctx.Request.Header.Get("Authorization"))
 		if err != nil {
 			slog.Error(err.Error())
 			return exceptions.Unauthorized("Invalid token")

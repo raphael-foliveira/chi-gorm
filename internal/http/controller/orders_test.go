@@ -20,14 +20,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var ordersController *controller.Orders
-
 func TestOrders_List(t *testing.T) {
 	t.Run("should list all orders", testCase(func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.List(ctx)
+		err := controller.Orders.List(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -37,10 +35,11 @@ func TestOrders_List(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.List(ctx)
+		err := controller.Orders.List(ctx)
 		assert.Error(t, err)
 	}))
 }
+
 func TestOrders_Get(t *testing.T) {
 	t.Run("should get an order", testCase(func(t *testing.T) {
 		orderId := fmt.Sprintf("%v", mocks.OrdersStub[0].ID)
@@ -50,7 +49,7 @@ func TestOrders_Get(t *testing.T) {
 		tx.URLParams.Add("id", orderId)
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Get(ctx)
+		err := controller.Orders.Get(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 		var requestBody *schemas.Order
@@ -66,7 +65,7 @@ func TestOrders_Get(t *testing.T) {
 		tx.URLParams.Add("id", "9999")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Get(ctx)
+		err := controller.Orders.Get(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -79,7 +78,7 @@ func TestOrders_Create(t *testing.T) {
 		reqBody, _ := json.Marshal(newOrder)
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Create(ctx)
+		err := controller.Orders.Create(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusCreated, recorder.Code)
 	}))
@@ -89,7 +88,7 @@ func TestOrders_Create(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Create(ctx)
+		err := controller.Orders.Create(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
@@ -104,7 +103,7 @@ func TestOrders_Create(t *testing.T) {
 		reqBody, _ := json.Marshal(newOrder)
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Create(ctx)
+		err := controller.Orders.Create(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -119,7 +118,7 @@ func TestOrders_Update(t *testing.T) {
 		tx.URLParams.Add("id", fmt.Sprintf("%v", order.ID))
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Update(ctx)
+		err := controller.Orders.Update(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -132,7 +131,7 @@ func TestOrders_Update(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Update(ctx)
+		err := controller.Orders.Update(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
@@ -149,7 +148,7 @@ func TestOrders_Update(t *testing.T) {
 		tx.URLParams.Add("id", "9999")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Update(ctx)
+		err := controller.Orders.Update(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -163,7 +162,7 @@ func TestOrders_Delete(t *testing.T) {
 		tx.URLParams.Add("id", fmt.Sprintf("%v", order.ID))
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Delete(ctx)
+		err := controller.Orders.Delete(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusNoContent, recorder.Code)
 	}))
@@ -176,7 +175,7 @@ func TestOrders_Delete(t *testing.T) {
 		tx.URLParams.Add("id", "9999")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := ordersController.Delete(ctx)
+		err := controller.Orders.Delete(ctx)
 		assert.Error(t, err)
 	}))
 }

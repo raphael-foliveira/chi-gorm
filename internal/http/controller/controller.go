@@ -2,14 +2,31 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
+	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
+
+var (
+	Clients     *clients
+	HealthCheck *healthCheck
+	Orders      *orders
+	Products    *products
+)
+
+func Initialize() {
+	Clients = NewClients()
+	HealthCheck = NewHealthCheck()
+	Orders = NewOrders()
+	Products = NewProducts()
+}
 
 type Context struct {
 	Response http.ResponseWriter
@@ -52,6 +69,30 @@ func (c *Context) ParseBody(v schemas.Validatable) error {
 		return exceptions.NewApiError(http.StatusUnprocessableEntity, err)
 	}
 	return nil
+}
+
+func useHandler(fn ControllerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		context := NewContext(w, r)
+		err := fn(context)
+		if err != nil {
+			handleApiErr(context, err)
+		}
+	}
+}
+
+func handleApiErr(ctx *Context, err error) error {
+	slog.Error(err.Error())
+	apiErr := &exceptions.ApiError{
+		Status: http.StatusInternalServerError,
+		Err:    "internal server error",
+	}
+	validationErr := &validate.ValidationError{}
+	if errors.As(err, &validationErr) {
+		return ctx.JSON(http.StatusUnprocessableEntity, validationErr)
+	}
+	errors.As(err, &apiErr)
+	return ctx.JSON(apiErr.Status, apiErr)
 }
 
 type ControllerFunc func(*Context) error

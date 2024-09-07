@@ -18,14 +18,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var productsController *controller.Products
-
 func TestProducts_List(t *testing.T) {
 	t.Run("should list all products", testCase(func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.List(ctx)
+		err := controller.Products.List(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -35,7 +33,7 @@ func TestProducts_List(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.List(ctx)
+		err := controller.Products.List(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -49,7 +47,7 @@ func TestProducts_Get(t *testing.T) {
 		tx.URLParams.Add("id", productId)
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Get(ctx)
+		err := controller.Products.Get(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -62,7 +60,7 @@ func TestProducts_Get(t *testing.T) {
 		tx.URLParams.Add("id", "9999")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Get(ctx)
+		err := controller.Products.Get(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -75,7 +73,7 @@ func TestProducts_Create(t *testing.T) {
 		reqBody, _ := json.Marshal(newProduct)
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Create(ctx)
+		err := controller.Products.Create(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusCreated, recorder.Code)
 	}))
@@ -85,7 +83,7 @@ func TestProducts_Create(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Create(ctx)
+		err := controller.Products.Create(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
@@ -99,7 +97,7 @@ func TestProducts_Create(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Create(ctx)
+		err := controller.Products.Create(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -115,7 +113,7 @@ func TestProducts_Update(t *testing.T) {
 		tx.URLParams.Add("id", productId)
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Update(ctx)
+		err := controller.Products.Update(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -128,7 +126,7 @@ func TestProducts_Update(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Update(ctx)
+		err := controller.Products.Update(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
@@ -145,7 +143,7 @@ func TestProducts_Update(t *testing.T) {
 		tx.URLParams.Add("id", "9999")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Update(ctx)
+		err := controller.Products.Update(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -160,7 +158,7 @@ func TestProducts_Delete(t *testing.T) {
 		tx.URLParams.Add("id", productId)
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Delete(ctx)
+		err := controller.Products.Delete(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusNoContent, recorder.Code)
 	}))
@@ -173,8 +171,7 @@ func TestProducts_Delete(t *testing.T) {
 		tx.URLParams.Add("id", "9999")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := productsController.Delete(ctx)
+		err := controller.Products.Delete(ctx)
 		assert.Error(t, err)
 	}))
-
 }

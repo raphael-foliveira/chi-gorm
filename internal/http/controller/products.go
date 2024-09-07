@@ -3,44 +3,30 @@ package controller
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type Products struct {
-	Service *service.Products
+type products struct{}
+
+func NewProducts() *products {
+	return &products{}
 }
 
-func NewProducts(service *service.Products) *Products {
-	return &Products{service}
-}
-
-func (p *Products) Mount(mux *chi.Mux) {
-	router := chi.NewRouter()
-	router.Get("/", useHandler(p.List))
-	router.Post("/", useHandler(p.Create))
-	router.Get("/{id}", useHandler(p.Get))
-	router.Delete("/{id}", useHandler(p.Delete))
-	router.Put("/{id}", useHandler(p.Update))
-
-	mux.Mount("/products", router)
-}
-
-func (p *Products) Create(ctx *Context) error {
+func (p *products) Create(ctx *Context) error {
 	body := &schemas.CreateProduct{}
 	err := ctx.ParseBody(body)
 	if err != nil {
 		return err
 	}
-	newOrder, err := p.Service.Create(body)
+	newOrder, err := service.Products.Create(body)
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusCreated, schemas.NewProduct(newOrder))
 }
 
-func (p *Products) Update(ctx *Context) error {
+func (p *products) Update(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -50,39 +36,39 @@ func (p *Products) Update(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	updatedOrder, err := p.Service.Update(id, body)
+	updatedOrder, err := service.Products.Update(id, body)
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusOK, schemas.NewProduct(updatedOrder))
 }
 
-func (p *Products) Delete(ctx *Context) error {
+func (p *products) Delete(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	err = p.Service.Delete(id)
+	err = service.Products.Delete(id)
 	if err != nil {
 		return err
 	}
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (p *Products) List(ctx *Context) error {
-	products, err := p.Service.List()
+func (p *products) List(ctx *Context) error {
+	products, err := service.Products.List()
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusOK, schemas.NewProducts(products))
 }
 
-func (p *Products) Get(ctx *Context) error {
+func (p *products) Get(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	product, err := p.Service.Get(id)
+	product, err := service.Products.Get(id)
 	if err != nil {
 		return err
 	}

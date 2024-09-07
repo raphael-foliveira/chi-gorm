@@ -3,43 +3,30 @@ package controller
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
-type Orders struct {
-	Service *service.Orders
+type orders struct{}
+
+func NewOrders() *orders {
+	return &orders{}
 }
 
-func NewOrders(service *service.Orders) *Orders {
-	return &Orders{service}
-}
-
-func (o *Orders) Mount(mux *chi.Mux) {
-	router := chi.NewRouter()
-	router.Get("/", useHandler(o.List))
-	router.Post("/", useHandler(o.Create))
-	router.Get("/{id}", useHandler(o.Get))
-	router.Delete("/{id}", useHandler(o.Delete))
-	router.Put("/{id}", useHandler(o.Update))
-	mux.Mount("/orders", router)
-}
-
-func (o *Orders) Create(ctx *Context) error {
+func (o *orders) Create(ctx *Context) error {
 	body := &schemas.CreateOrder{}
 	err := ctx.ParseBody(body)
 	if err != nil {
 		return err
 	}
-	newOrder, err := o.Service.Create(body)
+	newOrder, err := service.Orders.Create(body)
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusCreated, schemas.NewOrder(newOrder))
 }
 
-func (o *Orders) Update(ctx *Context) error {
+func (o *orders) Update(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -49,39 +36,39 @@ func (o *Orders) Update(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	updatedOrder, err := o.Service.Update(id, body)
+	updatedOrder, err := service.Orders.Update(id, body)
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusOK, schemas.NewOrder(updatedOrder))
 }
 
-func (o *Orders) Delete(ctx *Context) error {
+func (o *orders) Delete(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	err = o.Service.Delete(id)
+	err = service.Orders.Delete(id)
 	if err != nil {
 		return err
 	}
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (o *Orders) List(ctx *Context) error {
-	orders, err := o.Service.List()
+func (o *orders) List(ctx *Context) error {
+	orders, err := service.Orders.List()
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusOK, schemas.NewOrders(orders))
 }
 
-func (o *Orders) Get(ctx *Context) error {
+func (o *orders) Get(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	order, err := o.Service.Get(id)
+	order, err := service.Orders.Get(id)
 	if err != nil {
 		return err
 	}

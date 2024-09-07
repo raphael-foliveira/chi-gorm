@@ -1,4 +1,4 @@
-package repository
+package repository_test
 
 import (
 	"testing"
@@ -8,11 +8,8 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	config := config.LoadCfg("../../.env.test")
+	config.Initialize("../../.env.test")
 	database.Initialize(config.DatabaseURL)
 	m.Run()
-	err := database.Close()
-	if err != nil {
-		panic(err)
-	}
+	database.Close()
 }

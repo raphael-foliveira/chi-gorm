@@ -17,14 +17,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var clientsController *controller.Clients
-
 func TestClient_List(t *testing.T) {
 	t.Run("should list all clients", testCase(func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.List(ctx)
+		err := controller.Clients.List(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -34,7 +32,7 @@ func TestClient_List(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.List(ctx)
+		err := controller.Clients.List(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -47,7 +45,7 @@ func TestClient_Get(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Get(ctx)
+		err := controller.Clients.Get(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -60,7 +58,7 @@ func TestClient_Get(t *testing.T) {
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Get(ctx)
+		err := controller.Clients.Get(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -73,7 +71,7 @@ func TestClient_Create(t *testing.T) {
 		reqBody, _ := json.Marshal(newClient)
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Create(ctx)
+		err := controller.Clients.Create(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusCreated, recorder.Code)
 	}))
@@ -83,7 +81,7 @@ func TestClient_Create(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Create(ctx)
+		err := controller.Clients.Create(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
@@ -97,7 +95,7 @@ func TestClient_Create(t *testing.T) {
 		reqBody, _ := json.Marshal(newClient)
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Create(ctx)
+		err := controller.Clients.Create(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -113,7 +111,7 @@ func TestClient_Update(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Update(ctx)
+		err := controller.Clients.Update(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -126,7 +124,7 @@ func TestClient_Update(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Update(ctx)
+		err := controller.Clients.Update(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
@@ -143,7 +141,7 @@ func TestClient_Update(t *testing.T) {
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Update(ctx)
+		err := controller.Clients.Update(ctx)
 		assert.Error(t, err)
 	}))
 }
@@ -156,7 +154,7 @@ func TestClient_Delete(t *testing.T) {
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Delete(ctx)
+		err := controller.Clients.Delete(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusNoContent, recorder.Code)
 	}))
@@ -169,7 +167,7 @@ func TestClient_Delete(t *testing.T) {
 		tx.URLParams.Add("id", "99")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
-		err := clientsController.Delete(ctx)
+		err := controller.Clients.Delete(ctx)
 		assert.Error(t, err)
 	}))
 }

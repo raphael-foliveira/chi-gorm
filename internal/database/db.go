@@ -8,17 +8,17 @@ import (
 
 var DB *gorm.DB
 
-func Initialize(databaseUrl string) *gorm.DB {
+func Initialize(databaseUrl string) error {
 	db, err := start(databaseUrl)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	DB = db
 	err = migrateDb()
 	if err != nil {
-		panic(err)
+		return err
 	}
-	return DB
+	return nil
 }
 
 func start(dbUrl string) (*gorm.DB, error) {
@@ -35,17 +35,10 @@ func migrateDb() error {
 }
 
 func Close() error {
-	if DB == nil {
-		return nil
-	}
 	sqlDb, err := DB.DB()
 	if err != nil {
 		return err
 	}
-	err = sqlDb.Close()
-	if err != nil {
-		return err
-	}
-	DB = nil
+	sqlDb.Close()
 	return nil
 }
