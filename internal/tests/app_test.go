@@ -1,3 +1,5 @@
+//go:build integration
+
 package tests
 
 import (
@@ -5,36 +7,29 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
+	"github.com/raphael-foliveira/chi-gorm/internal/testhelpers"
 )
 
 func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func initializeDependencies() {
-	config.Initialize("../../.env.test")
-	database.Initialize(config.DatabaseURL)
-	repository.Initialize()
-	service.Initialize()
-	controller.Initialize()
+func initializeDependencies(t *testing.T) {
+	t.Helper()
 
+	testhelpers.StartDB(t)
 	app := server.CreateMainRouter()
-
 	controller.Mount(app)
-
 	testServer = httptest.NewServer(app)
 }
 
 func setUp(t *testing.T) {
-	initializeDependencies()
-	populateTables()
+	initializeDependencies(t)
+	populateTables(t)
 	t.Cleanup(func() {
 		database.DB.Exec("DELETE FROM orders")
 		database.DB.Exec("DELETE FROM products")
@@ -43,7 +38,8 @@ func setUp(t *testing.T) {
 	})
 }
 
-func populateTables() {
+func populateTables(t *testing.T) {
+	t.Helper()
 	clients := [20]entities.Client{}
 	products := [20]entities.Product{}
 	orders := [20]entities.Order{}

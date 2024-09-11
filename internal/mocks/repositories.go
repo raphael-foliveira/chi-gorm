@@ -1,3 +1,5 @@
+//go:build unit
+
 package mocks
 
 import (
@@ -84,7 +86,7 @@ func (pr *productsRepository) ExpectSuccess() {
 	pr.Repo.ExpectSuccess()
 	pr.On("List", mock.Anything).Return(ProductsStub, nil)
 	pr.On("Get", mock.Anything).Return(&ProductsStub[0], nil)
-	pr.On("FindMany", mock.Anything).Return([]entities.Product{}, nil)
+	pr.On("FindMany", mock.Anything).Return(ProductsStub, nil)
 }
 
 func (pr *productsRepository) ExpectError() {
@@ -107,7 +109,7 @@ func (or *ordersRepository) ExpectSuccess() {
 	or.Repo.ExpectSuccess()
 	or.On("List").Return(OrdersStub, nil)
 	or.On("Get", mock.Anything).Return(&OrdersStub[0], nil)
-	or.On("FindManyByClientId", mock.Anything).Return([]entities.Order{}, nil)
+	or.On("FindManyByClientId", mock.Anything).Return(OrdersStub, nil)
 }
 
 func (or *ordersRepository) ExpectError() {
@@ -130,7 +132,7 @@ func init() {
 	}
 }
 
-func MountRepositories() {
+func Repositories() {
 	OrdersRepository.ExpectSuccess()
 	ProductsRepository.ExpectSuccess()
 	ClientsRepository.ExpectSuccess()

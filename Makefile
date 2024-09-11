@@ -1,12 +1,20 @@
 run:
 	go run cmd/main.go
 	
+test-unit:
+	go test ./... -tags=unit -cover -coverpkg=../... -coverprofile=c.out;
+
+test-integration:
+	docker compose up -d database && \
+	go test ./... -tags=integration -cover -coverpkg=../... -coverprofile=c.out;
+	docker compose stop;
+
 cover:
 	go tool cover -html=c.out;
 
-test:
+test-all: 
 	docker compose up -d database && \
-	go test ./... -cover -coverpkg=../... -coverprofile=c.out;
+	go test ./... -tags=integration,unit -cover -coverpkg=../... -coverprofile=c.out;
 	docker compose stop;
 
 test-cover: test cover

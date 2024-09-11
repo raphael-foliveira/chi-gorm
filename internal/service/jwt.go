@@ -8,12 +8,10 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/dto"
 )
 
-type jwtS struct {
-	secret []byte
-}
+type jwtS struct{}
 
 func NewJwt() *jwtS {
-	return &jwtS{[]byte(config.JwtSecret)}
+	return &jwtS{}
 }
 
 func (j *jwtS) Sign(payload *dto.JwtPayload) (string, error) {
@@ -26,12 +24,12 @@ func (j *jwtS) Sign(payload *dto.JwtPayload) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims)
-	return token.SignedString(j.secret)
+	return token.SignedString([]byte(config.JwtSecret))
 }
 
 func (j *jwtS) Verify(token string) (*dto.JwtPayload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return []byte(j.secret), nil
+		return []byte(config.JwtSecret), nil
 	}
 	claims := &dto.JwtClaims{}
 	_, err := jwt.ParseWithClaims(token, claims, keyFunc)

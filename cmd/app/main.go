@@ -5,22 +5,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
 func main() {
-	config.Initialize()
-	database.Initialize(config.DatabaseURL)
+	if err := database.Start(); err != nil {
+		log.Fatal("database.Start failed:", err)
+	}
 	defer database.Close()
-	repository.Initialize()
-	service.Initialize()
-	controller.Initialize()
 
 	mux := chi.NewMux()
 
@@ -31,15 +27,16 @@ func main() {
 		Handler: mux,
 	}
 
-	ch := make(chan os.Signal)
-	signal.Notify(ch, os.Interrupt, os.Kill)
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 
 	log.Println("server starting on port 3000")
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 	}()
+
 	<-ch
 
 	log.Println("server interrupted")

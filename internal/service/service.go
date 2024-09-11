@@ -3,15 +3,8 @@ package service
 import "github.com/raphael-foliveira/chi-gorm/internal/ports"
 
 var (
-	Clients  ports.ClientsService
-	Orders   ports.OrdersService
-	Products ports.ProductsService
-	Jwt      ports.JwtService
+	Clients  ports.ClientsService  = NewClients()
+	Orders   ports.OrdersService   = NewOrders()
+	Products ports.ProductsService = NewProducts()
+	Jwt      ports.JwtService      = NewJwt()
 )
-
-func Initialize() {
-	Clients = NewClients()
-	Orders = NewOrders()
-	Products = NewProducts()
-	Jwt = NewJwt()
-}

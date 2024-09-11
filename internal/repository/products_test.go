@@ -1,18 +1,18 @@
+//go:build integration
+
 package repository_test
 
 import (
 	"testing"
 
-	"github.com/raphael-foliveira/chi-gorm/internal/config"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
+	"github.com/raphael-foliveira/chi-gorm/internal/testhelpers"
 )
 
 func TestProductsRepository(t *testing.T) {
-	config.Initialize("../../.env.test")
-	database.Initialize(config.DatabaseURL)
-	repository.Initialize()
+	testhelpers.StartDB(t)
 	defer database.Close()
 
 	t.Run("Should find many", func(t *testing.T) {

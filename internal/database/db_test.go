@@ -1,3 +1,5 @@
+//go:build integration
+
 package database_test
 
 import (
@@ -8,13 +10,13 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	config.Initialize("../../.env.test")
+	config.DatabaseURL = "postgres://postgres:postgres@localhost:5432/chi_gorm_test?sslmode=disable"
 	m.Run()
 }
 
 func TestInitDb(t *testing.T) {
 	t.Run("should retrieve a database instance", func(t *testing.T) {
-		database.Initialize(config.DatabaseURL)
+		database.Start()
 		if database.DB == nil {
 			t.Error("Db not initialized")
 		}

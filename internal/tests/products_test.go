@@ -1,3 +1,5 @@
+//go:build integration
+
 package tests
 
 import (
@@ -47,7 +49,6 @@ func TestProducts_Create(t *testing.T) {
 	faker.FakeData(&product)
 	expectedBody := schemas.Product{}
 	expectedBody.Name = product.Name
-	expectedBody.Price = product.Price
 	response, err := makeRequest("POST", "/products", product)
 	assert.NoError(t, err)
 	defer response.Body.Close()
@@ -65,7 +66,6 @@ func TestProducts_Update(t *testing.T) {
 	faker.FakeData(&update)
 	expectedBody := schemas.Product{}
 	expectedBody.Name = update.Name
-	expectedBody.Price = update.Price
 	response, err := makeRequest("PUT", "/products/"+fmt.Sprint(product.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()

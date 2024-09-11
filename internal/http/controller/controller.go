@@ -15,18 +15,11 @@ import (
 )
 
 var (
-	Clients     *clients
-	HealthCheck *healthCheck
-	Orders      *orders
-	Products    *products
-)
-
-func Initialize() {
-	Clients = NewClients()
+	Clients     = NewClients()
 	HealthCheck = NewHealthCheck()
-	Orders = NewOrders()
-	Products = NewProducts()
-}
+	Orders      = NewOrders()
+	Products    = NewProducts()
+)
 
 type Context struct {
 	Response http.ResponseWriter
