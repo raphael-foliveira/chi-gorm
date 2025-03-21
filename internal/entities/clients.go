@@ -6,7 +6,7 @@ import (
 
 type Client struct {
 	gorm.Model `faker:"-"`
-	Name       string  `faker:"name"`
-	Email      string  `faker:"email"`
-	Orders     []Order `faker:"-"`
+	Name       string  `faker:"name" json:"name"`
+	Email      string  `faker:"email" json:"email"`
+	Orders     []Order `faker:"-" json:"orders"`
 }
