@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
 func main() {
@@ -20,7 +21,19 @@ func main() {
 
 	mux := chi.NewMux()
 
-	controller.Mount(mux)
+	clientsRepo := repository.NewClients(database.DB)
+	ordersRepo := repository.NewOrders(database.DB)
+	productsRepo := repository.NewProducts(database.DB)
+
+	clientsController := controller.NewClients(clientsRepo, ordersRepo)
+	productsController := controller.NewProducts(productsRepo)
+	ordersController := controller.NewOrders(ordersRepo)
+	healthCheckController := controller.NewHealthCheck()
+
+	mux.Mount("/clients", clientsController.Routes())
+	mux.Mount("/products", productsController.Routes())
+	mux.Mount("/orders", ordersController.Routes())
+	mux.Mount("/health-check", healthCheckController.Routes())
 
 	s := &http.Server{
 		Addr:    ":3000",
@@ -30,8 +43,8 @@ func main() {
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 
-	log.Println("server starting on port 3000")
 	go func() {
+		log.Println("server starting on port 3000")
 		if err := s.ListenAndServe(); err != nil {
 			log.Fatal(err)
 		}

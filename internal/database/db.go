@@ -15,8 +15,7 @@ func Start() error {
 		return err
 	}
 	DB = db
-	err = migrateDb()
-	if err != nil {
+	if err := migrateDb(); err != nil {
 		return err
 	}
 	return nil

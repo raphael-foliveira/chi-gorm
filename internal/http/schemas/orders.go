@@ -1,6 +1,8 @@
 package schemas
 
 import (
+	"fmt"
+
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
@@ -28,7 +30,18 @@ type UpdateOrder struct {
 }
 
 func (uo *UpdateOrder) Validate() error {
-	return validate.Rules(validate.Min("quantity", int(uo.Quantity), 1))
+	return validate.Rules(func() error {
+		if int(uo.Quantity) < 1 {
+			return fmt.Errorf("%v: must be greater than %v", "quantity", 1)
+		}
+		return nil
+	}())
+}
+
+func (uo *UpdateOrder) ToModel() *entities.Order {
+	return &entities.Order{
+		Quantity: uo.Quantity,
+	}
 }
 
 type Order struct {

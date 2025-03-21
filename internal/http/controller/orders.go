@@ -3,72 +3,89 @@ package controller
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
+	"github.com/raphael-foliveira/chi-gorm/internal/ports"
 )
 
-type orders struct{}
-
-func NewOrders() *orders {
-	return &orders{}
+type Orders struct {
+	ordersRepo ports.OrdersRepository
 }
 
-func (o *orders) Create(ctx *Context) error {
-	body := &schemas.CreateOrder{}
-	err := ctx.ParseBody(body)
+func NewOrders(ordersRepo ports.OrdersRepository) *Orders {
+	return &Orders{
+		ordersRepo: ordersRepo,
+	}
+}
+
+func (c *Orders) Routes() *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(c.List))
+	router.Post("/", useHandler(c.Create))
+	router.Get("/{id}", useHandler(c.Get))
+	router.Delete("/{id}", useHandler(c.Delete))
+	router.Put("/{id}", useHandler(c.Update))
+
+	return router
+}
+
+func (o *Orders) Create(ctx *Context) error {
+	var body schemas.CreateOrder
+	err := ctx.ParseBody(&body)
 	if err != nil {
 		return err
 	}
-	newOrder, err := service.Orders.Create(body)
-	if err != nil {
+	newOrder := body.ToModel()
+	if err := o.ordersRepo.Create(newOrder); err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusCreated, schemas.NewOrder(newOrder))
 }
 
-func (o *orders) Update(ctx *Context) error {
+func (o *Orders) Update(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	body := &schemas.UpdateOrder{}
-	err = ctx.ParseBody(body)
+	var body schemas.UpdateOrder
+	err = ctx.ParseBody(&body)
 	if err != nil {
 		return err
 	}
-	updatedOrder, err := service.Orders.Update(id, body)
-	if err != nil {
+	order := body.ToModel()
+	order.ID = id
+	if err := o.ordersRepo.Update(order); err != nil {
 		return err
 	}
-	return ctx.JSON(http.StatusOK, schemas.NewOrder(updatedOrder))
+	return ctx.JSON(http.StatusOK, schemas.NewOrder(order))
 }
 
-func (o *orders) Delete(ctx *Context) error {
+func (o *Orders) Delete(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	err = service.Orders.Delete(id)
+	err = o.ordersRepo.Delete(id)
 	if err != nil {
 		return err
 	}
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (o *orders) List(ctx *Context) error {
-	orders, err := service.Orders.List()
+func (o *Orders) List(ctx *Context) error {
+	orders, err := o.ordersRepo.List()
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusOK, schemas.NewOrders(orders))
 }
 
-func (o *orders) Get(ctx *Context) error {
+func (o *Orders) Get(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	order, err := service.Orders.Get(id)
+	order, err := o.ordersRepo.Get(id)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/domain"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
 	"github.com/raphael-foliveira/chi-gorm/internal/testhelpers"
@@ -40,9 +40,9 @@ func setUp(t *testing.T) {
 
 func populateTables(t *testing.T) {
 	t.Helper()
-	clients := [20]entities.Client{}
-	products := [20]entities.Product{}
-	orders := [20]entities.Order{}
+	clients := [20]domain.Client{}
+	products := [20]domain.Product{}
+	orders := [20]domain.Order{}
 	faker.FakeData(&clients)
 	faker.FakeData(&products)
 	faker.FakeData(&orders)

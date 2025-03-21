@@ -18,7 +18,10 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 }
 
 func (cp *CreateProduct) Validate() error {
-	return validate.Rules(validate.Required("name", cp.Name), validate.Min("price", int(cp.Price), 0))
+	return validate.Rules(
+		validate.Required("name", cp.Name),
+		validate.Min("price", int(cp.Price), 0),
+	)
 }
 
 type UpdateProduct struct {

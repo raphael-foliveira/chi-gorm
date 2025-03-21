@@ -3,84 +3,106 @@ package controller
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
-	"github.com/raphael-foliveira/chi-gorm/internal/service"
+	"github.com/raphael-foliveira/chi-gorm/internal/ports"
 )
 
-type clients struct{}
-
-func NewClients() *clients {
-	return &clients{}
+type Clients struct {
+	clientsRepo ports.ClientsRepository
+	ordersRepo  ports.OrdersRepository
 }
 
-func (c *clients) Create(ctx *Context) error {
-	body := &schemas.CreateClient{}
-	err := ctx.ParseBody(body)
+func NewClients(clientsRepo ports.ClientsRepository, ordersRepo ports.OrdersRepository) *Clients {
+	return &Clients{
+		clientsRepo: clientsRepo,
+		ordersRepo:  ordersRepo,
+	}
+}
+
+func (c *Clients) Routes() *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/", useHandler(c.List))
+	router.Get("/{id}", useHandler(c.Get))
+	router.Get("/{id}/products", useHandler(c.GetProducts))
+	router.Post("/", useHandler(c.Create))
+	router.Delete("/{id}", useHandler(c.Delete))
+	router.Put("/{id}", useHandler(c.Update))
+
+	return router
+}
+
+func (c *Clients) Create(ctx *Context) error {
+	var body schemas.CreateClient
+	err := ctx.ParseBody(&body)
 	if err != nil {
 		return err
 	}
-	newClient, err := service.Clients.Create(body)
-	if err != nil {
+	newClient := body.ToModel()
+	if err := c.clientsRepo.Create(body.ToModel()); err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusCreated, &newClient)
 }
 
-func (c *clients) Update(ctx *Context) error {
+func (c *Clients) Update(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	body := &schemas.UpdateClient{}
-	err = ctx.ParseBody(body)
+	var body schemas.UpdateClient
+	err = ctx.ParseBody(&body)
 	if err != nil {
 		return err
 	}
-	updatedClient, err := service.Clients.Update(id, body)
-	if err != nil {
+
+	client := body.ToModel()
+	client.ID = id
+
+	if err := c.clientsRepo.Update(client); err != nil {
 		return err
 	}
-	return ctx.JSON(http.StatusOK, updatedClient)
+	return ctx.JSON(http.StatusOK, client)
 }
 
-func (c *clients) Delete(ctx *Context) error {
+func (c *Clients) Delete(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	err = service.Clients.Delete(id)
+	err = c.clientsRepo.Delete(id)
 	if err != nil {
 		return err
 	}
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (c *clients) List(ctx *Context) error {
-	clients, err := service.Clients.List()
+func (c *Clients) List(ctx *Context) error {
+	clients, err := c.clientsRepo.List()
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusOK, schemas.NewClients(clients))
 }
 
-func (c *clients) Get(ctx *Context) error {
+func (c *Clients) Get(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	client, err := service.Clients.Get(id)
+	client, err := c.clientsRepo.Get(id)
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusOK, schemas.NewClientDetail(client))
 }
 
-func (c *clients) GetProducts(ctx *Context) error {
+func (c *Clients) GetProducts(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
 	}
-	orders, err := service.Clients.GetOrders(id)
+	orders, err := c.ordersRepo.FindByClient(id)
 	if err != nil {
 		return err
 	}

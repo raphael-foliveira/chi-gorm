@@ -10,14 +10,14 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/domain"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestClients_List(t *testing.T) {
 	setUp(t)
-	clients := []entities.Client{}
+	clients := []domain.Client{}
 	database.DB.Find(&clients)
 	expectedBody := schemas.NewClients(clients)
 	response, err := makeRequest("GET", "/clients", nil)
@@ -32,7 +32,7 @@ func TestClients_List(t *testing.T) {
 
 func TestClients_Get(t *testing.T) {
 	setUp(t)
-	client := entities.Client{}
+	client := domain.Client{}
 	database.DB.First(&client)
 	expectedBody := schemas.NewClient(&client)
 	response, err := makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
@@ -53,7 +53,7 @@ func TestClients_Create(t *testing.T) {
 	response, err := makeRequest("POST", "/clients", client)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-	responseBody := entities.Client{}
+	responseBody := domain.Client{}
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 	assert.Equal(t, expectedBody.Name, responseBody.Name)
@@ -61,7 +61,7 @@ func TestClients_Create(t *testing.T) {
 
 func TestClients_Update(t *testing.T) {
 	setUp(t)
-	client := entities.Client{}
+	client := domain.Client{}
 	database.DB.First(&client)
 	update := schemas.UpdateClient{}
 	faker.FakeData(&update)
@@ -70,7 +70,7 @@ func TestClients_Update(t *testing.T) {
 	response, err := makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-	responseBody := entities.Client{}
+	responseBody := domain.Client{}
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	assert.Equal(t, responseBody.Name, expectedBody.Name)
@@ -78,7 +78,7 @@ func TestClients_Update(t *testing.T) {
 
 func TestClients_Delete(t *testing.T) {
 	setUp(t)
-	client := entities.Client{}
+	client := domain.Client{}
 	database.DB.First(&client)
 	response, err := makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
 	assert.NoError(t, err)

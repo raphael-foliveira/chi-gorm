@@ -3,7 +3,7 @@ package entities
 import "gorm.io/gorm"
 
 type Order struct {
-	gorm.Model `faker:"-"`
+	gorm.Model `faker:"-" json:"-"`
 	ClientID   uint
 	Client     Client `gorm:"OnDelete:CASCADE;"`
 	ProductID  uint

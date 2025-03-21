@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/domain"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/stretchr/testify/mock"
 )
@@ -59,10 +59,8 @@ func (s *Repo[T]) Delete(client *T) error {
 	return c.Error(0)
 }
 
-var ClientsRepository = &clientsRepository{Repo[entities.Client]{}}
-
 type clientsRepository struct {
-	Repo[entities.Client]
+	Repo[domain.Client]
 }
 
 func (cr *clientsRepository) ExpectSuccess() {
@@ -71,15 +69,13 @@ func (cr *clientsRepository) ExpectSuccess() {
 	cr.On("Get", mock.Anything).Return(&ClientsStub[0], nil)
 }
 
-var ProductsRepository = &productsRepository{Repo[entities.Product]{}}
-
 type productsRepository struct {
-	Repo[entities.Product]
+	Repo[domain.Product]
 }
 
-func (cr *productsRepository) FindMany(ids []uint) ([]entities.Product, error) {
+func (cr *productsRepository) FindMany(ids []uint) ([]domain.Product, error) {
 	c := cr.Called(ids)
-	return c.Get(0).([]entities.Product), c.Error(1)
+	return c.Get(0).([]domain.Product), c.Error(1)
 }
 
 func (pr *productsRepository) ExpectSuccess() {
@@ -94,15 +90,13 @@ func (pr *productsRepository) ExpectError() {
 	pr.On("FindMany", mock.Anything).Return(nil, errMock)
 }
 
-var OrdersRepository = &ordersRepository{Repo[entities.Order]{}}
-
 type ordersRepository struct {
-	Repo[entities.Order]
+	Repo[domain.Order]
 }
 
-func (os *ordersRepository) FindManyByClientId(clientId uint) ([]entities.Order, error) {
+func (os *ordersRepository) FindManyByClientId(clientId uint) ([]domain.Order, error) {
 	c := os.Called(clientId)
-	return c.Get(0).([]entities.Order), c.Error(1)
+	return c.Get(0).([]domain.Order), c.Error(1)
 }
 
 func (or *ordersRepository) ExpectSuccess() {
@@ -117,18 +111,12 @@ func (or *ordersRepository) ExpectError() {
 	or.On("FindManyByClientId", mock.Anything).Return(nil, errMock)
 }
 
-var (
-	ClientsStub  []entities.Client
-	ProductsStub []entities.Product
-	OrdersStub   []entities.Order
-)
-
 func init() {
 	faker.FakeData(&ClientsStub)
 	faker.FakeData(&ProductsStub)
 	faker.FakeData(&OrdersStub)
 	for i := range ClientsStub {
-		ClientsStub[i].Orders = []entities.Order{}
+		ClientsStub[i].Orders = []domain.Order{}
 	}
 }
 

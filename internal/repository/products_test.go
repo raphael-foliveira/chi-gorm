@@ -6,8 +6,7 @@ import (
 	"testing"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
+	"github.com/raphael-foliveira/chi-gorm/internal/domain"
 	"github.com/raphael-foliveira/chi-gorm/internal/testhelpers"
 )
 
@@ -16,7 +15,8 @@ func TestProductsRepository(t *testing.T) {
 	defer database.Close()
 
 	t.Run("Should find many", func(t *testing.T) {
-		products := []entities.Product{
+		deps := newTestDependencies(t)
+		products := []domain.Product{
 			{
 				Name:  "Brand 1",
 				Price: 1.0,
@@ -27,7 +27,7 @@ func TestProductsRepository(t *testing.T) {
 			},
 		}
 		database.DB.Create(&products)
-		foundProducts, err := repository.Products.FindMany([]uint{products[0].ID, products[1].ID})
+		foundProducts, err := deps.productsRepo.FindMany([]uint{products[0].ID, products[1].ID})
 		if err != nil {
 			t.Error(err)
 		}

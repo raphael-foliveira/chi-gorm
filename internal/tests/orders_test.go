@@ -10,14 +10,14 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/entities"
+	"github.com/raphael-foliveira/chi-gorm/internal/domain"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestOrders_List(t *testing.T) {
 	setUp(t)
-	orders := []entities.Order{}
+	orders := []domain.Order{}
 	database.DB.Find(&orders)
 	expectedBody := schemas.NewOrders(orders)
 	response, err := makeRequest("GET", "/orders", nil)
@@ -31,7 +31,7 @@ func TestOrders_List(t *testing.T) {
 
 func TestOrders_Get(t *testing.T) {
 	setUp(t)
-	order := entities.Order{}
+	order := domain.Order{}
 	database.DB.First(&order)
 	expectedBody := schemas.NewOrder(&order)
 	response, err := makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
@@ -45,9 +45,9 @@ func TestOrders_Get(t *testing.T) {
 
 func TestOrders_Create(t *testing.T) {
 	setUp(t)
-	product := entities.Product{}
+	product := domain.Product{}
 	database.DB.First(&product)
-	client := entities.Client{}
+	client := domain.Client{}
 	database.DB.First(&client)
 	order := schemas.CreateOrder{
 		ProductID: product.ID,
@@ -59,7 +59,7 @@ func TestOrders_Create(t *testing.T) {
 	response, err := makeRequest("POST", "/orders", order)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-	responseBody := entities.Order{}
+	responseBody := domain.Order{}
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 	assert.Equal(t, responseBody.Quantity, expectedBody.Quantity)
@@ -67,7 +67,7 @@ func TestOrders_Create(t *testing.T) {
 
 func TestOrders_Update(t *testing.T) {
 	setUp(t)
-	order := entities.Order{}
+	order := domain.Order{}
 	database.DB.First(&order)
 	update := schemas.UpdateOrder{}
 	faker.FakeData(&update)
@@ -76,7 +76,7 @@ func TestOrders_Update(t *testing.T) {
 	response, err := makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-	responseBody := entities.Order{}
+	responseBody := domain.Order{}
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	assert.Equal(t, responseBody.Quantity, expectedBody.Quantity)
@@ -84,7 +84,7 @@ func TestOrders_Update(t *testing.T) {
 
 func TestOrders_Delete(t *testing.T) {
 	setUp(t)
-	order := entities.Order{}
+	order := domain.Order{}
 	database.DB.First(&order)
 	response, err := makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 	assert.NoError(t, err)
