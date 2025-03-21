@@ -1,5 +1,3 @@
-//go:build integration
-
 package tests
 
 import (
@@ -8,9 +6,10 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/domain"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
+	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/raphael-foliveira/chi-gorm/internal/testhelpers"
 )
 
@@ -21,9 +20,19 @@ func TestMain(m *testing.M) {
 func initializeDependencies(t *testing.T) {
 	t.Helper()
 
-	testhelpers.StartDB(t)
+	testhelpers.StartDB()
 	app := server.CreateMainRouter()
-	controller.Mount(app)
+	clientsRepository := repository.NewClients(database.DB)
+	ordersRepository := repository.NewOrders(database.DB)
+	productsRepository := repository.NewProducts(database.DB)
+	clientsController := controller.NewClients(clientsRepository, ordersRepository)
+	ordersController := controller.NewOrders(ordersRepository)
+	productsController := controller.NewProducts(productsRepository)
+
+	app.Mount("/clients", clientsController.Routes())
+	app.Mount("/orders", ordersController.Routes())
+	app.Mount("/products", productsController.Routes())
+
 	testServer = httptest.NewServer(app)
 }
 
@@ -40,9 +49,9 @@ func setUp(t *testing.T) {
 
 func populateTables(t *testing.T) {
 	t.Helper()
-	clients := [20]domain.Client{}
-	products := [20]domain.Product{}
-	orders := [20]domain.Order{}
+	clients := [20]entities.Client{}
+	products := [20]entities.Product{}
+	orders := [20]entities.Order{}
 	faker.FakeData(&clients)
 	faker.FakeData(&products)
 	faker.FakeData(&orders)

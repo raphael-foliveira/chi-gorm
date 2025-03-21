@@ -1,14 +1,14 @@
 package testhelpers
 
 import (
-	"testing"
+	"log"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 )
 
-func StartDB(t *testing.T) {
+func StartDB() {
 	if err := database.Start(); err != nil {
-		t.Log("Error starting test database")
-		t.Fatal(err)
+		log.Println("Error starting test database")
+		log.Fatal(err)
 	}
 }

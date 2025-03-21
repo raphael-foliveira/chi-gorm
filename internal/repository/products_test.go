@@ -1,22 +1,20 @@
-//go:build integration
-
 package repository_test
 
 import (
 	"testing"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/domain"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/testhelpers"
 )
 
 func TestProductsRepository(t *testing.T) {
-	testhelpers.StartDB(t)
+	testhelpers.StartDB()
 	defer database.Close()
 
 	t.Run("Should find many", func(t *testing.T) {
 		deps := newTestDependencies(t)
-		products := []domain.Product{
+		products := []entities.Product{
 			{
 				Name:  "Brand 1",
 				Price: 1.0,
