@@ -1,5 +1,3 @@
-//go:build integration
-
 package database_test
 
 import (

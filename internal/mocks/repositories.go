@@ -1,13 +1,10 @@
-//go:build unit
-
 package mocks
 
 import (
 	"errors"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/domain"
-	"github.com/raphael-foliveira/chi-gorm/internal/repository"
+	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -59,54 +56,54 @@ func (s *Repo[T]) Delete(client *T) error {
 	return c.Error(0)
 }
 
-type clientsRepository struct {
-	Repo[domain.Client]
+type ClientsRepository struct {
+	Repo[entities.Client]
 }
 
-func (cr *clientsRepository) ExpectSuccess() {
+func (cr *ClientsRepository) ExpectSuccess() {
 	cr.Repo.ExpectSuccess()
 	cr.On("List").Return(ClientsStub, nil)
 	cr.On("Get", mock.Anything).Return(&ClientsStub[0], nil)
 }
 
-type productsRepository struct {
-	Repo[domain.Product]
+type ProductsRepository struct {
+	Repo[entities.Product]
 }
 
-func (cr *productsRepository) FindMany(ids []uint) ([]domain.Product, error) {
+func (cr *ProductsRepository) FindMany(ids []uint) ([]entities.Product, error) {
 	c := cr.Called(ids)
-	return c.Get(0).([]domain.Product), c.Error(1)
+	return c.Get(0).([]entities.Product), c.Error(1)
 }
 
-func (pr *productsRepository) ExpectSuccess() {
+func (pr *ProductsRepository) ExpectSuccess() {
 	pr.Repo.ExpectSuccess()
 	pr.On("List", mock.Anything).Return(ProductsStub, nil)
 	pr.On("Get", mock.Anything).Return(&ProductsStub[0], nil)
 	pr.On("FindMany", mock.Anything).Return(ProductsStub, nil)
 }
 
-func (pr *productsRepository) ExpectError() {
+func (pr *ProductsRepository) ExpectError() {
 	pr.Repo.ExpectError()
 	pr.On("FindMany", mock.Anything).Return(nil, errMock)
 }
 
-type ordersRepository struct {
-	Repo[domain.Order]
+type OrdersRepository struct {
+	Repo[entities.Order]
 }
 
-func (os *ordersRepository) FindManyByClientId(clientId uint) ([]domain.Order, error) {
+func (os *OrdersRepository) FindManyByClientId(clientId uint) ([]entities.Order, error) {
 	c := os.Called(clientId)
-	return c.Get(0).([]domain.Order), c.Error(1)
+	return c.Get(0).([]entities.Order), c.Error(1)
 }
 
-func (or *ordersRepository) ExpectSuccess() {
+func (or *OrdersRepository) ExpectSuccess() {
 	or.Repo.ExpectSuccess()
 	or.On("List").Return(OrdersStub, nil)
 	or.On("Get", mock.Anything).Return(&OrdersStub[0], nil)
 	or.On("FindManyByClientId", mock.Anything).Return(OrdersStub, nil)
 }
 
-func (or *ordersRepository) ExpectError() {
+func (or *OrdersRepository) ExpectError() {
 	or.Repo.ExpectError()
 	or.On("FindManyByClientId", mock.Anything).Return(nil, errMock)
 }
@@ -116,21 +113,12 @@ func init() {
 	faker.FakeData(&ProductsStub)
 	faker.FakeData(&OrdersStub)
 	for i := range ClientsStub {
-		ClientsStub[i].Orders = []domain.Order{}
+		ClientsStub[i].Orders = []entities.Order{}
 	}
 }
 
-func Repositories() {
-	OrdersRepository.ExpectSuccess()
-	ProductsRepository.ExpectSuccess()
-	ClientsRepository.ExpectSuccess()
-	repository.Clients = ClientsRepository
-	repository.Products = ProductsRepository
-	repository.Orders = OrdersRepository
-}
-
-func ClearRepositoryMocks() {
-	ClientsRepository.ExpectedCalls = nil
-	ProductsRepository.ExpectedCalls = nil
-	OrdersRepository.ExpectedCalls = nil
-}
+var (
+	ClientsStub  []entities.Client
+	ProductsStub []entities.Product
+	OrdersStub   []entities.Order
+)

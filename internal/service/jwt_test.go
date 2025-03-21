@@ -1,5 +1,3 @@
-//go:build unit
-
 package service_test
 
 import (
@@ -11,6 +9,7 @@ import (
 )
 
 func TestJwt(t *testing.T) {
+	jwtService := service.NewJwt()
 	payload := &dto.JwtPayload{
 		ClientID:   1,
 		ClientName: "John Doe",
@@ -18,15 +17,15 @@ func TestJwt(t *testing.T) {
 	}
 
 	t.Run("should sign a token", func(t *testing.T) {
-		tokenString, err := service.Jwt.Sign(payload)
+		tokenString, err := jwtService.Sign(payload)
 		assert.NoError(t, err)
 		assert.NotEqual(t, "", tokenString)
 	})
 
 	t.Run("should verify a token", func(t *testing.T) {
-		tokenString, err := service.Jwt.Sign(payload)
+		tokenString, err := jwtService.Sign(payload)
 		assert.NoError(t, err)
-		tokenPayload, err := service.Jwt.Verify(tokenString)
+		tokenPayload, err := jwtService.Verify(tokenString)
 		assert.NoError(t, err)
 		assert.Equal(t, payload.ClientID, tokenPayload.ClientID)
 		assert.Equal(t, payload.ClientName, tokenPayload.ClientName)
