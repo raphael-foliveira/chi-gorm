@@ -4,18 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 )
 
-var testServer *httptest.Server
-
-func makeRequest(method string, endpoint string, body interface{}) (*http.Response, error) {
-	hc := &http.Client{}
-	url := testServer.URL + endpoint
-	if body != nil {
-		return sendRequestWithBody(hc, method, body, url)
+func makeRequest(testServerUrl string) func(method string, endpoint string, body interface{}) (*http.Response, error) {
+	return func(method string, endpoint string, body interface{}) (*http.Response, error) {
+		hc := &http.Client{}
+		url := testServerUrl + endpoint
+		if body != nil {
+			return sendRequestWithBody(hc, method, body, url)
+		}
+		return sendRequest(hc, method, url)
 	}
-	return sendRequest(hc, method, url)
 }
 
 func sendRequest(hc *http.Client, method string, url string) (*http.Response, error) {
