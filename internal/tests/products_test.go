@@ -14,11 +14,11 @@ import (
 )
 
 func TestProducts_List(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	products := []entities.Product{}
 	database.DB.Find(&products)
 	expectedBody := schemas.NewProducts(products)
-	response, err := makeRequest("GET", "/products", nil)
+	response, err := deps.makeRequest("GET", "/products", nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := []schemas.Product{}
@@ -28,11 +28,11 @@ func TestProducts_List(t *testing.T) {
 }
 
 func TestProduct_Get(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	product := entities.Product{}
 	database.DB.First(&product)
 	expectedBody := schemas.NewProduct(&product)
-	response, err := makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
+	response, err := deps.makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Product{}
@@ -42,12 +42,12 @@ func TestProduct_Get(t *testing.T) {
 }
 
 func TestProducts_Create(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	product := schemas.CreateProduct{}
 	faker.FakeData(&product)
 	expectedBody := schemas.Product{}
 	expectedBody.Name = product.Name
-	response, err := makeRequest("POST", "/products", product)
+	response, err := deps.makeRequest("POST", "/products", product)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Product{}
@@ -57,14 +57,14 @@ func TestProducts_Create(t *testing.T) {
 }
 
 func TestProducts_Update(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	product := entities.Product{}
 	database.DB.First(&product)
 	update := schemas.UpdateProduct{}
 	faker.FakeData(&update)
 	expectedBody := schemas.Product{}
 	expectedBody.Name = update.Name
-	response, err := makeRequest("PUT", "/products/"+fmt.Sprint(product.ID), update)
+	response, err := deps.makeRequest("PUT", "/products/"+fmt.Sprint(product.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Product{}
@@ -74,10 +74,10 @@ func TestProducts_Update(t *testing.T) {
 }
 
 func TestProducts_Delete(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	product := entities.Product{}
 	database.DB.First(&product)
-	response, err := makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
+	response, err := deps.makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)

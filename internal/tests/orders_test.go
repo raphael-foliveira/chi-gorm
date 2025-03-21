@@ -14,11 +14,11 @@ import (
 )
 
 func TestOrders_List(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	orders := []entities.Order{}
 	database.DB.Find(&orders)
 	expectedBody := schemas.NewOrders(orders)
-	response, err := makeRequest("GET", "/orders", nil)
+	response, err := deps.makeRequest("GET", "/orders", nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := []schemas.Order{}
@@ -28,11 +28,11 @@ func TestOrders_List(t *testing.T) {
 }
 
 func TestOrders_Get(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	order := entities.Order{}
 	database.DB.First(&order)
 	expectedBody := schemas.NewOrder(&order)
-	response, err := makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
+	response, err := deps.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Order{}
@@ -42,7 +42,7 @@ func TestOrders_Get(t *testing.T) {
 }
 
 func TestOrders_Create(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	product := entities.Product{}
 	database.DB.First(&product)
 	client := entities.Client{}
@@ -54,7 +54,7 @@ func TestOrders_Create(t *testing.T) {
 	faker.FakeData(&order)
 	expectedBody := schemas.Order{}
 	expectedBody.Quantity = order.Quantity
-	response, err := makeRequest("POST", "/orders", order)
+	response, err := deps.makeRequest("POST", "/orders", order)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Order{}
@@ -64,27 +64,26 @@ func TestOrders_Create(t *testing.T) {
 }
 
 func TestOrders_Update(t *testing.T) {
-	setUp(t)
-	order := entities.Order{}
+	deps := newTestDependencies(t)
+	var order entities.Order
 	database.DB.First(&order)
 	update := schemas.UpdateOrder{}
 	faker.FakeData(&update)
-	expectedBody := schemas.Order{}
-	expectedBody.Quantity = update.Quantity
-	response, err := makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
+	expectedQuantity := update.Quantity
+	response, err := deps.makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-	responseBody := entities.Order{}
+	var responseBody schemas.Order
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
-	assert.Equal(t, responseBody.Quantity, expectedBody.Quantity)
+	assert.Equal(t, responseBody.Quantity, expectedQuantity)
 }
 
 func TestOrders_Delete(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	order := entities.Order{}
 	database.DB.First(&order)
-	response, err := makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
+	response, err := deps.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)

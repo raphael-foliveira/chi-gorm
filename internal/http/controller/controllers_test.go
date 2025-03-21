@@ -15,6 +15,9 @@ type testDependencies struct {
 	clientsController  *controller.Clients
 	ordersController   *controller.Orders
 	productsController *controller.Products
+	clientsStubs       []entities.Client
+	productsStubs      []entities.Product
+	ordersStubs        []entities.Order
 }
 
 func newTestDependencies(t *testing.T) *testDependencies {
@@ -45,16 +48,15 @@ func newTestDependencies(t *testing.T) *testDependencies {
 	database.DB.Create(&ordersStub)
 
 	t.Cleanup(func() {
-		database.DB.Delete(&clientsStub)
-		database.DB.Delete(&productsStub)
-		database.DB.Delete(&ordersStub)
-		database.Close()
 	})
 
 	return &testDependencies{
 		clientsController:  clientsController,
 		ordersController:   ordersController,
 		productsController: productsController,
+		clientsStubs:       clientsStub,
+		productsStubs:      productsStub,
+		ordersStubs:        ordersStub,
 	}
 }
 
@@ -68,4 +70,10 @@ func testCase(testFunc func(*testing.T, *testDependencies)) func(*testing.T) {
 func TestMain(m *testing.M) {
 	testhelpers.StartDB()
 	m.Run()
+	database.DB.Exec(`
+	DELETE FROM orders;
+	DELETE FROM products;
+	DELETE FROM clients;
+	`)
+	database.Close()
 }

@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -17,7 +18,18 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func initializeDependencies(t *testing.T) {
+type testDependencies struct {
+	clientsController  *controller.Clients
+	ordersController   *controller.Orders
+	productsController *controller.Products
+	clientsStubs       []entities.Client
+	productsStubs      []entities.Product
+	ordersStubs        []entities.Order
+	testServer         *httptest.Server
+	makeRequest        func(method, path string, body interface{}) (*http.Response, error)
+}
+
+func newTestDependencies(t *testing.T) *testDependencies {
 	t.Helper()
 
 	testhelpers.StartDB()
@@ -33,25 +45,9 @@ func initializeDependencies(t *testing.T) {
 	app.Mount("/orders", ordersController.Routes())
 	app.Mount("/products", productsController.Routes())
 
-	testServer = httptest.NewServer(app)
-}
-
-func setUp(t *testing.T) {
-	initializeDependencies(t)
-	populateTables(t)
-	t.Cleanup(func() {
-		database.DB.Exec("DELETE FROM orders")
-		database.DB.Exec("DELETE FROM products")
-		database.DB.Exec("DELETE FROM clients")
-		database.Close()
-	})
-}
-
-func populateTables(t *testing.T) {
-	t.Helper()
-	clients := [20]entities.Client{}
-	products := [20]entities.Product{}
-	orders := [20]entities.Order{}
+	clients := []entities.Client{}
+	products := []entities.Product{}
+	orders := []entities.Order{}
 	faker.FakeData(&clients)
 	faker.FakeData(&products)
 	faker.FakeData(&orders)
@@ -60,6 +56,9 @@ func populateTables(t *testing.T) {
 	database.DB.Create(&products)
 
 	for i := range orders {
+		if i >= len(clients) || i >= len(products) {
+			break
+		}
 		orders[i].ID = 0
 		orders[i].ClientID = clients[i].ID
 		orders[i].Client = clients[i]
@@ -67,4 +66,19 @@ func populateTables(t *testing.T) {
 		orders[i].ProductID = products[i].ID
 	}
 	database.DB.Create(&orders)
+
+	t.Cleanup(func() {
+	})
+
+	testServer := httptest.NewServer(app)
+	return &testDependencies{
+		clientsController:  clientsController,
+		ordersController:   ordersController,
+		productsController: productsController,
+		clientsStubs:       clients,
+		productsStubs:      products,
+		ordersStubs:        orders,
+		testServer:         testServer,
+		makeRequest:        makeRequest(testServer.URL),
+	}
 }

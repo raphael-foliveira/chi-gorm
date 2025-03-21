@@ -40,7 +40,7 @@ func TestProducts_List(t *testing.T) {
 func TestProducts_Get(t *testing.T) {
 	t.Run("should get a product", testCase(func(t *testing.T, deps *testDependencies) {
 		recorder := httptest.NewRecorder()
-		productId := fmt.Sprintf("%v", mocks.ProductsStub[0].ID)
+		productId := fmt.Sprintf("%v", deps.productsStubs[0].ID)
 		request := httptest.NewRequest("GET", "/"+productId, nil)
 		tx := chi.NewRouteContext()
 		tx.URLParams.Add("id", productId)

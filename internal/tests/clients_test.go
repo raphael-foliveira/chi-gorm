@@ -14,11 +14,11 @@ import (
 )
 
 func TestClients_List(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	clients := []entities.Client{}
 	database.DB.Find(&clients)
 	expectedBody := schemas.NewClients(clients)
-	response, err := makeRequest("GET", "/clients", nil)
+	response, err := deps.makeRequest("GET", "/clients", nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := []schemas.Client{}
@@ -29,11 +29,11 @@ func TestClients_List(t *testing.T) {
 }
 
 func TestClients_Get(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	client := entities.Client{}
 	database.DB.First(&client)
 	expectedBody := schemas.NewClient(&client)
-	response, err := makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
+	response, err := deps.makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Client{}
@@ -43,12 +43,12 @@ func TestClients_Get(t *testing.T) {
 }
 
 func TestClients_Create(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	client := schemas.CreateClient{}
 	faker.FakeData(&client)
 	expectedBody := schemas.Client{}
 	expectedBody.Name = client.Name
-	response, err := makeRequest("POST", "/clients", client)
+	response, err := deps.makeRequest("POST", "/clients", client)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Client{}
@@ -58,14 +58,14 @@ func TestClients_Create(t *testing.T) {
 }
 
 func TestClients_Update(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	client := entities.Client{}
 	database.DB.First(&client)
 	update := schemas.UpdateClient{}
 	faker.FakeData(&update)
 	expectedBody := schemas.Client{}
 	expectedBody.Name = update.Name
-	response, err := makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
+	response, err := deps.makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Client{}
@@ -75,10 +75,10 @@ func TestClients_Update(t *testing.T) {
 }
 
 func TestClients_Delete(t *testing.T) {
-	setUp(t)
+	deps := newTestDependencies(t)
 	client := entities.Client{}
 	database.DB.First(&client)
-	response, err := makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
+	response, err := deps.makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)

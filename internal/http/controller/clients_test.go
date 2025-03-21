@@ -11,8 +11,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/entities"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
@@ -40,19 +38,10 @@ func TestClient_List(t *testing.T) {
 
 func TestClient_Get(t *testing.T) {
 	t.Run("should get a client", testCase(func(t *testing.T, deps *testDependencies) {
-		client := entities.Client{
-			Name:   "John Doe",
-			Email:  "john@doe.com",
-			Orders: []entities.Order{},
-		}
-		if db := database.DB.Create(&client); db.Error != nil {
-			t.Fatal(db.Error)
-		}
-
 		recorder := httptest.NewRecorder()
-		request := httptest.NewRequest("GET", fmt.Sprintf("/%d", client.ID), nil)
+		request := httptest.NewRequest("GET", fmt.Sprintf("/%d", deps.clientsStubs[0].ID), nil)
 		tx := chi.NewRouteContext()
-		tx.URLParams.Add("id", fmt.Sprintf("%d", client.ID))
+		tx.URLParams.Add("id", fmt.Sprintf("%d", deps.clientsStubs[0].ID))
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := controller.NewContext(recorder, request)
 		err := deps.clientsController.Get(ctx)
