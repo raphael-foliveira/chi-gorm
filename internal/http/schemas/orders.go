@@ -26,7 +26,7 @@ func (co *CreateOrder) Validate() error {
 }
 
 type UpdateOrder struct {
-	Quantity uint `json:"quantity"`
+	CreateOrder
 }
 
 func (uo *UpdateOrder) Validate() error {
@@ -40,7 +40,9 @@ func (uo *UpdateOrder) Validate() error {
 
 func (uo *UpdateOrder) ToModel() *entities.Order {
 	return &entities.Order{
-		Quantity: uo.Quantity,
+		Quantity:  uo.Quantity,
+		ClientID:  uo.ClientID,
+		ProductID: uo.ProductID,
 	}
 }
 

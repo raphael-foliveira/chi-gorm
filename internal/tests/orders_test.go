@@ -70,6 +70,12 @@ func TestOrders_Update(t *testing.T) {
 	update := schemas.UpdateOrder{}
 	faker.FakeData(&update)
 	expectedQuantity := update.Quantity
+	var client entities.Client
+	database.DB.First(&client)
+	update.ClientID = client.ID
+	var product entities.Product
+	database.DB.First(&product)
+	update.ProductID = product.ID
 	response, err := deps.makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
