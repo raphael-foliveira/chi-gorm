@@ -8,13 +8,13 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/dto"
 )
 
-type jwtS struct{}
+type Jwt struct{}
 
-func NewJwt() *jwtS {
-	return &jwtS{}
+func NewJwt() *Jwt {
+	return &Jwt{}
 }
 
-func (j *jwtS) Sign(payload *dto.JwtPayload) (string, error) {
+func (j *Jwt) Sign(payload *dto.JwtPayload) (string, error) {
 	claims := dto.JwtClaims{
 		JwtPayload: payload,
 		RegisteredClaims: &jwt.RegisteredClaims{
@@ -27,7 +27,7 @@ func (j *jwtS) Sign(payload *dto.JwtPayload) (string, error) {
 	return token.SignedString([]byte(config.JwtSecret))
 }
 
-func (j *jwtS) Verify(token string) (*dto.JwtPayload, error) {
+func (j *Jwt) Verify(token string) (*dto.JwtPayload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.JwtSecret), nil
 	}

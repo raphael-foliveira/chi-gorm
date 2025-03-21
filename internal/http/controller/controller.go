@@ -14,13 +14,6 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
-var (
-	Clients     = NewClients()
-	HealthCheck = NewHealthCheck()
-	Orders      = NewOrders()
-	Products    = NewProducts()
-)
-
 type Context struct {
 	Response http.ResponseWriter
 	Request  *http.Request
