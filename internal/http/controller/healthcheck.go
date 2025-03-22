@@ -13,10 +13,10 @@ func (h *HealthCheck) healthCheck(ctx *Context) error {
 }
 
 func (c *HealthCheck) Routes() *chi.Mux {
-	router := chi.NewRouter()
-	router.Get("/", useHandler(c.healthCheck))
+	router := NewRouter()
+	router.Get("/", c.healthCheck)
 
-	return router
+	return router.Mux
 }
 
 func NewHealthCheck() *HealthCheck {
@@ -24,8 +24,5 @@ func NewHealthCheck() *HealthCheck {
 }
 
 func (h *HealthCheck) Mount(mux *chi.Mux) {
-	router := chi.NewRouter()
-	router.Get("/", useHandler(h.healthCheck))
-
-	mux.Mount("/health-check", router)
+	mux.Mount("/health-check", h.Routes())
 }

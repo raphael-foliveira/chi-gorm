@@ -20,7 +20,7 @@ func NewClients(clientsRepo ports.ClientsRepository, ordersRepo ports.OrdersRepo
 	}
 }
 
-func (c *Clients) Routes() *chi.Mux {
+func (c *Clients) Mount(mux *chi.Mux) {
 	router := NewRouter()
 	router.Get("/", c.List)
 	router.Get("/{id}", c.Get)
@@ -28,12 +28,7 @@ func (c *Clients) Routes() *chi.Mux {
 	router.Post("/", c.Create)
 	router.Delete("/{id}", c.Delete)
 	router.Put("/{id}", c.Update)
-
-	return router.Mux
-}
-
-func (c *Clients) Mount(mux *chi.Mux) {
-	mux.Mount("/clients", c.Routes())
+	mux.Mount("/clients", router)
 }
 
 func (c *Clients) Create(ctx *Context) error {
