@@ -57,7 +57,7 @@ func TestOrders_Create(t *testing.T) {
 	response, err := deps.makeRequest("POST", "/orders", order)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-	responseBody := entities.Order{}
+	var responseBody entities.Order
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 	assert.Equal(t, responseBody.Quantity, expectedBody.Quantity)

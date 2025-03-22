@@ -18,19 +18,14 @@ func NewProducts(productsRepo ports.ProductsRepository) *Products {
 	}
 }
 
-func (c *Products) Routes() *chi.Mux {
+func (c *Products) Mount(mux *chi.Mux) {
 	router := NewRouter()
 	router.Get("/", c.List)
 	router.Post("/", c.Create)
 	router.Get("/{id}", c.Get)
 	router.Delete("/{id}", c.Delete)
 	router.Put("/{id}", c.Update)
-
-	return router.Mux
-}
-
-func (c *Products) Mount(mux *chi.Mux) {
-	mux.Mount("/products", c.Routes())
+	mux.Mount("/products", router)
 }
 
 func (p *Products) Create(ctx *Context) error {

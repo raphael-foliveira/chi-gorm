@@ -51,7 +51,7 @@ func TestClients_Create(t *testing.T) {
 	response, err := deps.makeRequest("POST", "/clients", client)
 	assert.NoError(t, err)
 	defer response.Body.Close()
-	responseBody := entities.Client{}
+	var responseBody entities.Client
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 	assert.Equal(t, expectedBody.Name, responseBody.Name)

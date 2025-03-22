@@ -33,7 +33,7 @@ func newTestDependencies(t *testing.T) *testDependencies {
 	t.Helper()
 
 	testhelpers.StartDB()
-	app := server.CreateMainRouter()
+	app := server.New()
 	clientsRepository := repository.NewClients(database.DB)
 	ordersRepository := repository.NewOrders(database.DB)
 	productsRepository := repository.NewProducts(database.DB)
@@ -41,9 +41,7 @@ func newTestDependencies(t *testing.T) *testDependencies {
 	ordersController := controller.NewOrders(ordersRepository)
 	productsController := controller.NewProducts(productsRepository)
 
-	app.Mount("/clients", clientsController.Routes())
-	app.Mount("/orders", ordersController.Routes())
-	app.Mount("/products", productsController.Routes())
+	app.Mount(clientsController, ordersController, productsController)
 
 	clients := []entities.Client{}
 	products := []entities.Product{}
