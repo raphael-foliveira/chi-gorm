@@ -20,7 +20,7 @@ func NewClients(clientsRepo ports.ClientsRepository, ordersRepo ports.OrdersRepo
 	}
 }
 
-func (c *Clients) Mount(mux *chi.Mux) {
+func (c *Clients) Mount(mux chi.Router) {
 	router := NewRouter()
 	router.Get("/", c.List)
 	router.Get("/{id}", c.Get)

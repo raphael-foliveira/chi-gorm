@@ -18,7 +18,7 @@ func NewOrders(ordersRepo ports.OrdersRepository) *Orders {
 	}
 }
 
-func (c *Orders) Mount(mux *chi.Mux) {
+func (c *Orders) Mount(mux chi.Router) {
 	router := NewRouter()
 	router.Get("/", c.List)
 	router.Post("/", c.Create)
