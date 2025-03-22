@@ -21,15 +21,19 @@ func NewClients(clientsRepo ports.ClientsRepository, ordersRepo ports.OrdersRepo
 }
 
 func (c *Clients) Routes() *chi.Mux {
-	router := chi.NewRouter()
-	router.Get("/", useHandler(c.List))
-	router.Get("/{id}", useHandler(c.Get))
-	router.Get("/{id}/products", useHandler(c.GetProducts))
-	router.Post("/", useHandler(c.Create))
-	router.Delete("/{id}", useHandler(c.Delete))
-	router.Put("/{id}", useHandler(c.Update))
+	router := NewRouter()
+	router.Get("/", c.List)
+	router.Get("/{id}", c.Get)
+	router.Get("/{id}/products", c.GetProducts)
+	router.Post("/", c.Create)
+	router.Delete("/{id}", c.Delete)
+	router.Put("/{id}", c.Update)
 
-	return router
+	return router.Mux
+}
+
+func (c *Clients) Mount(mux *chi.Mux) {
+	mux.Mount("/clients", c.Routes())
 }
 
 func (c *Clients) Create(ctx *Context) error {
