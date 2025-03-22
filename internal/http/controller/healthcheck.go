@@ -16,7 +16,7 @@ func NewHealthCheck() *HealthCheck {
 	return &HealthCheck{}
 }
 
-func (h *HealthCheck) Mount(mux *chi.Mux) {
+func (h *HealthCheck) Mount(mux chi.Router) {
 	router := NewRouter()
 	router.Get("/", h.healthCheck)
 

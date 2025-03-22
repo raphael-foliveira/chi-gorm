@@ -7,9 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
@@ -24,7 +24,7 @@ func main() {
 		}
 	}()
 
-	mux := chi.NewMux()
+	mux := server.New()
 
 	clientsRepo := repository.NewClients(database.DB)
 	ordersRepo := repository.NewOrders(database.DB)
@@ -35,10 +35,12 @@ func main() {
 	ordersController := controller.NewOrders(ordersRepo)
 	healthCheckController := controller.NewHealthCheck()
 
-	clientsController.Mount(mux)
-	productsController.Mount(mux)
-	ordersController.Mount(mux)
-	healthCheckController.Mount(mux)
+	mux.Mount(
+		clientsController,
+		productsController,
+		ordersController,
+		healthCheckController,
+	)
 
 	s := &http.Server{
 		Addr:    ":3000",
