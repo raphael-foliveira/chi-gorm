@@ -17,7 +17,12 @@ func main() {
 	if err := database.Start(); err != nil {
 		log.Fatal("database.Start failed:", err)
 	}
-	defer database.Close()
+
+	defer func() {
+		if err := database.Close(); err != nil {
+			log.Fatal("database.Close failed")
+		}
+	}()
 
 	mux := chi.NewMux()
 
@@ -30,10 +35,10 @@ func main() {
 	ordersController := controller.NewOrders(ordersRepo)
 	healthCheckController := controller.NewHealthCheck()
 
-	mux.Mount("/clients", clientsController.Routes())
-	mux.Mount("/products", productsController.Routes())
-	mux.Mount("/orders", ordersController.Routes())
-	mux.Mount("/health-check", healthCheckController.Routes())
+	clientsController.Mount(mux)
+	productsController.Mount(mux)
+	ordersController.Mount(mux)
+	healthCheckController.Mount(mux)
 
 	s := &http.Server{
 		Addr:    ":3000",

@@ -15,10 +15,7 @@ func Start() error {
 		return err
 	}
 	DB = db
-	if err := migrateDb(); err != nil {
-		return err
-	}
-	return nil
+	return migrateDb()
 }
 
 func start(dbUrl string) (*gorm.DB, error) {
@@ -39,8 +36,5 @@ func Close() error {
 	if err != nil {
 		return err
 	}
-	if err := sqlDb.Close(); err != nil {
-		return err
-	}
-	return nil
+	return sqlDb.Close()
 }
