@@ -38,7 +38,7 @@ func (c *Clients) Create(ctx *Context) error {
 		return err
 	}
 	newClient := body.ToModel()
-	if err := c.clientsRepo.Create(body.ToModel()); err != nil {
+	if err := c.clientsRepo.Create(newClient); err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusCreated, &newClient)
