@@ -39,7 +39,7 @@ func TestClients_Get(t *testing.T) {
 	client := entities.Client{}
 	database.DB.First(&client)
 	expectedBody := schemas.NewClient(&client)
-	response, err := deps.makeRequest("GET", "/clients/"+fmt.Sprint(client.ID), nil)
+	response, err := deps.makeRequest("GET", fmt.Sprintf("/clients/%v", client.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Client{}
@@ -71,7 +71,7 @@ func TestClients_Update(t *testing.T) {
 	faker.FakeData(&update)
 	expectedBody := schemas.Client{}
 	expectedBody.Name = update.Name
-	response, err := deps.makeRequest("PUT", "/clients/"+fmt.Sprint(client.ID), update)
+	response, err := deps.makeRequest("PUT", fmt.Sprintf("/clients/%v", client.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Client{}
@@ -84,7 +84,7 @@ func TestClients_Delete(t *testing.T) {
 	deps := newTestDependencies(t)
 	client := entities.Client{}
 	database.DB.First(&client)
-	response, err := deps.makeRequest("DELETE", "/clients/"+fmt.Sprint(client.ID), nil)
+	response, err := deps.makeRequest("DELETE", fmt.Sprintf("/clients/%v", client.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)

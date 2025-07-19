@@ -32,7 +32,7 @@ func TestProduct_Get(t *testing.T) {
 	product := entities.Product{}
 	database.DB.First(&product)
 	expectedBody := schemas.NewProduct(&product)
-	response, err := deps.makeRequest("GET", "/products/"+fmt.Sprint(product.ID), nil)
+	response, err := deps.makeRequest("GET", fmt.Sprintf("/products/%v", product.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Product{}
@@ -64,7 +64,7 @@ func TestProducts_Update(t *testing.T) {
 	faker.FakeData(&update)
 	expectedBody := schemas.Product{}
 	expectedBody.Name = update.Name
-	response, err := deps.makeRequest("PUT", "/products/"+fmt.Sprint(product.ID), update)
+	response, err := deps.makeRequest("PUT", fmt.Sprintf("/products/%v", product.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := entities.Product{}
@@ -77,7 +77,7 @@ func TestProducts_Delete(t *testing.T) {
 	deps := newTestDependencies(t)
 	product := entities.Product{}
 	database.DB.First(&product)
-	response, err := deps.makeRequest("DELETE", "/products/"+fmt.Sprint(product.ID), nil)
+	response, err := deps.makeRequest("DELETE", fmt.Sprintf("/products/%v", product.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)

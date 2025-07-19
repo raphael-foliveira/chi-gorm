@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-func makeRequest(testServerUrl string) func(method string, endpoint string, body interface{}) (*http.Response, error) {
-	return func(method string, endpoint string, body interface{}) (*http.Response, error) {
+func makeRequest(testServerUrl string) func(method string, endpoint string, body any) (*http.Response, error) {
+	return func(method string, endpoint string, body any) (*http.Response, error) {
 		hc := &http.Client{}
 		url := testServerUrl + endpoint
 		if body != nil {
@@ -25,7 +25,7 @@ func sendRequest(hc *http.Client, method string, url string) (*http.Response, er
 	return hc.Do(req)
 }
 
-func sendRequestWithBody(hc *http.Client, method string, body interface{}, url string) (*http.Response, error) {
+func sendRequestWithBody(hc *http.Client, method string, body any, url string) (*http.Response, error) {
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
 		return nil, err

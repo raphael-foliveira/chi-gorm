@@ -32,7 +32,7 @@ func TestOrders_Get(t *testing.T) {
 	order := entities.Order{}
 	database.DB.First(&order)
 	expectedBody := schemas.NewOrder(&order)
-	response, err := deps.makeRequest("GET", "/orders/"+fmt.Sprint(order.ID), nil)
+	response, err := deps.makeRequest("GET", fmt.Sprintf("/orders/%v", order.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	responseBody := schemas.Order{}
@@ -76,7 +76,7 @@ func TestOrders_Update(t *testing.T) {
 	var product entities.Product
 	database.DB.First(&product)
 	update.ProductID = product.ID
-	response, err := deps.makeRequest("PUT", "/orders/"+fmt.Sprint(order.ID), update)
+	response, err := deps.makeRequest("PUT", fmt.Sprintf("/orders/%v", order.ID), update)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	var responseBody schemas.Order
@@ -89,7 +89,7 @@ func TestOrders_Delete(t *testing.T) {
 	deps := newTestDependencies(t)
 	order := entities.Order{}
 	database.DB.First(&order)
-	response, err := deps.makeRequest("DELETE", "/orders/"+fmt.Sprint(order.ID), nil)
+	response, err := deps.makeRequest("DELETE", fmt.Sprintf("/orders/%v", order.ID), nil)
 	assert.NoError(t, err)
 	defer response.Body.Close()
 	assert.Equal(t, http.StatusNoContent, response.StatusCode)
