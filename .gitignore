@@ -3,3 +3,4 @@ c.out
 tmp
 .vscode
 bin
+.envrc
