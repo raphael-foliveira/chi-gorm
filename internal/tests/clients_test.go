@@ -13,6 +13,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func dumpJson(t *testing.T, data any) string {
+	json, err := json.Marshal(data)
+	assert.NoError(t, err)
+	return string(json)
+}
+
 func TestClients_List(t *testing.T) {
 	deps := newTestDependencies(t)
 	clients := []entities.Client{}
@@ -24,7 +30,7 @@ func TestClients_List(t *testing.T) {
 	responseBody := []schemas.Client{}
 	json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
-	assert.Equal(t, len(expectedBody), len(responseBody))
+	assert.JSONEq(t, dumpJson(t, expectedBody), dumpJson(t, responseBody))
 	assert.Equal(t, expectedBody[0].Name, responseBody[0].Name)
 }
 
