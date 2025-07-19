@@ -5,8 +5,8 @@ func Validate(validateFn func(v *Validator)) map[string][]string {
 	validateFn(vv)
 
 	if !vv.IsValid() {
-		return nil
+		return vv.Errors
 	}
 
-	return vv.Errors
+	return nil
 }
