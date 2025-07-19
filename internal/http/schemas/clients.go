@@ -2,7 +2,7 @@ package schemas
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/validate"
+	"github.com/raphael-foliveira/chi-gorm/internal/validation"
 )
 
 type CreateClient struct {
@@ -17,12 +17,12 @@ func (cc *CreateClient) ToModel() *entities.Client {
 	}
 }
 
-func (cc *CreateClient) Validate() error {
-	return validate.Rules(
-		validate.Required("name", cc.Name),
-		validate.Required("email", cc.Email),
-		validate.Email("email", cc.Email),
-	)
+func (cc *CreateClient) Validate() map[string][]string {
+	return validation.Validate(func(v *validation.Validator) {
+		v.Check("name", cc.Name != "", "name is required")
+		v.Check("email", cc.Email != "", "email is required")
+		v.Check("email", cc.Email != "", "email is required")
+	})
 }
 
 type UpdateClient struct {

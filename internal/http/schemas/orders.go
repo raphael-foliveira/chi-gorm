@@ -1,10 +1,8 @@
 package schemas
 
 import (
-	"fmt"
-
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/validate"
+	"github.com/raphael-foliveira/chi-gorm/internal/validation"
 )
 
 type CreateOrder struct {
@@ -21,21 +19,22 @@ func (co *CreateOrder) ToModel() *entities.Order {
 	}
 }
 
-func (co *CreateOrder) Validate() error {
-	return validate.Rules(validate.Min("quantity", int(co.Quantity), 1))
+func (co *CreateOrder) Validate() map[string][]string {
+	return validation.Validate(func(v *validation.Validator) {
+		v.Check("quantity", int(co.Quantity) >= 1, "quantity must be greater than 1")
+	})
 }
 
 type UpdateOrder struct {
 	CreateOrder
 }
 
-func (uo *UpdateOrder) Validate() error {
-	return validate.Rules(func() error {
+func (uo *UpdateOrder) Validate() map[string][]string {
+	return validation.Validate(func(v *validation.Validator) {
 		if int(uo.Quantity) < 1 {
-			return fmt.Errorf("%v: must be greater than %v", "quantity", 1)
+			v.Check("quantity", int(uo.Quantity) >= 1, "quantity must be greater than 1")
 		}
-		return nil
-	}())
+	})
 }
 
 func (uo *UpdateOrder) ToModel() *entities.Order {

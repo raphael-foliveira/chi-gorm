@@ -2,7 +2,7 @@ package schemas
 
 import (
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/validate"
+	"github.com/raphael-foliveira/chi-gorm/internal/validation"
 )
 
 type CreateProduct struct {
@@ -17,11 +17,11 @@ func (cp *CreateProduct) ToModel() *entities.Product {
 	}
 }
 
-func (cp *CreateProduct) Validate() error {
-	return validate.Rules(
-		validate.Required("name", cp.Name),
-		validate.Min("price", int(cp.Price), 0),
-	)
+func (cp *CreateProduct) Validate() map[string][]string {
+	return validation.Validate(func(v *validation.Validator) {
+		v.Check("name", cp.Name != "", "name is required")
+		v.Check("price", cp.Price > 0, "price must be greater than 0")
+	})
 }
 
 type UpdateProduct struct {

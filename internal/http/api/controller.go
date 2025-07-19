@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,18 +11,19 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
-	"github.com/raphael-foliveira/chi-gorm/internal/validate"
 )
 
 type Context struct {
 	Response http.ResponseWriter
 	Request  *http.Request
+	Ctx context.Context
 }
 
 func NewContext(w http.ResponseWriter, r *http.Request) *Context {
 	return &Context{
 		Response: w,
 		Request:  r,
+		Ctx: r.Context(),
 	}
 }
 
@@ -45,7 +47,7 @@ func (c *Context) GetUintPathParam(paramName string) (uint, error) {
 }
 
 type Validatable interface {
-	Validate() error
+	Validate() map[string][]string
 }
 
 func (c *Context) ParseBody(v Validatable) error {
@@ -80,11 +82,6 @@ func handleApiErr(ctx *Context, err error) error {
 		Err:    "internal server error",
 	}
 
-	validationErr := &validate.ValidationError{}
-	if errors.As(err, &validationErr) {
-		return ctx.JSON(http.StatusUnprocessableEntity, validationErr)
-	}
-
 	// log unhandled errors
 	if !errors.As(err, &apiErr) {
 		slog.Error(err.Error())
@@ -94,31 +91,3 @@ func handleApiErr(ctx *Context, err error) error {
 }
 
 type ControllerFunc func(*Context) error
-
-type Router struct {
-	*chi.Mux
-}
-
-func NewRouter() *Router {
-	return &Router{Mux: chi.NewRouter()}
-}
-
-func (r *Router) Get(path string, controller ControllerFunc) {
-	r.Mux.Get(path, useHandler(controller))
-}
-
-func (r *Router) Post(path string, controller ControllerFunc) {
-	r.Mux.Post(path, useHandler(controller))
-}
-
-func (r *Router) Patch(path string, controller ControllerFunc) {
-	r.Mux.Patch(path, useHandler(controller))
-}
-
-func (r *Router) Delete(path string, controller ControllerFunc) {
-	r.Mux.Delete(path, useHandler(controller))
-}
-
-func (r *Router) Put(path string, controller ControllerFunc) {
-	r.Mux.Put(path, useHandler(controller))
-}

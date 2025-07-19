@@ -17,7 +17,13 @@ type Server struct {
 
 func NewServer() *Server {
 	r := chi.NewRouter()
-	attachMiddleware(r)
+
+	// attach middleware
+	r.Use(middleware.Logger)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"*"},
+	}))
+
 	return &Server{
 		Mux: r,
 	}
@@ -29,40 +35,32 @@ func (s *Server) Mount() {
 	ordersController := NewOrdersController(s.OrdersRepository)
 	productsController := NewProductsController(s.ProductsRepository)
 
-	clientsRouter := NewRouter()
-	clientsRouter.Get("/", clientsController.List)
-	clientsRouter.Get("/{id}", clientsController.Get)
-	clientsRouter.Get("/{id}/products", clientsController.GetProducts)
-	clientsRouter.Post("/", clientsController.Create)
-	clientsRouter.Delete("/{id}", clientsController.Delete)
-	clientsRouter.Put("/{id}", clientsController.Update)
-
-	healthCheckRouter := NewRouter()
-	healthCheckRouter.Get("/", healthCheckController.healthCheck)
-
-	ordersRouter := NewRouter()
-	ordersRouter.Get("/", ordersController.List)
-	ordersRouter.Get("/{id}", ordersController.Get)
-	ordersRouter.Post("/", ordersController.Create)
-	ordersRouter.Delete("/{id}", ordersController.Delete)
-	ordersRouter.Put("/{id}", ordersController.Update)
-
-	productsRouter := NewRouter()
-	productsRouter.Get("/", productsController.List)
-	productsRouter.Get("/{id}", productsController.Get)
-	productsRouter.Post("/", productsController.Create)
-	productsRouter.Delete("/{id}", productsController.Delete)
-	productsRouter.Put("/{id}", productsController.Update)
-
+	clientsRouter := chi.NewRouter()
+	clientsRouter.Get("/", useHandler(clientsController.List))
+	clientsRouter.Get("/{id}", useHandler(clientsController.Get))
+	clientsRouter.Get("/{id}/products", useHandler(clientsController.GetProducts))
+	clientsRouter.Post("/", useHandler(clientsController.Create))
+	clientsRouter.Delete("/{id}", useHandler(clientsController.Delete))
+	clientsRouter.Put("/{id}", useHandler(clientsController.Update))
 	s.Mux.Mount("/clients", clientsRouter)
-	s.Mux.Mount("/health-check", healthCheckRouter)
-	s.Mux.Mount("/orders", ordersRouter)
-	s.Mux.Mount("/products", productsRouter)
-}
 
-func attachMiddleware(r *chi.Mux) {
-	r.Use(middleware.Logger)
-	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins: []string{"*"},
-	}))
+	healthCheckRouter := chi.NewRouter()
+	healthCheckRouter.Get("/", useHandler(healthCheckController.healthCheck))
+	s.Mux.Mount("/health-check", healthCheckRouter)
+
+	ordersRouter := chi.NewRouter()
+	ordersRouter.Get("/", useHandler(ordersController.List))
+	ordersRouter.Get("/{id}", useHandler(ordersController.Get))
+	ordersRouter.Post("/", useHandler(ordersController.Create))
+	ordersRouter.Delete("/{id}", useHandler(ordersController.Delete))
+	ordersRouter.Put("/{id}", useHandler(ordersController.Update))
+	s.Mux.Mount("/orders", ordersRouter)
+
+	productsRouter := chi.NewRouter()
+	productsRouter.Get("/", useHandler(productsController.List))
+	productsRouter.Get("/{id}", useHandler(productsController.Get))
+	productsRouter.Post("/", useHandler(productsController.Create))
+	productsRouter.Delete("/{id}", useHandler(productsController.Delete))
+	productsRouter.Put("/{id}", useHandler(productsController.Update))
+	s.Mux.Mount("/products", productsRouter)
 }
