@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"net/http"
@@ -7,17 +7,17 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/ports"
 )
 
-type Orders struct {
+type OrdersController struct {
 	ordersRepo ports.OrdersRepository
 }
 
-func NewOrders(ordersRepo ports.OrdersRepository) *Orders {
-	return &Orders{
+func NewOrdersController(ordersRepo ports.OrdersRepository) *OrdersController {
+	return &OrdersController{
 		ordersRepo: ordersRepo,
 	}
 }
 
-func (o *Orders) Create(ctx *Context) error {
+func (o *OrdersController) Create(ctx *Context) error {
 	var body schemas.CreateOrder
 	err := ctx.ParseBody(&body)
 	if err != nil {
@@ -30,7 +30,7 @@ func (o *Orders) Create(ctx *Context) error {
 	return ctx.JSON(http.StatusCreated, schemas.NewOrder(newOrder))
 }
 
-func (o *Orders) Update(ctx *Context) error {
+func (o *OrdersController) Update(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (o *Orders) Update(ctx *Context) error {
 	return ctx.JSON(http.StatusOK, schemas.NewOrder(order))
 }
 
-func (o *Orders) Delete(ctx *Context) error {
+func (o *OrdersController) Delete(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (o *Orders) Delete(ctx *Context) error {
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (o *Orders) List(ctx *Context) error {
+func (o *OrdersController) List(ctx *Context) error {
 	orders, err := o.ordersRepo.List()
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func (o *Orders) List(ctx *Context) error {
 	return ctx.JSON(http.StatusOK, schemas.NewOrders(orders))
 }
 
-func (o *Orders) Get(ctx *Context) error {
+func (o *OrdersController) Get(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err

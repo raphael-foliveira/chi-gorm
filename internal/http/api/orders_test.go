@@ -1,10 +1,11 @@
-package controller_test
+package api_test
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,47 +13,55 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/api"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestProducts_List(t *testing.T) {
-	t.Run("should list all products", testCase(func(t *testing.T, deps *testDependencies) {
+func TestOrders_List(t *testing.T) {
+	t.Run("should list all orders", testCase(func(t *testing.T, deps *testDependencies) {
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/", nil)
-		ctx := controller.NewContext(recorder, request)
-		err := deps.productsController.List(ctx)
+		ctx := api.NewContext(recorder, request)
+		err := deps.ordersController.List(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
 }
 
-func TestProducts_Get(t *testing.T) {
-	t.Run("should get a product", testCase(func(t *testing.T, deps *testDependencies) {
+func TestOrders_Get(t *testing.T) {
+	t.Run("should get an order", testCase(func(t *testing.T, deps *testDependencies) {
+		orderId := fmt.Sprintf("%v", deps.ordersStubs[0].ID)
 		recorder := httptest.NewRecorder()
-		productId := fmt.Sprintf("%v", deps.productsStubs[0].ID)
-		request := httptest.NewRequest("GET", "/"+productId, nil)
+		request := httptest.NewRequest("GET", "/"+orderId, nil)
 		tx := chi.NewRouteContext()
-		tx.URLParams.Add("id", productId)
+		tx.URLParams.Add("id", orderId)
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		ctx := controller.NewContext(recorder, request)
-		err := deps.productsController.Get(ctx)
+		ctx := api.NewContext(recorder, request)
+		err := deps.ordersController.Get(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
+		var requestBody *schemas.Order
+		json.NewDecoder(recorder.Body).Decode(&requestBody)
+		assert.Equal(t, deps.ordersStubs[0].ID, requestBody.ID)
 	}))
 }
 
-func TestProducts_Create(t *testing.T) {
-	t.Run("should create a product", testCase(func(t *testing.T, deps *testDependencies) {
+func TestOrders_Create(t *testing.T) {
+	t.Run("should create an order", testCase(func(t *testing.T, deps *testDependencies) {
 		recorder := httptest.NewRecorder()
-		var newProduct schemas.CreateProduct
-		faker.FakeData(&newProduct)
-		reqBody, _ := json.Marshal(newProduct)
+		var newOrder schemas.CreateOrder
+		faker.FakeData(&newOrder)
+		newOrder.ClientID = deps.clientsStubs[0].ID
+		newOrder.ProductID = deps.productsStubs[0].ID
+		reqBody, _ := json.Marshal(newOrder)
 		request := httptest.NewRequest("POST", "/", bytes.NewReader(reqBody))
-		ctx := controller.NewContext(recorder, request)
-		err := deps.productsController.Create(ctx)
+		ctx := api.NewContext(recorder, request)
+		err := deps.ordersController.Create(ctx)
+		var responseBody map[string]any
+		json.NewDecoder(recorder.Body).Decode(&responseBody)
+		log.Printf("responseBody: %#v", responseBody)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusCreated, recorder.Code)
 	}))
@@ -61,26 +70,29 @@ func TestProducts_Create(t *testing.T) {
 		invalidReqBody := `{"foo: 95}`
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
-		ctx := controller.NewContext(recorder, request)
-		err := deps.productsController.Create(ctx)
+		ctx := api.NewContext(recorder, request)
+		err := deps.ordersController.Create(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
 	}))
 }
 
-func TestProducts_Update(t *testing.T) {
-	t.Run("should update a product", testCase(func(t *testing.T, deps *testDependencies) {
+func TestOrders_Update(t *testing.T) {
+	t.Run("should update an order", testCase(func(t *testing.T, deps *testDependencies) {
 		recorder := httptest.NewRecorder()
-		product := mocks.ProductsStub[0]
-		productId := fmt.Sprintf("%v", product.ID)
-		reqBody, _ := json.Marshal(product)
-		request := httptest.NewRequest("PUT", "/"+productId, bytes.NewReader(reqBody))
+		order := deps.ordersStubs[0]
+		reqBody, _ := json.Marshal(&schemas.CreateOrder{
+			Quantity:  10,
+			ClientID:  deps.clientsStubs[0].ID,
+			ProductID: deps.productsStubs[0].ID,
+		})
+		request := httptest.NewRequest("PUT", fmt.Sprintf("/%v", order.ID), bytes.NewReader(reqBody))
 		tx := chi.NewRouteContext()
-		tx.URLParams.Add("id", productId)
+		tx.URLParams.Add("id", fmt.Sprintf("%v", order.ID))
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		ctx := controller.NewContext(recorder, request)
-		err := deps.productsController.Update(ctx)
+		ctx := api.NewContext(recorder, request)
+		err := deps.ordersController.Update(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	}))
@@ -92,25 +104,24 @@ func TestProducts_Update(t *testing.T) {
 		tx := chi.NewRouteContext()
 		tx.URLParams.Add("id", "1")
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		ctx := controller.NewContext(recorder, request)
-		err := deps.productsController.Update(ctx)
+		ctx := api.NewContext(recorder, request)
+		err := deps.ordersController.Update(ctx)
 		apiErr, ok := err.(*exceptions.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
 	}))
 }
 
-func TestProducts_Delete(t *testing.T) {
-	t.Run("should delete a product", testCase(func(t *testing.T, deps *testDependencies) {
-		product := mocks.ProductsStub[0]
-		productId := fmt.Sprintf("%v", product.ID)
+func TestOrders_Delete(t *testing.T) {
+	t.Run("should delete an order", testCase(func(t *testing.T, deps *testDependencies) {
+		order := mocks.OrdersStub[0]
 		recorder := httptest.NewRecorder()
-		request := httptest.NewRequest("DELETE", "/"+productId, nil)
+		request := httptest.NewRequest("DELETE", fmt.Sprintf("/%v", order.ID), nil)
 		tx := chi.NewRouteContext()
-		tx.URLParams.Add("id", productId)
+		tx.URLParams.Add("id", fmt.Sprintf("%v", order.ID))
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
-		ctx := controller.NewContext(recorder, request)
-		err := deps.productsController.Delete(ctx)
+		ctx := api.NewContext(recorder, request)
+		err := deps.ordersController.Delete(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusNoContent, recorder.Code)
 	}))

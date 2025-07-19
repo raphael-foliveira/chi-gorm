@@ -8,7 +8,7 @@ import (
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/api"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/raphael-foliveira/chi-gorm/internal/testhelpers"
 )
@@ -29,7 +29,7 @@ func newTestDependencies(t *testing.T) *testDependencies {
 	t.Helper()
 
 	testhelpers.StartDB()
-	app := controller.NewServer()
+	app := api.NewServer()
 	clientsRepository := repository.NewClients(database.DB)
 	ordersRepository := repository.NewOrders(database.DB)
 	productsRepository := repository.NewProducts(database.DB)

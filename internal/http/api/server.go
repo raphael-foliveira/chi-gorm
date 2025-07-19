@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"github.com/go-chi/chi/v5"
@@ -24,10 +24,10 @@ func NewServer() *Server {
 }
 
 func (s *Server) Mount() {
-	clientsController := NewClients(s.ClientsRepository, s.OrdersRepository)
-	healthCheckController := NewHealthCheck()
-	ordersController := NewOrders(s.OrdersRepository)
-	productsController := NewProducts(s.ProductsRepository)
+	clientsController := NewClientsController(s.ClientsRepository, s.OrdersRepository)
+	healthCheckController := NewHealthCheckController()
+	ordersController := NewOrdersController(s.OrdersRepository)
+	productsController := NewProductsController(s.ProductsRepository)
 
 	clientsRouter := NewRouter()
 	clientsRouter.Get("/", clientsController.List)

@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"net/http"
@@ -7,17 +7,17 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/ports"
 )
 
-type Products struct {
+type ProductsController struct {
 	productsRepo ports.ProductsRepository
 }
 
-func NewProducts(productsRepo ports.ProductsRepository) *Products {
-	return &Products{
+func NewProductsController(productsRepo ports.ProductsRepository) *ProductsController {
+	return &ProductsController{
 		productsRepo: productsRepo,
 	}
 }
 
-func (p *Products) Create(ctx *Context) error {
+func (p *ProductsController) Create(ctx *Context) error {
 	var body schemas.CreateProduct
 	err := ctx.ParseBody(&body)
 	if err != nil {
@@ -30,7 +30,7 @@ func (p *Products) Create(ctx *Context) error {
 	return ctx.JSON(http.StatusCreated, schemas.NewProduct(newProduct))
 }
 
-func (p *Products) Update(ctx *Context) error {
+func (p *ProductsController) Update(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func (p *Products) Update(ctx *Context) error {
 	return ctx.JSON(http.StatusOK, schemas.NewProduct(order))
 }
 
-func (p *Products) Delete(ctx *Context) error {
+func (p *ProductsController) Delete(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func (p *Products) Delete(ctx *Context) error {
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (p *Products) List(ctx *Context) error {
+func (p *ProductsController) List(ctx *Context) error {
 	products, err := p.productsRepo.List()
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func (p *Products) List(ctx *Context) error {
 	return ctx.JSON(http.StatusOK, schemas.NewProducts(products))
 }
 
-func (p *Products) Get(ctx *Context) error {
+func (p *ProductsController) Get(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
