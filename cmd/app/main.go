@@ -9,7 +9,6 @@ import (
 
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/server"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
@@ -24,23 +23,17 @@ func main() {
 		}
 	}()
 
-	mux := server.New()
+	mux := controller.NewServer()
 
 	clientsRepo := repository.NewClients(database.DB)
 	ordersRepo := repository.NewOrders(database.DB)
 	productsRepo := repository.NewProducts(database.DB)
 
-	clientsController := controller.NewClients(clientsRepo, ordersRepo)
-	productsController := controller.NewProducts(productsRepo)
-	ordersController := controller.NewOrders(ordersRepo)
-	healthCheckController := controller.NewHealthCheck()
+	mux.ClientsRepository = clientsRepo
+	mux.OrdersRepository = ordersRepo
+	mux.ProductsRepository = productsRepo
 
-	mux.Mount(
-		clientsController,
-		productsController,
-		ordersController,
-		healthCheckController,
-	)
+	mux.Mount()
 
 	s := &http.Server{
 		Addr:    ":3000",

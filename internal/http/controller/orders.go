@@ -3,7 +3,6 @@ package controller
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/ports"
 )
@@ -16,16 +15,6 @@ func NewOrders(ordersRepo ports.OrdersRepository) *Orders {
 	return &Orders{
 		ordersRepo: ordersRepo,
 	}
-}
-
-func (c *Orders) Mount(mux chi.Router) {
-	router := NewRouter()
-	router.Get("/", c.List)
-	router.Post("/", c.Create)
-	router.Get("/{id}", c.Get)
-	router.Delete("/{id}", c.Delete)
-	router.Put("/{id}", c.Update)
-	mux.Mount("/orders", router)
 }
 
 func (o *Orders) Create(ctx *Context) error {

@@ -2,8 +2,6 @@ package controller
 
 import (
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type HealthCheck struct{}
@@ -16,9 +14,3 @@ func NewHealthCheck() *HealthCheck {
 	return &HealthCheck{}
 }
 
-func (h *HealthCheck) Mount(mux chi.Router) {
-	router := NewRouter()
-	router.Get("/", h.healthCheck)
-
-	mux.Mount("/health-check", router)
-}
