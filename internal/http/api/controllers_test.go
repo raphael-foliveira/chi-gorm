@@ -1,4 +1,4 @@
-package controller_test
+package api_test
 
 import (
 	"testing"
@@ -6,15 +6,15 @@ import (
 	"github.com/go-faker/faker/v4"
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
 	"github.com/raphael-foliveira/chi-gorm/internal/entities"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/api"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 	"github.com/raphael-foliveira/chi-gorm/internal/testhelpers"
 )
 
 type testDependencies struct {
-	clientsController  *controller.Clients
-	ordersController   *controller.Orders
-	productsController *controller.Products
+	clientsController  *api.ClientsController
+	ordersController   *api.OrdersController
+	productsController *api.ProductsController
 	clientsStubs       []entities.Client
 	productsStubs      []entities.Product
 	ordersStubs        []entities.Order
@@ -26,9 +26,9 @@ func newTestDependencies(t *testing.T) *testDependencies {
 	clientsRepository := repository.NewClients(database.DB)
 	ordersRepository := repository.NewOrders(database.DB)
 	productsRepository := repository.NewProducts(database.DB)
-	clientsController := controller.NewClients(clientsRepository, ordersRepository)
-	ordersController := controller.NewOrders(ordersRepository)
-	productsController := controller.NewProducts(productsRepository)
+	clientsController := api.NewClientsController(clientsRepository, ordersRepository)
+	ordersController := api.NewOrdersController(ordersRepository)
+	productsController := api.NewProductsController(productsRepository)
 
 	var (
 		clientsStub  []entities.Client

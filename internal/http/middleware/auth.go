@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/api"
 	"github.com/raphael-foliveira/chi-gorm/internal/service"
 )
 
@@ -17,8 +17,8 @@ func NewAuthMiddleware(jwtService service.Jwt) *AuthMiddleware {
 	}
 }
 
-func (am *AuthMiddleware) Auth(next controller.ControllerFunc) controller.ControllerFunc {
-	return func(ctx *controller.Context) error {
+func (am *AuthMiddleware) Auth(next api.ControllerFunc) api.ControllerFunc {
+	return func(ctx *api.Context) error {
 		authorizationHeader := ctx.Request.Header.Get("Authorization")
 		if authorizationHeader == "" {
 			return exceptions.Unauthorized("Missing authorization header not present")

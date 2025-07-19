@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"net/http"
@@ -7,19 +7,19 @@ import (
 	"github.com/raphael-foliveira/chi-gorm/internal/ports"
 )
 
-type Clients struct {
+type ClientsController struct {
 	clientsRepo ports.ClientsRepository
 	ordersRepo  ports.OrdersRepository
 }
 
-func NewClients(clientsRepo ports.ClientsRepository, ordersRepo ports.OrdersRepository) *Clients {
-	return &Clients{
+func NewClientsController(clientsRepo ports.ClientsRepository, ordersRepo ports.OrdersRepository) *ClientsController {
+	return &ClientsController{
 		clientsRepo: clientsRepo,
 		ordersRepo:  ordersRepo,
 	}
 }
 
-func (c *Clients) Create(ctx *Context) error {
+func (c *ClientsController) Create(ctx *Context) error {
 	var body schemas.CreateClient
 	err := ctx.ParseBody(&body)
 	if err != nil {
@@ -32,7 +32,7 @@ func (c *Clients) Create(ctx *Context) error {
 	return ctx.JSON(http.StatusCreated, &newClient)
 }
 
-func (c *Clients) Update(ctx *Context) error {
+func (c *ClientsController) Update(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (c *Clients) Update(ctx *Context) error {
 	return ctx.JSON(http.StatusOK, client)
 }
 
-func (c *Clients) Delete(ctx *Context) error {
+func (c *ClientsController) Delete(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (c *Clients) Delete(ctx *Context) error {
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (c *Clients) List(ctx *Context) error {
+func (c *ClientsController) List(ctx *Context) error {
 	clients, err := c.clientsRepo.List()
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (c *Clients) List(ctx *Context) error {
 	return ctx.JSON(http.StatusOK, schemas.NewClients(clients))
 }
 
-func (c *Clients) Get(ctx *Context) error {
+func (c *ClientsController) Get(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func (c *Clients) Get(ctx *Context) error {
 	return ctx.JSON(http.StatusOK, schemas.NewClientDetail(client))
 }
 
-func (c *Clients) GetProducts(ctx *Context) error {
+func (c *ClientsController) GetProducts(ctx *Context) error {
 	id, err := ctx.GetUintPathParam("id")
 	if err != nil {
 		return err

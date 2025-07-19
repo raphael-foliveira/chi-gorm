@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/raphael-foliveira/chi-gorm/internal/database"
-	"github.com/raphael-foliveira/chi-gorm/internal/http/controller"
+	"github.com/raphael-foliveira/chi-gorm/internal/http/api"
 	"github.com/raphael-foliveira/chi-gorm/internal/repository"
 )
 
@@ -23,7 +23,7 @@ func main() {
 		}
 	}()
 
-	mux := controller.NewServer()
+	mux := api.NewServer()
 
 	clientsRepo := repository.NewClients(database.DB)
 	ordersRepo := repository.NewOrders(database.DB)
