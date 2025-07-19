@@ -38,6 +38,8 @@ func newTestDependencies(t *testing.T) *testDependencies {
 	app.OrdersRepository = ordersRepository
 	app.ProductsRepository = productsRepository
 
+	app.Mount()
+
 	clients := []entities.Client{}
 	products := []entities.Product{}
 	orders := []entities.Order{}
