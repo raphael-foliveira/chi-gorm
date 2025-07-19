@@ -12,7 +12,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-faker/faker/v4"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/api"
 	"github.com/raphael-foliveira/chi-gorm/internal/http/schemas"
 	"github.com/raphael-foliveira/chi-gorm/internal/mocks"
@@ -72,7 +71,7 @@ func TestOrders_Create(t *testing.T) {
 		request := httptest.NewRequest("POST", "/", bytes.NewReader([]byte(invalidReqBody)))
 		ctx := api.NewContext(recorder, request)
 		err := deps.ordersController.Create(ctx)
-		apiErr, ok := err.(*exceptions.ApiError)
+		apiErr, ok := err.(*api.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
 	}))
@@ -106,7 +105,7 @@ func TestOrders_Update(t *testing.T) {
 		request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, tx))
 		ctx := api.NewContext(recorder, request)
 		err := deps.ordersController.Update(ctx)
-		apiErr, ok := err.(*exceptions.ApiError)
+		apiErr, ok := err.(*api.ApiError)
 		assert.True(t, ok, "err should be an ApiError")
 		assert.Equal(t, http.StatusUnprocessableEntity, apiErr.Status)
 	}))

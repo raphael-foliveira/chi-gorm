@@ -10,20 +10,19 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/raphael-foliveira/chi-gorm/internal/exceptions"
 )
 
 type Context struct {
 	Response http.ResponseWriter
 	Request  *http.Request
-	Ctx context.Context
+	Ctx      context.Context
 }
 
 func NewContext(w http.ResponseWriter, r *http.Request) *Context {
 	return &Context{
 		Response: w,
 		Request:  r,
-		Ctx: r.Context(),
+		Ctx:      r.Context(),
 	}
 }
 
@@ -41,7 +40,7 @@ func (c *Context) JSON(status int, data any) error {
 func (c *Context) GetUintPathParam(paramName string) (uint, error) {
 	id, err := strconv.ParseUint(chi.URLParam(c.Request, paramName), 10, 64)
 	if err != nil {
-		return 0, exceptions.BadRequest(fmt.Sprintf("invalid %v", paramName))
+		return 0, BadRequest(fmt.Sprintf("invalid %v", paramName))
 	}
 	return uint(id), nil
 }
@@ -53,11 +52,11 @@ type Validatable interface {
 func (c *Context) ParseBody(v Validatable) error {
 	err := json.NewDecoder(c.Request.Body).Decode(v)
 	if err != nil {
-		return exceptions.UnprocessableEntity("invalid body")
+		return UnprocessableEntity("invalid body")
 	}
 	defer c.Request.Body.Close()
 	if err := v.Validate(); err != nil {
-		return exceptions.NewApiError(http.StatusUnprocessableEntity, err)
+		return NewApiError(http.StatusUnprocessableEntity, err)
 	}
 	return nil
 }
@@ -77,7 +76,7 @@ func useHandler(fn ControllerFunc) http.HandlerFunc {
 }
 
 func handleApiErr(ctx *Context, err error) error {
-	apiErr := &exceptions.ApiError{
+	apiErr := &ApiError{
 		Status: http.StatusInternalServerError,
 		Err:    "internal server error",
 	}
